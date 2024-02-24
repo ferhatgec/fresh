@@ -1,0 +1,19 @@
+{
+ [Project,
+  project_name = "aaaa",
+  default_window_size_w = 132,
+  default_window_size_h = 23,
+  default_clear_color = {
+   [Color,
+    red = 255,
+    green = 255,
+    blue = 255,
+    alpha = 255;
+  ];
+ },
+ default_fes_file = "",
+ preloaded_fes_files = {
+ };
+];
+};
+

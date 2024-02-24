@@ -1,0 +1,111 @@
+required_version is 0.1
+
+# you can use use add_source files "..."
+# to add file to files variable line by line.
+set files as "/Tp./src/application/window.cpp
+              /Tp./src/resources/sprite_resource.cpp
+              /Tp./src/resources/timer_resource.cpp
+              /Tp./src/resources/cursor_resource.cpp
+              /Tp./src/resources/font_resource.cpp
+              /Tp./src/resources/clipboard_resource.cpp
+              /Tp./src/resources/audio_resource.cpp
+              /Tp./src/resources/music_resource.cpp
+              /Tp./src/resources/animation_resource.cpp
+              /Tp./src/resources/fes_loader_resource.cpp
+              /Tp./src/objects/base_object.cpp
+              /Tp./src/objects/sprite_object.cpp
+              /Tp./src/objects/label_object.cpp
+              /Tp./src/objects/area_object.cpp
+              /Tp./src/objects/collision_object.cpp
+              /Tp./src/objects/camera_object.cpp
+              /Tp./src/objects/gui/gui_base_object.cpp
+              /Tp./src/objects/gui/gui_button_object.cpp
+              /Tp./src/objects/editor/editor_project_color_object.cpp
+              /Tp./src/objects/editor/editor_project_file_object.cpp
+              /Tp./src/objects/editor/editor_project_object.cpp
+              /Tp./src/fes/fes_ast.cpp
+              /Tp./src/fes/fes_parser.cpp
+              /Tp./src/fes/fes_tokenizer.cpp
+              /Tp./src/input/keyboard_input.cpp
+              /Tp./src/input/mouse_input.cpp
+              /Tp./src/render_objects.cpp
+              /Tp./libs/imgui/imgui.cpp
+              /Tp./libs/imgui/misc/cpp/imgui_stdlib.cpp
+              /Tp./libs/imgui/imgui_demo.cpp
+              /Tp./libs/imgui/imgui_draw.cpp
+              /Tp./libs/imgui/imgui_tables.cpp
+              /Tp./libs/imgui/imgui_widgets.cpp
+              /Tp./libs/imgui/backends/imgui_impl_sdlrenderer2.cpp
+              /Tp./libs/imgui/backends/imgui_impl_sdl2.cpp
+              /Tp./libs/imgui/backends/imgui_impl_opengl3.cpp
+              /Tp./src/freshengine.cpp
+              /Tp./src/editor/operation.cpp
+              /Tp./src/editor/editor.cpp"
+
+set object_files as "window.obj
+                     sprite_resource.obj
+                     timer_resource.obj
+                     cursor_resource.obj
+                     font_resource.obj
+                     clipboard_resource.obj
+                     audio_resource.obj
+                     music_resource.obj
+                     animation_resource.obj
+                     fes_loader_resource.obj
+                     base_object.obj
+                     sprite_object.obj
+                     label_object.obj
+                     area_object.obj
+                     collision_object.obj
+                     camera_object.obj
+                     gui_base_object.obj
+                     gui_button_object.obj
+                     editor_project_color_object.obj
+                     editor_project_file_object.obj
+                     editor_project_object.obj
+                     fes_ast.obj
+                     fes_parser.obj
+                     fes_tokenizer.obj
+                     keyboard_input.obj
+                     mouse_input.obj
+                     render_objects.obj
+                     imgui.obj
+                     imgui_stdlib.obj
+                     imgui_demo.obj
+                     imgui_draw.obj
+                     imgui_tables.obj
+                     imgui_widgets.obj
+                     imgui_impl_sdlrenderer2.obj
+                     imgui_impl_sdl2.obj
+                     imgui_impl_opengl3.obj
+                     freshengine.obj
+                     operation.obj
+                     editor.obj"
+
+set static_dependencies as "./libs/SDL/lib/x64/SDL2.lib
+                            ./libs/SDL_image/lib/x64/SDL2_image.lib
+                            ./libs/SDL_ttf/lib/x64/SDL2_ttf.lib
+                            ./libs/SDL_mixer/lib/x64/SDL2_mixer.lib"
+
+set static_libs as "{static_dependencies}
+                    kernel32.lib
+                    user32.lib
+                    gdi32.lib
+                    shell32.lib
+                    freshengine.lib"
+
+set include_dirs as "/I./libs/
+                    /I./libs/SDL/include/
+                    /I./libs/SDL_image/include/
+                    /I./libs/SDL_mixer/include/
+                    /I./libs/SDL_ttf/include/
+                    /I./libs/imgui/
+                    /I./libs/imgui/backends/"
+
+set compiler_params as "/EHsc /std:c++20 /MP /DWIN64"
+
+for signal "start" [
+    use exec "cl.exe {compiler_params} /c {include_dirs} {files} /link {static_dependencies}"
+    use exec "lib.exe {object_files} /out:freshengine.lib"
+    use exec "cl.exe {compiler_params} {include_dirs} /Tp./example/example.cpp /Feeditor.exe {static_libs}"
+]

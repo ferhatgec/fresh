@@ -1,0 +1,14 @@
+{
+ [SpriteObject,
+  name = "Scene.fes",
+  group_id = auto,
+  disabled = false,
+  visible = true,
+  width = 405,
+  height = 171,
+  position_x = -9,
+  position_y = -60,
+  sprite_resource = "example/barrier.png",
+  sub_groups = {};
+ ];
+};

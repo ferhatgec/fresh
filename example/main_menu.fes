@@ -1,0 +1,84 @@
+sub_groups      = {
+   [GuiButtonObject, # render_objects[3]
+                         group_id        = auto,
+                         disabled        = false,
+                         visible         = true,
+                         width           = 144,
+                         height          = 144,
+                         position_x      = 0,
+                         position_y      = 0,
+                         sub_groups      = {},
+                         on_clicked_sprite_object = {
+                          [SpriteObject,
+                           width  = 200,
+                           height = 80,
+                           position_x = 0,
+                           position_y = 0,
+                           visible = true,
+                           disabled = false,
+                           group_id = auto,
+                           sprite_resource = "example/button_clicked.png";
+                          ];
+                         },
+                         on_clicked_label_object = {
+                          [LabelObject,
+                           group_id        = auto,
+                           disabled        = false,
+                           visible         = true,
+                           width           = 80,
+                           height          = 40,
+                           position_x      = 40,
+                           position_y      = 40,
+                           background_red  = 255,
+                           background_green= 0,
+                           background_blue = 0,
+                           background_alpha= 255,
+                           foreground_red  = 255,
+                           foreground_green= 0,
+                           foreground_blue = 0,
+                           foreground_alpha= 255,
+                           label_text      = "Clicked me why...",
+                           font_size       = 64,
+                           font_resource   = "example/gch.ttf";];
+                         },
+                         on_hover_sprite_object = {
+                          [SpriteObject,
+                           width  = 200, height = 80,
+                           position_x = 0, position_y = 0,
+                           visible = true, disabled = false,
+                           group_id = auto,
+                           sprite_resource = "example/button_normal.png";
+                          ];
+                         },
+                         on_hover_label_object = {
+                          [LabelObject,
+                           group_id        = auto,
+                           disabled        = false, visible         = true,
+                           width           = 80, height          = 40,
+                           position_x      = 40, position_y      = 40,
+                           background_red  = 255, background_green= 0, background_blue = 0, background_alpha= 255,
+                           foreground_red  = 255, foreground_green= 0, foreground_blue = 0, foreground_alpha= 255,
+                           label_text      = "Click me...", font_size = 64, font_resource   = "example/gch.ttf";
+                          ];
+                         },
+                         sprite_object   = {
+                          [SpriteObject,
+                           width  = 200, height = 80,
+                           position_x = 0, position_y = 0,
+                           visible = true, disabled = false,
+                           group_id = auto,
+                           sprite_resource = "example/button_normal.png";
+                          ];
+                         },
+                         label_object    = {
+                          [LabelObject,
+                           group_id        = auto,
+                           disabled        = false, visible         = true,
+                           width           = 80, height          = 40,
+                           position_x      = 40, position_y      = 40,
+                           background_red  = 255, background_green= 0, background_blue = 0, background_alpha= 255,
+                           foreground_red  = 255, foreground_green= 0, foreground_blue = 0, foreground_alpha= 255,
+                           label_text      = "Click me...", font_size       = 64, font_resource   = "example/gch.ttf";
+                          ];
+                         };
+                        ];
