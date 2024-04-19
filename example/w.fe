@@ -1,0 +1,7 @@
+def i = 0;
+
+def update() =
+ pos_x = i;
+ pos_y = i;
+ i = i + 1;
+;

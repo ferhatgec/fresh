@@ -113,9 +113,38 @@ void Scanner::number() {
 }
 
 void Scanner::string() {
+  std::string str = "";
   while (this->peek() != '"' && !this->is_at_end()) {
     if (this->peek() == '\n')
       ++this->line;
+    if (this->peek() == '\\') {
+      this->advance();
+      switch(this->peek()) {
+        case 'a': { str.push_back('\a'); break; }
+        case 'b': { str.push_back('\b'); break; }
+        case 'f': { str.push_back('\f'); break; }
+        case 'n': { str.push_back('\n'); break; }
+        case 'r': { str.push_back('\r'); break; }
+        case 'v': { str.push_back('\v'); break; }
+        case '?': { str.push_back('\?'); break; }
+        case 't': { str.push_back('\t'); break; }
+        case 'w': { str.push_back(' '); break; }
+        case 'e': { str.push_back('\x1b'); break; }
+        case '"': {
+          str.push_back('"');
+          break;
+        }
+        case '\\': {
+          str.push_back('\\');
+          break;
+        }
+        default: {
+          std::cout << "Engine [language] error: Cannot determine given escape character: '" << this->peek() << "'\n";
+          std::exit(1);
+        }
+      }
+    } else
+      str.push_back(this->peek());
     this->advance();
   }
   if (this->is_at_end()) {
@@ -123,7 +152,7 @@ void Scanner::string() {
     return;
   }
   this->advance();
-  this->add_token(TokenType::STRING, std::string(this->source.substr(this->start + 1, this->current - 2 - this->start)));
+  this->add_token(TokenType::STRING, str);
 }
 
 [[nodiscard]] bool Scanner::match(const char &expected) {

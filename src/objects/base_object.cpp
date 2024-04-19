@@ -1,4 +1,5 @@
 #include <iostream>
+#include <fstream>
 
 #include "../../include/objects/base_object.hpp"
 #include "../../include/fescript/fescript_scanner.hpp"
@@ -15,6 +16,8 @@ BaseObject::BaseObject() {
   this->_copy_last_pos_info.y = 0;
   this->_object_id = id::object_id;
   this->_object_def = "baseobject";
+  this->script_content = "";
+  this->script_file_name = "";
   ++id::object_id;
 }
 
@@ -29,6 +32,8 @@ BaseObject::BaseObject(bool disabled, bool visible, idk::i32 pos_x, idk::i32 pos
   this->_copy_last_pos_info.y = 0;
   this->_object_id = id::object_id;
   this->_object_def = "baseobject";
+  this->script_content = "";
+  this->script_file_name = "";
   ++id::object_id;
 }
 
@@ -151,8 +156,22 @@ BaseObject::get_name() noexcept {
 }
 
 __idk_nodiscard
-void BaseObject::load_fescript_rt(const idk::StringViewChar& script) noexcept {
-  fescript::Scanner scanner(script.data());
+void BaseObject::load_fescript_rt(const idk::StringViewChar& script, bool is_file) noexcept {
+  if(script.is_empty())
+    return;
+  idk::StringViewChar script_content = "";
+  if(is_file) {
+    std::ifstream script_stream(script.data());
+    for(std::string temp_str = ""; std::getline(script_stream, temp_str); script_content.push_back(temp_str.data()))
+      script_content.push_back('\n');
+    script_stream.close();
+    this->script_file_name = script;
+  } else
+    script_content = script;
+  
+  this->script_content = script_content;
+
+  fescript::Scanner scanner(script_content.data());
   std::vector<fescript::Token> tokens = scanner.scan_tokens();
   fescript::Parser parser(tokens);
   auto statements = parser.parse();

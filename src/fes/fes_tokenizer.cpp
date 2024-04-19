@@ -234,6 +234,7 @@ void FesTokenizer::_check_and_push() noexcept {
     pushe("label_text", Keywords::LabelText);
     pushe("font_size", Keywords::FontSize);
     pushe("font_resource", Keywords::FontResource);
+    pushe("script_resource", Keywords::ScriptResource);
     pushe("label_object", Keywords::LabelObjectProperty);
     pushe("sprite_object", Keywords::SpriteObjectProperty);
     pushe("on_clicked_sprite_object", Keywords::OnClickedSpriteObjectProperty);

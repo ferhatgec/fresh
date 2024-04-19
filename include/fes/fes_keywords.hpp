@@ -46,6 +46,7 @@ enum Keywords {
   FontSize, // font_size
   FontResource, // font_resource
   SpriteResource, // sprite_resource
+  ScriptResource, // script_resource
   LabelObjectProperty, // label_object
   SpriteObjectProperty, // sprite_object
 

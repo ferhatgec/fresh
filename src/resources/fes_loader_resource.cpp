@@ -281,6 +281,7 @@ __idk_nodiscard
       object->push_object(idk::move(_object));
     }
 
+    object->load_fescript_rt(casted_obj->_fescript_path, true);
     return dynamic_cast<BaseObject*>(object);
   }// change this
 
@@ -313,6 +314,7 @@ __idk_nodiscard
       object->push_object(idk::move(_object));
     }
 
+    object->load_fescript_rt(object_node->_fescript_path, true);
     return dynamic_cast<BaseObject*>(object);
   }
 
@@ -320,6 +322,7 @@ __idk_nodiscard
     std::cout << "Engine error: Undefined object type found in FesLoaderResource.\n";
     auto ptr = this->_generate_baseobject_ptr<fresh::BaseObject>(idk::move(object_node));
     ptr->_object_def = "baseobject";
+    ptr->load_fescript_rt(object_node->_fescript_path, true);
     return ptr;
   }
   }
@@ -363,6 +366,7 @@ __idk_nodiscard
     object->push_object(idk::move(_object));
   }
 
+  object->load_fescript_rt(object_node->_fescript_path, true);
   return dynamic_cast<BaseObject*>(object);
 }
 
@@ -568,6 +572,8 @@ __idk_nodiscard
     --FesLoaderResource::_space_indentation;
     INDENT();
     fes_data.push_back("},\n");
+    INDENT();
+    fes_data.push_back("script_resource = \"" + casted_obj->_fescript_path + "\",\n");
 
     idk::StringViewChar sub_groups = this->_convert_list(object_node);
     sub_groups.trim_spaces_left();
@@ -605,6 +611,8 @@ __idk_nodiscard
     fes_data.push_back("position_x = " + idk::StringViewChar(std::to_string(object_node->_position_x).data()) + ",\n");
     INDENT();
     fes_data.push_back("position_y = " + idk::StringViewChar(std::to_string(object_node->_position_y).data()) + ",\n");
+    INDENT();
+    fes_data.push_back("script_resource = \"" + object_node->_fescript_path + "\",\n");
 
     idk::StringViewChar sub_groups = this->_convert_list(object_node);
     sub_groups.trim_spaces_left();
@@ -657,6 +665,8 @@ __idk_nodiscard
     fes_data.push_back("font_size = " + idk::StringViewChar(std::to_string(casted_obj->_font_size).data()) + ",\n");
     INDENT();
     fes_data.push_back("font_resource = \"" + casted_obj->_label_path + "\",\n");
+    INDENT();
+    fes_data.push_back("script_resource = \"" + casted_obj->_fescript_path + "\",\n");
 
     idk::StringViewChar sub_groups = this->_convert_list(object_node);
     sub_groups.trim_spaces_left();
@@ -687,6 +697,8 @@ __idk_nodiscard
     fes_data.push_back("position_y = " + idk::StringViewChar(std::to_string(object_node->_position_y).data()) + ",\n");
     INDENT();
     fes_data.push_back("sprite_resource = \"" + std::dynamic_pointer_cast<fes::FesSpriteObjectAST>(object_node)->_sprite_path + "\",\n");
+    INDENT();
+    fes_data.push_back("script_resource = \"" + object_node->_fescript_path + "\",\n");
 
     idk::StringViewChar sub_groups = this->_convert_list(object_node);
     sub_groups.trim_spaces_left();
@@ -818,7 +830,7 @@ FesLoaderResource::_convert_base_object_properties(std::shared_ptr<fes::FesObjec
   conv_obj->_position_y = object_node->get_position_info().y;
   conv_obj->_disabled = object_node->_disabled;
   conv_obj->_visible = object_node->_visible;
-
+  conv_obj->_fescript_path = object_node->script_file_name;
   for(auto& sub_obj: object_node->_sub_objects) {
     conv_obj->_sub_groups.push_back(idk::move(this->_convert_object_from_render_objects(sub_obj)));
   }

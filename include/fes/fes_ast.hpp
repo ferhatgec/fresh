@@ -60,6 +60,7 @@ public:
   idk::isize _position_y { 0_isize };
 
   idk::StringViewChar _name = ""; // name of the created object.
+  idk::StringViewChar _fescript_path = "";
 protected:
 };
 

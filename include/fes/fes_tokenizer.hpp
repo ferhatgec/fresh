@@ -23,7 +23,7 @@ public:
   FesTokenizer(idk::StringViewChar&& fes_raw_text_data_or_file_path, bool file = true);
   ~FesTokenizer();
 
-  // most of the time, fes scenes are being not that much contains large data.
+  // most of the time, fes scenes contains not that large data.
   // so memory mapped i/o is a bit overkill here, so we will use normal way.
   // if you want to read files fast, use it on your own, then pass file argument as false.
   // fes will automatically initialize raw_text_data variable with fes_raw_text_data_or_file_path.

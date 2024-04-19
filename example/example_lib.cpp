@@ -1,5 +1,6 @@
 #define SDL_MAIN_HANDLED
 #define __FRESH_ENABLE_EDITOR
+#include <fstream>
 #include "../include/editor/editor.hpp"
 constexpr auto _speed = 5;
 constexpr auto _maximum_speed = 10;
@@ -82,8 +83,6 @@ public:
 
     this->_resource.load_fes("example/scene.fes");
     this->_resource.generate_objects();
-    const idk::StringViewChar code = "def i = 0; def update() = pos_x = i; pos_y = i; i = i + 1;;";
-    fresh::RenderObjects::objects_to_render.front()->load_fescript_rt(code);
     std::cout << 2;
     Engine::get_instance()->link_camera(std::dynamic_pointer_cast<fresh::CameraObject>(fresh::RenderObjects::objects_to_render[0]));
     std::cout << 3;
@@ -365,8 +364,8 @@ public:
     //std::cout << std::boolalpha << "CollisionDetection1: " <<
      //   _collision_detection_1->is_colliding_with(this->_collision_detection_2) << '\n';
 
-    std::cout << std::boolalpha << "IsVisibleOnCamera: " <<
-        _camera_object->is_visible_on_camera(this->_icon) << '\n';
+   // std::cout << std::boolalpha << "IsVisibleOnCamera: " <<
+    //    _camera_object->is_visible_on_camera(this->_icon) << '\n';
     _animation_of_gech.run_animation();
     if(Engine::get_instance()->get_keyboard_input().is_key_just_pressed(SDL_SCANCODE_D)) {
       this->_icon->get_position_info().x += _speed;

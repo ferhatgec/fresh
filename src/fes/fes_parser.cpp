@@ -284,6 +284,11 @@ void FesParser::parse_variable(std::shared_ptr<FesObjectAST>& object_node) noexc
         break;
       }
 
+      case Keywords::ScriptResource: {
+        object_node->_fescript_path = _variable_data.first();
+        break;
+      }
+
       case Keywords::Visible:
       case Keywords::Disabled: {
         if(_variable.second() == Keywords::Visible)

@@ -105,7 +105,7 @@ public:
   get_name() noexcept;
 
   __idk_nodiscard
-  void load_fescript_rt(const idk::StringViewChar& script) noexcept;
+  void load_fescript_rt(const idk::StringViewChar& script, bool is_file = false) noexcept;
 protected:
   idk::StringViewChar _object_def;
   std::vector<std::shared_ptr<BaseObject>> _sub_objects;
@@ -122,6 +122,8 @@ protected:
   idk::StringViewChar _name;
 
   fescript::Interpreter _code;
+  idk::StringViewChar script_file_name;
+  idk::StringViewChar script_content;
 };
 } // namespace fresh
 
