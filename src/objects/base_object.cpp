@@ -1,5 +1,9 @@
-#include "../../include/objects/base_object.hpp"
 #include <iostream>
+
+#include "../../include/objects/base_object.hpp"
+#include "../../include/fescript/fescript_scanner.hpp"
+#include "../../include/fescript/fescript_parser.hpp"
+#include "../../include/fescript/fescript_resolver.hpp"
 
 namespace fresh {
 BaseObject::BaseObject() {
@@ -141,9 +145,30 @@ __idk_nodiscard
 }
 
 __idk_nodiscard
-  idk::StringViewChar&
-  BaseObject::get_name() noexcept {
+idk::StringViewChar&
+BaseObject::get_name() noexcept {
   return this->_name;
+}
+
+__idk_nodiscard
+void BaseObject::load_fescript_rt(const idk::StringViewChar& script) noexcept {
+  fescript::Scanner scanner(script.data());
+  std::vector<fescript::Token> tokens = scanner.scan_tokens();
+  fescript::Parser parser(tokens);
+  auto statements = parser.parse();
+  if (fescript::had_error || fescript::had_runtime_error)
+    return;
+  fescript::Resolver resolver{this->_code};
+  resolver.resolve(statements);
+  if (fescript::had_error || fescript::had_runtime_error) {
+    std::cout << "Engine error: Unable to handle runtime error.\n";
+    std::exit(1);
+  }
+  this->_code.get_statements() = statements;
+  this->_code.get_render_object_id() = this->_object_id;
+  // we run interpreter first to calculate first values of variables.
+  // it will prevent variable not found in scope style problems.
+  this->_code.interpret(this->_code.get_statements());
 }
 
 /*

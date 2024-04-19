@@ -26,6 +26,19 @@ set files as "/Tp./src/application/window.cpp
               /Tp./src/fes/fes_ast.cpp
               /Tp./src/fes/fes_parser.cpp
               /Tp./src/fes/fes_tokenizer.cpp
+              /Tp./src/fescript/fescript_array.cpp
+              /Tp./src/fescript/fescript_class.cpp
+              /Tp./src/fescript/fescript_dict.cpp
+              /Tp./src/fescript/fescript_environment.cpp
+              /Tp./src/fescript/fescript_expr.cpp
+              /Tp./src/fescript/fescript_function.cpp
+              /Tp./src/fescript/fescript_instance.cpp
+              /Tp./src/fescript/fescript_interpreter.cpp
+              /Tp./src/fescript/fescript_parser.cpp
+              /Tp./src/fescript/fescript_resolver.cpp
+              /Tp./src/fescript/fescript_scanner.cpp
+              /Tp./src/fescript/fescript_stmt.cpp
+              /Tp./src/fescript/fescript_token.cpp
               /Tp./src/input/keyboard_input.cpp
               /Tp./src/input/mouse_input.cpp
               /Tp./src/render_objects.cpp
@@ -66,6 +79,19 @@ set object_files as "window.obj
                      fes_ast.obj
                      fes_parser.obj
                      fes_tokenizer.obj
+                     fescript_array.obj
+                     fescript_class.obj
+                     fescript_dict.obj
+                     fescript_environment.obj
+                     fescript_expr.obj
+                     fescript_function.obj
+                     fescript_instance.obj
+                     fescript_interpreter.obj
+                     fescript_parser.obj
+                     fescript_resolver.obj
+                     fescript_scanner.obj
+                     fescript_stmt.obj
+                     fescript_token.obj
                      keyboard_input.obj
                      mouse_input.obj
                      render_objects.obj
@@ -81,6 +107,7 @@ set object_files as "window.obj
                      freshengine.obj
                      operation.obj
                      editor.obj"
+
 
 set static_dependencies as "./libs/SDL/lib/x64/SDL2.lib
                             ./libs/SDL_image/lib/x64/SDL2_image.lib
@@ -107,5 +134,5 @@ set compiler_params as "/EHsc /std:c++20 /MP /DWIN64"
 for signal "start" [
     use exec "cl.exe {compiler_params} /c {include_dirs} {files} /link {static_dependencies}"
     use exec "lib.exe {object_files} /out:freshengine.lib"
-    use exec "cl.exe {compiler_params} {include_dirs} /Tp./example/example.cpp /Feeditor.exe {static_libs}"
+    use exec "cl.exe {compiler_params} {include_dirs} /Tp./example/example_lib.cpp /Feeditor.exe {static_libs}"
 ]

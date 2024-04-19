@@ -1,14 +1,20 @@
 {
- [SpriteObject,
-  name = "Scene.fes",
-  group_id = auto,
-  disabled = false,
-  visible = true,
-  width = 405,
-  height = 171,
-  position_x = -9,
-  position_y = -60,
-  sprite_resource = "example/barrier.png",
-  sub_groups = {};
- ];
+[SpriteObject,
+name = "Scene.fes",
+group_id = auto,
+disabled = false,
+visible = true,
+width = 789,
+height = 299,
+position_x = 10,
+position_y = -30,
+sprite_resource = "example/street_wall.png",
+sub_groups = {};
+],
+[CameraObject,
+    group_id        = auto,
+    disabled        = false, visible         = true,
+    width           = 80, height          = 40,
+    position_x      = 40, position_y      = 40;
+    ];
 };

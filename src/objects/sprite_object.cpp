@@ -74,6 +74,7 @@ void SpriteObject::sync() noexcept {
 #ifdef __FRESH_ENABLE_EDITOR
   _gizmo->get_position_info() = this->get_position_info();// update deltas
 #endif
+  this->_code.interpret_update();
 
   SDL_SetTextureBlendMode(this->_sprite_resource.get_texture(), this->_convert_blend_mode_enum());
 

@@ -86,7 +86,7 @@ public:
     } else {
       if((_tick < this->_animation_frame[this->_current_index].get_end_ms())
         && (_tick >= this->_animation_frame[this->_current_index].get_start_ms())) { // [start, end)
-        dynamic_cast<SecondType*>(fresh::RenderObjects::objects_to_render[this->_index_in_render_objects])
+        dynamic_cast<SecondType*>(fresh::RenderObjects::objects_to_render[this->_index_in_render_objects].get())
             ->get_property<KeyType>()
             = *this->_animation_frame[this->_current_index].get_assignable_object();
 
@@ -140,7 +140,7 @@ private:
       return;
     }
 
-    dynamic_cast<SecondType*>(fresh::RenderObjects::objects_to_render[this->_index_in_render_objects])
+    dynamic_cast<SecondType*>(fresh::RenderObjects::objects_to_render[this->_index_in_render_objects].get())
         ->get_property<KeyType>() = *this->_animation_frame[0].get_assignable_object();
 
     this->_current_index = 0;

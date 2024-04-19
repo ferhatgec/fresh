@@ -1,12 +1,17 @@
 #ifndef FRESHENGINE_BASE_OBJECT_HPP
 #define FRESHENGINE_BASE_OBJECT_HPP
 
+#include <vector>
+
 #include "../../libs/idk/idk/types/predefined.hpp"
-#include "../../libs/SDL/include/SDL.h"
-#include "../resources/id_resource.hpp"
 #include "../../libs/idk/idk/utilities/type_traits.hpp"
 #include "../../libs/idk/idk/types/stringview.hpp"
-#include <vector>
+
+#include "../../libs/SDL/include/SDL.h"
+
+#include "../resources/id_resource.hpp"
+
+#include "../fescript/fescript_interpreter.hpp"
 
 namespace fresh {
 // BaseObject is must be inherited if any object gonna be rendered with any position
@@ -98,6 +103,9 @@ public:
   __idk_nodiscard
   idk::StringViewChar&
   get_name() noexcept;
+
+  __idk_nodiscard
+  void load_fescript_rt(const idk::StringViewChar& script) noexcept;
 protected:
   idk::StringViewChar _object_def;
   std::vector<std::shared_ptr<BaseObject>> _sub_objects;
@@ -111,7 +119,9 @@ protected:
   SDL_Rect _copy_last_pos_info; // it's here to calculate velocity
   idk::i64 _object_id;
 
-  idk::StringViewChar  _name;
+  idk::StringViewChar _name;
+
+  fescript::Interpreter _code;
 };
 } // namespace fresh
 

@@ -9,6 +9,14 @@
 namespace fresh {
 RenderObjects::RenderObjects() {}
 RenderObjects::~RenderObjects() {}
+std::shared_ptr<BaseObject> RenderObjects::find(idk::isize object_id) noexcept {
+  for(auto& object: RenderObjects::objects_to_render) {
+    if(object->get_object_id() == object_id)
+      return object;
+  }
+  std::cout << "Engine error: Cannot find RenderObject member with object id (" << object_id << ").\n";
+  std::exit(1);
+}
 
 std::vector<std::shared_ptr<BaseObject>> RenderObjects::objects_to_render;
 }// namespace fresh

@@ -22,6 +22,8 @@ CameraObject::is_visible_on_camera(std::shared_ptr<fresh::BaseObject> object) no
 }
 
 void CameraObject::sync() noexcept {
+  this->_code.interpret_update();
+
   for(auto& object : fresh::RenderObjects::objects_to_render) {
     if(object->_object_def != "cameraobject") {
       object->get_position_info().x =
