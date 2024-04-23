@@ -2,6 +2,10 @@
 #define __FRESH_ENABLE_EDITOR
 #include <fstream>
 #include "../include/editor/editor.hpp"
+#include "../include/fescript/fescript_interpreter.hpp"
+#include "../include/fescript/fescript_scanner.hpp"
+#include "../include/fescript/fescript_parser.hpp"
+#include "../include/fescript/fescript_resolver.hpp"
 constexpr auto _speed = 5;
 constexpr auto _maximum_speed = 10;
 
@@ -433,11 +437,45 @@ public:
   }
 };
 
-int main() {
-  SDL_SetMainReady();
-  Application* app = new Application();
-  app->run();
-  delete app;
 
+using namespace fescript;
+
+[[nodiscard]] std::string read_file(std::string_view path) noexcept {
+std::ifstream file(path.data());
+if (!file)
+return "print \"failed to open file\";";
+std::string contents;
+for (std::string temp; std::getline(file, temp); contents.append(temp + "\n"))
+;
+file.close();
+return std::move(contents);
+}
+
+Interpreter interpreter;
+
+void run(std::string_view source) noexcept {
+  Scanner scanner(std::move(source));
+  std::vector<Token> tokens = scanner.scan_tokens();
+  Parser parser(tokens);
+  auto statements = parser.parse();
+  if (had_error || had_runtime_error)
+    return;
+  Resolver resolver{interpreter};
+  resolver.resolve(statements);
+  if (had_error || had_runtime_error)
+    return;
+  interpreter.interpret(statements);
+}
+
+int main(int argc, char** argv) {
+  SDL_SetMainReady();
+  if(argc < 2) {
+    Application* app = new Application();
+    app->run();
+    if(app)
+      delete app;
+    return 1;
+  }
+  run(read_file(argv[1]));
   return 0;
 }

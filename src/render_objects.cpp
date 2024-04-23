@@ -19,5 +19,6 @@ std::shared_ptr<BaseObject> RenderObjects::find(idk::isize object_id) noexcept {
 }
 
 std::vector<std::shared_ptr<BaseObject>> RenderObjects::objects_to_render;
+idk::f80 RenderObjects::delta_ms { 0_f80 };
 }// namespace fresh
 #endif

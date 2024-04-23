@@ -9,10 +9,57 @@
 #include "../../include/fescript/fescript_interpreter.hpp"
 #include "../../include/render_objects.hpp"
 
+#include "../../include/fescript/modules/fescript_math.hpp"
+#include "../../include/fescript/modules/fescript_os.hpp"
+#include "../../include/fescript/modules/fescript_path.hpp"
+
 namespace fescript {
 Interpreter::Interpreter() {
   this->globals = std::make_shared<Environment>();
   this->environment = this->globals;
+
+  this->globals->define("Math_abs", std::make_shared<FescriptMathAbs>());
+  this->globals->define("Math_max", std::make_shared<FescriptMathMax>());
+  this->globals->define("Math_min", std::make_shared<FescriptMathMin>());
+  this->globals->define("Math_exp", std::make_shared<FescriptMathExp>());
+  this->globals->define("Math_log", std::make_shared<FescriptMathLog>());
+  this->globals->define("Math_pow", std::make_shared<FescriptMathPow>());
+  this->globals->define("Math_sqrt", std::make_shared<FescriptMathSqrt>());
+  this->globals->define("Math_cbrt", std::make_shared<FescriptMathCbrt>());
+  this->globals->define("Math_sin", std::make_shared<FescriptMathSin>());
+  this->globals->define("Math_cos", std::make_shared<FescriptMathCos>());
+  this->globals->define("Math_tan", std::make_shared<FescriptMathTan>());
+  this->globals->define("Math_asin", std::make_shared<FescriptMathAsin>());
+  this->globals->define("Math_acos", std::make_shared<FescriptMathAcos>());
+  this->globals->define("Math_atan", std::make_shared<FescriptMathAtan>());
+  this->globals->define("Math_sinh", std::make_shared<FescriptMathSinh>());
+  this->globals->define("Math_cosh", std::make_shared<FescriptMathCosh>());
+  this->globals->define("Math_tanh", std::make_shared<FescriptMathTanh>());
+  this->globals->define("Math_asinh", std::make_shared<FescriptMathAsinh>());
+  this->globals->define("Math_acosh", std::make_shared<FescriptMathAcosh>());
+  this->globals->define("Math_atanh", std::make_shared<FescriptMathAtanh>());
+  this->globals->define("Math_erf", std::make_shared<FescriptMathErf>());
+  this->globals->define("Math_gamma", std::make_shared<FescriptMathGamma>());
+  this->globals->define("Math_ceil", std::make_shared<FescriptMathCeil>());
+  this->globals->define("Math_floor", std::make_shared<FescriptMathFloor>());
+  this->globals->define("Math_trunc", std::make_shared<FescriptMathTrunc>());
+  this->globals->define("Math_round", std::make_shared<FescriptMathRound>());
+
+  this->globals->define("OS_platform", std::make_shared<FescriptOSPlatform>());
+  this->globals->define("OS_exec", std::make_shared<FescriptOSExec>());
+  this->globals->define("OS_arch", std::make_shared<FescriptOSArch>());
+
+  this->globals->define("Path_exists", std::make_shared<FescriptPathExists>());
+  this->globals->define("Path_is_dir", std::make_shared<FescriptPathIsDir>());
+  this->globals->define("Path_is_file", std::make_shared<FescriptPathIsFile>());
+  this->globals->define("Path_is_symlink", std::make_shared<FescriptPathIsSymlink>());
+  this->globals->define("Path_is_socket", std::make_shared<FescriptPathIsSocket>());
+  this->globals->define("Path_is_empty", std::make_shared<FescriptPathIsEmpty>());
+  this->globals->define("Path_cwd", std::make_shared<FescriptPathCwd>());
+  this->globals->define("Path_rwalk", std::make_shared<FescriptPathRwalk>());
+  this->globals->define("Path_walk", std::make_shared<FescriptPathWalk>());
+  this->globals->define("Path_read_file", std::make_shared<FescriptPathReadFile>());
+  this->globals->define("Path_write_file", std::make_shared<FescriptPathWriteFile>());
 }
 
 void Interpreter::interpret(
@@ -144,6 +191,12 @@ void Interpreter::execute_block(const std::vector<std::shared_ptr<Stmt>> &statem
 }
 
 [[nodiscard]] Object Interpreter::visit(std::shared_ptr<Function> stmt) {
+  if(auto it = this->globals->values.find(stmt->name.lexeme); it != this->globals->values.end()) {
+    if(it->second.index() == FescriptFunctionIndex || it->second.index() == FescriptCallableIndex) {
+      std::cout << "Engine [language] error: There is already a function named as '" << stmt->name.lexeme << "'.\n";
+      std::exit(1);
+    }
+  }
   auto function = std::make_shared<FescriptFunction>(stmt, environment, false);
   this->environment->define(stmt->name.lexeme, std::move(function));
   if((stmt->name.lexeme == "update" && this->current_state == State::Update) ||
@@ -154,7 +207,9 @@ void Interpreter::execute_block(const std::vector<std::shared_ptr<Stmt>> &statem
                                                                         stmt->name.lexeme,
                                                                         -1)),
                                                   Token(),
-                                                  std::vector<std::shared_ptr<Expr>>{}));
+                                                  std::vector<std::shared_ptr<Expr>>{
+      std::make_shared<Literal>(fresh::RenderObjects::delta_ms)
+    }));
   }
   return nullptr;
 }
@@ -274,6 +329,10 @@ void Interpreter::execute_block(const std::vector<std::shared_ptr<Stmt>> &statem
     this->check_number_operands(expr->op, left, right);
     return std::get<LongDoubleIndex>(left) * std::get<LongDoubleIndex>(right);
   }
+  case TokenType::PERCENT: {
+    this->check_number_operands(expr->op, left, right);
+    return fmodl(std::get<LongDoubleIndex>(left), std::get<LongDoubleIndex>(right));
+  }
   }
   return nullptr;
 }
@@ -283,11 +342,14 @@ void Interpreter::execute_block(const std::vector<std::shared_ptr<Stmt>> &statem
   std::vector<Object> arguments;
   for (const std::shared_ptr<Expr> &argument : expr->arguments)
     arguments.push_back(this->evaluate(argument));
+
   std::shared_ptr<FescriptCallable> function;
   if (callee.index() == FescriptFunctionIndex) {
     function = std::get<FescriptFunctionIndex>(callee);
   } else if (callee.index() == FescriptClassIndex) {
     function = std::get<FescriptClassIndex>(callee);
+  } else if(callee.index() == FescriptCallableIndex) {
+    function = std::get<FescriptCallableIndex>(callee);
   } else {
     throw RuntimeError{expr->paren, "can only call functions and classes."};
   }

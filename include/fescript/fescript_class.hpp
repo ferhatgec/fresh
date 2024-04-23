@@ -28,7 +28,7 @@ public:
   [[nodiscard]] int arity() override;
 
 private:
-  const std::string name;
+  std::string name;
   const std::shared_ptr<FescriptClass> superclass;
   std::map<std::string, std::shared_ptr<FescriptFunction>> methods;
 };

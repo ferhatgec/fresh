@@ -11,7 +11,6 @@ FescriptArray::~FescriptArray() {
 }
 
 [[nodiscard]] Object FescriptArray::get(const int index) {
-  // bellek
   if(index < this->values.size())
     return this->values[index];
   return nullptr;
@@ -26,5 +25,10 @@ FescriptArray::~FescriptArray() {
   }
   as_text.push_back(']');
   return as_text;
+}
+
+[[nodiscard]]
+std::vector<Object>& FescriptArray::get_values() noexcept {
+  return this->values;
 }
 }

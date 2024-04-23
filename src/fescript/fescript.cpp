@@ -43,7 +43,7 @@ void run(std::string_view source) noexcept {
 
 int main(int argc, char *argv[]) {
   if (argc > 2) {
-    std::cout << "Usage: fescr [script]\n";
+    std::cout << "Usage: fescript [script]\n";
   } else if (argc == 2) {
     run(read_file(argv[1]));
   } else {

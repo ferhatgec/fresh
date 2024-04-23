@@ -1,6 +1,38 @@
 def i = 0;
+def i = 5;
+print Math_abs(10);
+print Math_log(8, 2);
+print OS_platform();
+print OS_arch();
+print OS_exec("elite.exe");
 
-def update() =
+print Path_rwalk("example\\");
+print Path_exists("Elitefile");
+print Path_read_file("example/w.fe");
+print Path_write_file("test.txt", "test!");
+
+def Math_abs() =
+;
+
+
+print not true;
+
+class Math =
+ def sgn(a) =
+  if(a < 0) =
+   return -1;
+  ;
+  if(a == 0) =
+   return 0;
+  ;
+  return 1;
+ ;
+;
+
+print(Math().sgn(10));
+
+# update function
+def update(delta) =
  pos_x = i;
  pos_y = i;
  i = i + 1;

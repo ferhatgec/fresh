@@ -33,7 +33,8 @@ void Scanner::scan_token() {
   case '*':
   case '[':
   case ']':
-  case ':': {
+  case ':':
+  case '%': {
     this->add_token(static_cast<TokenType>(c));
     break;
   }
@@ -53,12 +54,13 @@ void Scanner::scan_token() {
     this->add_token(match('=') ? TokenType::GREATER_EQUAL : TokenType::GREATER);
     break;
   }
+  case '#': {
+    while(this->peek() != '\n' && !this->is_at_end())
+      this->advance();
+    break;
+  }
   case '/': {
-    if (this->match('/')) {
-      while (this->peek() != '\n' && !is_at_end())
-        this->advance();
-    } else
-      this->add_token(TokenType::SLASH);
+    this->add_token(TokenType::SLASH);
     break;
   }
   case ' ':

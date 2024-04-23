@@ -70,9 +70,14 @@ void Engine::run() {
 
   idk::u64 _desired_delta = 1000 / Engine::get_instance()->_fps;
   idk::u64 _start_loop;
+  Uint64 delta_now = SDL_GetPerformanceCounter();
+  Uint64 delta_prev = 0;
 
   while(Engine::get_instance()->_engine_running) {
     _start_loop = SDL_GetTicks64();
+    delta_prev = delta_now;
+    delta_now = SDL_GetPerformanceCounter();
+    RenderObjects::delta_ms = static_cast<idk::f80>((delta_now - delta_prev) * 1000) / static_cast<idk::f80>(SDL_GetPerformanceFrequency());
 
     SDL_GetWindowSize(Engine::get_instance()->get_window()->_window,
                       &Engine::get_instance()->get_window()->_width,

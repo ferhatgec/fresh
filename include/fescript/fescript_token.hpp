@@ -22,6 +22,7 @@
 #define FescriptInstanceIndex 6
 #define FescriptArrayIndex 7
 #define FescriptDictIndex 8
+#define FescriptCallableIndex 9
 
 namespace fescript {
 class FescriptFunction;
@@ -29,13 +30,15 @@ class FescriptClass;
 class FescriptInstance;
 class FescriptArray;
 class FescriptDict;
+class FescriptCallable;
 
 using Object =
   std::variant<std::string, long double, bool, std::nullptr_t,
                std::shared_ptr<FescriptFunction>, std::shared_ptr<FescriptClass>,
                std::shared_ptr<FescriptInstance>,
                std::shared_ptr<FescriptArray>,
-               std::shared_ptr<FescriptDict>>;
+               std::shared_ptr<FescriptDict>,
+               std::shared_ptr<FescriptCallable>>;
 
 class Token {
 public:
@@ -51,4 +54,6 @@ public:
   Object literal;
   int line;
 };
+
+static inline Token empty_token = Token(TokenType::SEMICOLON, "", std::string(""), -1);
 }// namespace fescript

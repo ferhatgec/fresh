@@ -39,6 +39,9 @@ set files as "/Tp./src/application/window.cpp
               /Tp./src/fescript/fescript_scanner.cpp
               /Tp./src/fescript/fescript_stmt.cpp
               /Tp./src/fescript/fescript_token.cpp
+              /Tp./src/fescript/modules/fescript_math.cpp
+              /Tp./src/fescript/modules/fescript_os.cpp
+              /Tp./src/fescript/modules/fescript_path.cpp
               /Tp./src/input/keyboard_input.cpp
               /Tp./src/input/mouse_input.cpp
               /Tp./src/render_objects.cpp
@@ -92,6 +95,9 @@ set object_files as "window.obj
                      fescript_scanner.obj
                      fescript_stmt.obj
                      fescript_token.obj
+                     fescript_math.obj
+                     fescript_os.obj
+                     fescript_path.obj
                      keyboard_input.obj
                      mouse_input.obj
                      render_objects.obj

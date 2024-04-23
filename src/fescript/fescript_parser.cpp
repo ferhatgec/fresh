@@ -271,7 +271,7 @@ Parser::Parser(const std::vector<Token> &tokens)
 
 [[nodiscard]] std::shared_ptr<Expr> Parser::factor() {
   std::shared_ptr<Expr> expr = std::move(this->unary());
-  while (this->match({TokenType::SLASH, TokenType::STAR})) {
+  while (this->match({TokenType::SLASH, TokenType::STAR, TokenType::PERCENT})) {
     Token op = this->previous();
     expr = std::make_shared<Binary>(expr, std::move(op), std::move(this->unary()));
   }

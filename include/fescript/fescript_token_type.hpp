@@ -23,6 +23,7 @@ enum TokenType {
   SEMICOLON = ';',
   SLASH = '/',
   STAR = '*',
+  PERCENT = '%',
   LEFT_BOX_PAREN = '[',
   RIGHT_BOX_PAREN = ']',
   COLON = ':',
@@ -65,10 +66,10 @@ enum TokenType {
   EOF_
 };
 
-static const std::array<std::string, 40> strings {
+static const std::array<std::string, 41> strings {
   "LEFT_PAREN", "RIGHT_PAREN", "LEFT_BRACE", "RIGHT_BRACE", "COMMA",
   "DOT", "MINUS", "PLUS", "SEMICOLON", "SLASH",
-  "STAR", "BANG", "BANG_EQUAL", "EQUAL", "EQUAL_EQUAL",
+  "STAR", "PERCENT", "BANG", "BANG_EQUAL", "EQUAL", "EQUAL_EQUAL",
   "GREATER", "GREATER_EQUAL", "LESS", "LESS_EQUAL", "IDENTIFIER",
   "STRING", "NUMBER", "AND", "CLASS", "ELSE", "ELIF",
   "FALSE", "FUN", "FOR", "IF", "NIL",

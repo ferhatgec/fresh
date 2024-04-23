@@ -66,6 +66,7 @@ private:
     {"true", TokenType::TRUE},
     {"def", TokenType::VAR},
     {"while", TokenType::WHILE},
+    {"not", TokenType::BANG}
   };
 };
 }// namespace fescript

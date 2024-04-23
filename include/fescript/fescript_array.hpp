@@ -16,7 +16,9 @@ public:
 
   [[nodiscard]] Object get(const int index);
   [[nodiscard]] std::string to_string();
-  
+
+  [[nodiscard]]
+  std::vector<Object>& get_values() noexcept;
 private:
   std::vector<Object> values;
 };
