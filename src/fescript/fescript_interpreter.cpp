@@ -15,6 +15,13 @@
 #include "../../include/fescript/modules/fescript_io.hpp"
 
 #include "../../include/fescript/modules/engine_io.hpp"
+#include "../../include/fescript/modules/engine.hpp"
+
+#include "../../include/fescript/wrappers/fescript_base_object.hpp"
+#include "../../include/fescript/wrappers/fescript_sprite_object.hpp"
+
+#include "../../include/objects/base_object.hpp"
+#include "../../include/objects/sprite_object.hpp"
 
 namespace fescript {
 Interpreter::Interpreter() {
@@ -76,6 +83,10 @@ Interpreter::Interpreter() {
   this->globals->define("EngineIO_is_mouse_button_just_pressed", std::make_shared<FescriptEngineIOIsMouseButtonJustPressed>());
 
   ENGINEIO_INIT_CONSTANTS()
+
+  this->globals->define("Engine_BaseObject", std::make_shared<BaseObjectWrapper>());
+  this->globals->define("Engine_SpriteObject", std::make_shared<SpriteObjectWrapper>());
+  this->globals->define("Engine_render_objects_push", std::make_shared<FescriptEngineRenderObjectsPush>());
 }
 
 void Interpreter::interpret(
@@ -290,6 +301,10 @@ void Interpreter::execute_block(const std::vector<std::shared_ptr<Stmt>> &statem
     fresh::RenderObjects::find(this->render_object_id)->get_is_visible() = std::get<BoolIndex>(value);
   else if(expr->name.lexeme == "disabled")
     fresh::RenderObjects::find(this->render_object_id)->get_is_disabled() = std::get<BoolIndex>(value);
+  else if(expr->name.lexeme == "width")
+    fresh::RenderObjects::find(this->render_object_id)->get_position_info().w = static_cast<idk::i32>(fabsl(std::get<LongDoubleIndex>(value)));
+  else if(expr->name.lexeme == "height")
+    fresh::RenderObjects::find(this->render_object_id)->get_position_info().h = static_cast<idk::i32>(fabsl(std::get<LongDoubleIndex>(value)));
   else {
     if (auto it = this->locals.find(expr); it != this->locals.end())
       this->environment->assign_at(it->second, expr->name, value);
@@ -336,6 +351,20 @@ void Interpreter::execute_block(const std::vector<std::shared_ptr<Stmt>> &statem
     if (left.index() == StringIndex && right.index() == StringIndex) {
       return std::get<StringIndex>(left) + std::get<StringIndex>(right);
     }
+    if(left.index() == FescriptArrayIndex) {
+      auto copy_left_array = std::get<FescriptArrayIndex>(left)->get_values();
+
+      if(right.index() == FescriptArrayIndex) {
+        for(auto& right_array_element: std::get<FescriptArrayIndex>(right)->get_values()) {
+          copy_left_array.push_back(right_array_element);
+        }
+      } else {
+        copy_left_array.push_back(right);
+      }
+      std::shared_ptr<FescriptArray> array = std::make_shared<FescriptArray>();
+      array->get_values() = std::move(copy_left_array);
+      return std::move(array);
+    }
     throw RuntimeError{expr->op, "operands must be two numbers or two strings."};
   }
   case TokenType::SLASH: {
@@ -359,7 +388,6 @@ void Interpreter::execute_block(const std::vector<std::shared_ptr<Stmt>> &statem
   std::vector<Object> arguments;
   for (const std::shared_ptr<Expr> &argument : expr->arguments)
     arguments.push_back(this->evaluate(argument));
-
   std::shared_ptr<FescriptCallable> function;
   if (callee.index() == FescriptFunctionIndex) {
     function = std::get<FescriptFunctionIndex>(callee);
@@ -396,6 +424,48 @@ void Interpreter::execute_block(const std::vector<std::shared_ptr<Stmt>> &statem
       return std::get<FescriptDictIndex>(object)->get(this->evaluate(expr->name_expr));
     }
     return std::get<FescriptDictIndex>(object)->get(expr->name.literal);
+  } else if(object.index() == FescriptBaseObjectIndex) {
+    if(expr->is_name_an_expr) {
+      // TODO
+      return "TODO";
+    }
+    if(expr->name.lexeme == "pos_x") {
+      return static_cast<idk::f80>(std::get<FescriptBaseObjectIndex>(object)->get_position_info().x);
+    } else if(expr->name.lexeme == "pos_y") {
+      return static_cast<idk::f80>(std::get<FescriptBaseObjectIndex>(object)->get_position_info().y);
+    } else if(expr->name.lexeme == "visible") {
+      return std::get<FescriptBaseObjectIndex>(object)->get_is_visible();
+    } else if(expr->name.lexeme == "disabled") {
+      return std::get<FescriptBaseObjectIndex>(object)->get_is_disabled();
+    } else if(expr->name.lexeme == "width") {
+      return static_cast<idk::f80>(std::get<FescriptBaseObjectIndex>(object)->get_position_info().w);
+    } else if(expr->name.lexeme == "height") {
+      return static_cast<idk::f80>(std::get<FescriptBaseObjectIndex>(object)->get_position_info().h);
+    } else {
+      throw RuntimeError(expr->name, "BaseObject property cannot be found.");
+    }
+  } else if(object.index() == FescriptSpriteObjectIndex) {
+    if(expr->is_name_an_expr) {
+      // TODO
+      return "TODO";
+    }
+      if(expr->name.lexeme == "pos_x") {
+        return static_cast<idk::f80>(std::get<FescriptSpriteObjectIndex>(object)->get_position_info().x);
+      } else if(expr->name.lexeme == "pos_y") {
+        return static_cast<idk::f80>(std::get<FescriptSpriteObjectIndex>(object)->get_position_info().y);
+      } else if(expr->name.lexeme == "visible") {
+        return std::get<FescriptSpriteObjectIndex>(object)->get_is_visible();
+      } else if(expr->name.lexeme == "disabled") {
+        return std::get<FescriptSpriteObjectIndex>(object)->get_is_disabled();
+      } else if(expr->name.lexeme == "width") {
+        return static_cast<idk::f80>(std::get<FescriptSpriteObjectIndex>(object)->get_position_info().w);
+      } else if(expr->name.lexeme == "height") {
+        return static_cast<idk::f80>(std::get<FescriptSpriteObjectIndex>(object)->get_position_info().h);
+      } else if(expr->name.lexeme == "sprite_resource") {
+        return std::string(std::get<FescriptSpriteObjectIndex>(object)->get_sprite_resource()._texture_path.data());
+      } else {
+        throw RuntimeError(expr->name, "SpriteObject property cannot be found.");
+      }
   }
   throw RuntimeError(expr->name, "only instances have properties.");
 }
@@ -435,10 +505,20 @@ void Interpreter::execute_block(const std::vector<std::shared_ptr<Stmt>> &statem
 
 [[nodiscard]] Object Interpreter::visit(std::shared_ptr<Set> expr) {
   Object object = this->evaluate(expr->object);
+  Object value = this->evaluate(expr->value);
+  switch(object.index()) {
+    case FescriptBaseObjectIndex: {
+      std::get<FescriptBaseObjectIndex>(object)->set(expr->name, value);
+      return value;
+    }
+    case FescriptSpriteObjectIndex: {
+      std::get<FescriptSpriteObjectIndex>(object)->set(expr->name, value);
+      return value;
+    }
+  }
   if (object.index() != FescriptInstanceIndex)
     throw RuntimeError(expr->name, "only instances have fields.");
-  Object value = this->evaluate(expr->value);
-  std::get<std::shared_ptr<FescriptInstance>>(object)->set(expr->name, value);
+  std::get<FescriptInstanceIndex>(object)->set(expr->name, value);
   return value;
 }
 
@@ -551,6 +631,15 @@ std::string Interpreter::stringify(const Object &object) {
   }
   case FescriptDictIndex: {
     return std::get<FescriptDictIndex>(object)->to_string();
+  }
+  case FescriptCallableIndex: {
+    return std::get<FescriptCallableIndex>(object)->to_string();
+  }
+  case FescriptBaseObjectIndex: {
+    return std::get<FescriptBaseObjectIndex>(object)->to_string();
+  }
+  case FescriptSpriteObjectIndex: {
+    return std::get<FescriptSpriteObjectIndex>(object)->to_string();
   }
   }
   return "nil";

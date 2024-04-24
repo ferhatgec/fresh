@@ -12,6 +12,7 @@
 #include "../resources/id_resource.hpp"
 
 #include "../fescript/fescript_interpreter.hpp"
+#include "../fescript/fescript_token.hpp"
 
 namespace fresh {
 // BaseObject is must be inherited if any object gonna be rendered with any position
@@ -95,6 +96,9 @@ public:
   get_property<bool>() noexcept {
     return this->_visible;
   }
+
+  [[nodiscard]] std::string to_string() { return "baseobject"; }
+  [[nodiscard]] virtual void set(const fescript::Token& name, fescript::Object value);
 
   __idk_nodiscard
   std::vector<std::shared_ptr<BaseObject>>&

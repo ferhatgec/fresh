@@ -23,6 +23,13 @@
 #define FescriptArrayIndex 7
 #define FescriptDictIndex 8
 #define FescriptCallableIndex 9
+#define FescriptBaseObjectIndex 10
+#define FescriptSpriteObjectIndex 11
+
+namespace fresh {
+class BaseObject;
+class SpriteObject;
+} // namespace fresh
 
 namespace fescript {
 class FescriptFunction;
@@ -38,7 +45,9 @@ using Object =
                std::shared_ptr<FescriptInstance>,
                std::shared_ptr<FescriptArray>,
                std::shared_ptr<FescriptDict>,
-               std::shared_ptr<FescriptCallable>>;
+               std::shared_ptr<FescriptCallable>,
+               std::shared_ptr<fresh::BaseObject>,
+               std::shared_ptr<fresh::SpriteObject>>;
 
 class Token {
 public:

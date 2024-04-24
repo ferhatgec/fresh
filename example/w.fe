@@ -1,4 +1,13 @@
-def i = 0;
+def x = Engine_SpriteObject();
+x.width = 100;
+x.height = 100;
+x.pos_x = 0;
+x.pos_y = 0;
+x.sprite_resource = "example/icon.png";
+IO_println(x.width, x.height, x.pos_x, x.pos_y, x.sprite_resource);
+Engine_render_objects_push(x);
+
+# def i = 0;
 # def i = 5;
 
 # IO_println(Math_abs(10));
@@ -19,6 +28,8 @@ def i = 0;
 
 # IO_println(not true);
 
+
+
 # class Math =
 #  def sgn(a) =
 #   if(a < 0) =
@@ -35,11 +46,11 @@ def i = 0;
 
 # update function
 def update(delta) =
- if(EngineIO_is_key_just_pressed(EngineIO_Key_A)) =
-  IO_println("[A] Pressed and released.");
- ; elif(EngineIO_is_key_pressed(EngineIO_Key_A)) =
-  IO_println("[A] Still being pressed.");
- ;
+ #if(EngineIO_is_key_just_pressed(EngineIO_Key_A)) =
+ # IO_println("[A] Pressed and released.");
+ #; elif(EngineIO_is_key_pressed(EngineIO_Key_A)) =
+ # IO_println("[A] Still being pressed.");
+ #;
  #pos_x = i;
  #pos_y = i;
  #i = i + 1;

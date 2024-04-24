@@ -41,6 +41,12 @@ public:
   get_property<bool>() noexcept {
     return this->_visible;
   }
+
+  [[nodiscard]] std::string to_string() {
+    return "spriteobject";
+  }
+
+  [[nodiscard]] void set(const fescript::Token& name, fescript::Object value) override;
 private:
   __idk_nodiscard
   SDL_BlendMode
