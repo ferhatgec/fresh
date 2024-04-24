@@ -1,39 +1,46 @@
 def i = 0;
-def i = 5;
-print Math_abs(10);
-print Math_log(8, 2);
-print OS_platform();
-print OS_arch();
-print OS_exec("elite.exe");
+# def i = 5;
 
-print Path_rwalk("example\\");
-print Path_exists("Elitefile");
-print Path_read_file("example/w.fe");
-print Path_write_file("test.txt", "test!");
+# IO_println(Math_abs(10));
+# IO_println(Math_log(8, 2));
+# IO_println(OS_platform());
+# IO_println(OS_arch());
+# IO_println(OS_exec("elite.exe"));
+# IO_println("Hello", "world");
 
-def Math_abs() =
-;
+# IO_println(Path_rwalk("example\\"));
+# IO_println(Path_exists("Elitefile", "fes.cpp"));
+# IO_println(Path_exists("Elitefile"));
+# IO_println(Path_exists("_Elitefile_"));
+# IO_println(IO_read_file("example/w.fe"));
+# IO_println(IO_write_file("test.txt", "test!"));
 
+# IO_println(IO_char_input("input a character: "));
 
-print not true;
+# IO_println(not true);
 
-class Math =
- def sgn(a) =
-  if(a < 0) =
-   return -1;
-  ;
-  if(a == 0) =
-   return 0;
-  ;
-  return 1;
- ;
-;
+# class Math =
+#  def sgn(a) =
+#   if(a < 0) =
+#    return -1;
+#   ;
+#   if(a == 0) =
+#    return 0;
+#   ;
+#   return 1;
+#  ;
+# ;
 
-print(Math().sgn(10));
+# IO_println((Math().sgn(10)));
 
 # update function
 def update(delta) =
- pos_x = i;
- pos_y = i;
- i = i + 1;
+ if(EngineIO_is_key_just_pressed(EngineIO_Key_A)) =
+  IO_println("[A] Pressed and released.");
+ ; elif(EngineIO_is_key_pressed(EngineIO_Key_A)) =
+  IO_println("[A] Still being pressed.");
+ ;
+ #pos_x = i;
+ #pos_y = i;
+ #i = i + 1;
 ;

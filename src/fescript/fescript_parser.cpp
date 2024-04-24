@@ -57,8 +57,6 @@ Parser::Parser(const std::vector<Token> &tokens)
     return std::move(this->for_statement());
   if (this->match({TokenType::IF}))
     return std::move(this->if_statement());
-  if (this->match({TokenType::PRINT}))
-    return std::move(this->print_statement());
   if (this->match({TokenType::RETURN}))
     return std::move(this->return_statement());
   if (this->match({TokenType::WHILE}))
@@ -132,12 +130,6 @@ Parser::Parser(const std::vector<Token> &tokens)
     else_branch = std::make_shared<Block>(std::move(this->block()));
   }
   return std::make_shared<If>(std::move(condition), std::move(then_branch), std::move(elifs), std::move(else_branch));
-}
-
-[[nodiscard]] std::shared_ptr<Stmt> Parser::print_statement() {
-  std::shared_ptr<Expr> value = std::move(this->expression());
-  this->consume(TokenType::SEMICOLON, "expect ';' after value.");
-  return std::make_shared<Print>(std::move(value));
 }
 
 [[nodiscard]] std::shared_ptr<Stmt> Parser::return_statement() {
@@ -449,7 +441,6 @@ void Parser::synchronize() {
     case TokenType::FOR:
     case TokenType::IF:
     case TokenType::WHILE:
-    case TokenType::PRINT:
     case TokenType::RETURN:
       return;
     }

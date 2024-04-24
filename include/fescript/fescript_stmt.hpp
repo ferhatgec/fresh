@@ -15,7 +15,6 @@ class Class;
 class Expression;
 class Function;
 class If;
-class Print;
 class Return;
 class Var;
 class While;
@@ -27,7 +26,6 @@ public:
   [[nodiscard]] virtual Object visit(std::shared_ptr<Expression> stmt) = 0;
   [[nodiscard]] virtual Object visit(std::shared_ptr<Function> stmt) = 0;
   [[nodiscard]] virtual Object visit(std::shared_ptr<If> stmt) = 0;
-  [[nodiscard]] virtual Object visit(std::shared_ptr<Print> stmt) = 0;
   [[nodiscard]] virtual Object visit(std::shared_ptr<Return> stmt) = 0;
   [[nodiscard]] virtual Object visit(std::shared_ptr<Var> stmt) = 0;
   [[nodiscard]] virtual Object visit(std::shared_ptr<While> stmt) = 0;
@@ -106,17 +104,6 @@ public:
   const std::shared_ptr<Block> then_branch;
   const std::map<std::shared_ptr<Expr>, std::shared_ptr<Block>> elifs;
   const std::shared_ptr<Block> else_branch;
-};
-
-class Print : public Stmt, public std::enable_shared_from_this<Print> {
-public:
-  Print(std::shared_ptr<Expr> expression);
-  ~Print();
-
-  [[nodiscard]] Object accept(StmtVisitor &visitor) override;
-
-public:
-  const std::shared_ptr<Expr> expression;
 };
 
 class Return : public Stmt, public std::enable_shared_from_this<Return> {

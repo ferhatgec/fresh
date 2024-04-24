@@ -12,6 +12,9 @@
 #include "../../include/fescript/modules/fescript_math.hpp"
 #include "../../include/fescript/modules/fescript_os.hpp"
 #include "../../include/fescript/modules/fescript_path.hpp"
+#include "../../include/fescript/modules/fescript_io.hpp"
+
+#include "../../include/fescript/modules/engine_io.hpp"
 
 namespace fescript {
 Interpreter::Interpreter() {
@@ -58,8 +61,21 @@ Interpreter::Interpreter() {
   this->globals->define("Path_cwd", std::make_shared<FescriptPathCwd>());
   this->globals->define("Path_rwalk", std::make_shared<FescriptPathRwalk>());
   this->globals->define("Path_walk", std::make_shared<FescriptPathWalk>());
-  this->globals->define("Path_read_file", std::make_shared<FescriptPathReadFile>());
-  this->globals->define("Path_write_file", std::make_shared<FescriptPathWriteFile>());
+
+  this->globals->define("IO_print", std::make_shared<FescriptIOPrint>());
+  this->globals->define("IO_println", std::make_shared<FescriptIOPrintln>());
+  this->globals->define("IO_read_file", std::make_shared<FescriptIOReadFile>());
+  this->globals->define("IO_write_file", std::make_shared<FescriptIOWriteFile>());
+  this->globals->define("IO_input", std::make_shared<FescriptIOInput>());
+  this->globals->define("IO_char_input", std::make_shared<FescriptIOCharInput>());
+
+  this->globals->define("EngineIO_is_key_pressed", std::make_shared<FescriptEngineIOIsKeyPressed>());
+  this->globals->define("EngineIO_is_key_just_pressed", std::make_shared<FescriptEngineIOIsKeyJustPressed>());
+  this->globals->define("EngineIO_is_key_released", std::make_shared<FescriptEngineIOIsKeyReleased>());
+  this->globals->define("EngineIO_is_mouse_button_pressed", std::make_shared<FescriptEngineIOIsMouseButtonPressed>());
+  this->globals->define("EngineIO_is_mouse_button_just_pressed", std::make_shared<FescriptEngineIOIsMouseButtonJustPressed>());
+
+  ENGINEIO_INIT_CONSTANTS()
 }
 
 void Interpreter::interpret(
@@ -192,7 +208,8 @@ void Interpreter::execute_block(const std::vector<std::shared_ptr<Stmt>> &statem
 
 [[nodiscard]] Object Interpreter::visit(std::shared_ptr<Function> stmt) {
   if(auto it = this->globals->values.find(stmt->name.lexeme); it != this->globals->values.end()) {
-    if(it->second.index() == FescriptFunctionIndex || it->second.index() == FescriptCallableIndex) {
+    if((it->second.index() == FescriptFunctionIndex || it->second.index() == FescriptCallableIndex)
+      && !(stmt->name.lexeme == "update" && this->current_state == State::Update)) {
       std::cout << "Engine [language] error: There is already a function named as '" << stmt->name.lexeme << "'.\n";
       std::exit(1);
     }
@@ -232,12 +249,12 @@ void Interpreter::execute_block(const std::vector<std::shared_ptr<Stmt>> &statem
   }
   return nullptr;
 }
-
-[[nodiscard]] Object Interpreter::visit(std::shared_ptr<Print> stmt) {
-  Object value = this->evaluate(stmt->expression);
-  std::cout << this->stringify(value) << "\n";
-  return nullptr;
-}
+//
+//[[nodiscard]] Object Interpreter::visit(std::shared_ptr<Print> stmt) {
+//  Object value = this->evaluate(stmt->expression);
+//  std::cout << this->stringify(value) << "\n";
+//  return nullptr;
+//}
 
 [[nodiscard]] Object Interpreter::visit(std::shared_ptr<Return> stmt) {
   Object value = nullptr;
@@ -353,7 +370,7 @@ void Interpreter::execute_block(const std::vector<std::shared_ptr<Stmt>> &statem
   } else {
     throw RuntimeError{expr->paren, "can only call functions and classes."};
   }
-  if (arguments.size() != function->arity()) {
+  if ((arguments.size() != function->arity()) && function->arity() != -1) {
     throw RuntimeError{expr->paren, "expected " + std::to_string(function->arity()) + " arguments but got " + std::to_string(arguments.size()) + "."};
   }
   return function->call(*this, std::move(arguments));

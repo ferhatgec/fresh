@@ -3,6 +3,7 @@
 
 #include "../../libs/idk/idk/types/predefined.hpp"
 #include "../../libs/SDL/include/SDL.h"
+#include <unordered_map>
 
 namespace fresh {
 class KeyboardInput {

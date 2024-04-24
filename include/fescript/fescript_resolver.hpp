@@ -26,7 +26,6 @@ public:
   [[nodiscard]] Object visit(std::shared_ptr<Expression> stmt) override;
   [[nodiscard]] Object visit(std::shared_ptr<Function> stmt) override;
   [[nodiscard]] Object visit(std::shared_ptr<If> stmt) override;
-  [[nodiscard]] Object visit(std::shared_ptr<Print> stmt) override;
   [[nodiscard]] Object visit(std::shared_ptr<Return> stmt) override;
   [[nodiscard]] Object visit(std::shared_ptr<Var> stmt) override;
   [[nodiscard]] Object visit(std::shared_ptr<While> stmt) override;

@@ -70,17 +70,6 @@ If::~If() {
   return visitor.visit(shared_from_this());
 }
 
-Print::Print(std::shared_ptr<Expr> expression)
-    : expression{std::move(expression)} {
-}
-
-Print::~Print() {
-}
-
-[[nodiscard]] Object Print::accept(StmtVisitor &visitor) {
-  return visitor.visit(shared_from_this());
-}
-
 Return::Return(Token keyword, std::shared_ptr<Expr> value)
     : keyword{std::move(keyword)}, value{std::move(value)} {}
 

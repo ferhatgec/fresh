@@ -331,6 +331,7 @@ public:
   bool _press { false };
   void
   update() override {
+    return;
     if(Engine::get_mouse_input().is_button_just_pressed(SDL_BUTTON_LEFT)) {
       std::cout << "Mouse left click just pressed and released.\n";
     }

@@ -42,6 +42,8 @@ set files as "/Tp./src/application/window.cpp
               /Tp./src/fescript/modules/fescript_math.cpp
               /Tp./src/fescript/modules/fescript_os.cpp
               /Tp./src/fescript/modules/fescript_path.cpp
+              /Tp./src/fescript/modules/fescript_io.cpp
+              /Tp./src/fescript/modules/engine_io.cpp
               /Tp./src/input/keyboard_input.cpp
               /Tp./src/input/mouse_input.cpp
               /Tp./src/render_objects.cpp
@@ -98,6 +100,8 @@ set object_files as "window.obj
                      fescript_math.obj
                      fescript_os.obj
                      fescript_path.obj
+                     fescript_io.obj
+                     engine_io.obj
                      keyboard_input.obj
                      mouse_input.obj
                      render_objects.obj

@@ -46,6 +46,9 @@ public:
 
   std::vector<std::shared_ptr<Stmt>>& get_statements() noexcept;
   idk::isize& get_render_object_id() noexcept;
+
+
+  [[nodiscard]] static std::string stringify(const Object &object);
 private:
   [[nodiscard]] Object evaluate(std::shared_ptr<Expr> expr);
   [[nodiscard]] Object look_up_variable(const Token &name, std::shared_ptr<Expr> expr);
@@ -62,14 +65,11 @@ private:
   [[nodiscard]] bool is_truthy(const Object &object);
   [[nodiscard]] bool is_equal(const Object &a, const Object &b);
 
-  [[nodiscard]] std::string stringify(const Object &object);
-
   [[nodiscard]] Object visit(std::shared_ptr<Block> stmt) override;
   [[nodiscard]] Object visit(std::shared_ptr<Class> stmt) override;
   [[nodiscard]] Object visit(std::shared_ptr<Expression> stmt) override;
   [[nodiscard]] Object visit(std::shared_ptr<Function> stmt) override;
   [[nodiscard]] Object visit(std::shared_ptr<If> stmt) override;
-  [[nodiscard]] Object visit(std::shared_ptr<Print> stmt) override;
   [[nodiscard]] Object visit(std::shared_ptr<Return> stmt) override;
   [[nodiscard]] Object visit(std::shared_ptr<Var> stmt) override;
   [[nodiscard]] Object visit(std::shared_ptr<While> stmt) override;

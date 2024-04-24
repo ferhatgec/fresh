@@ -71,11 +71,6 @@ Resolver::Resolver(Interpreter &interpreter) : interpreter{interpreter} {}
   return nullptr;
 }
 
-[[nodiscard]] Object Resolver::visit(std::shared_ptr<Print> stmt) {
-  this->resolve(stmt->expression);
-  return nullptr;
-}
-
 [[nodiscard]] Object Resolver::visit(std::shared_ptr<Return> stmt) {
   if (current_function == FunctionType::NONE) {
     error(stmt->keyword, "can't return from top-level code.");
