@@ -7,7 +7,22 @@ x.sprite_resource = "example/icon.png";
 IO_println(x.width, x.height, x.pos_x, x.pos_y, x.sprite_resource);
 Engine_render_objects_push(x);
 
-# def i = 0;
+def y = Engine_LabelObject();
+y.pos_x = 0;
+y.pos_y = 0;
+y.width = 300;
+y.height = 100;
+y.label_text = "Helloworld";
+y.background_blue = 100;
+y.background_red = 100;
+y.font_resource = "example/gch.ttf";
+y.font_size = 32;
+IO_println(x, y);
+
+x.sub_groups = [y];
+
+# Engine_render_objects_push(y);
+
 # def i = 5;
 
 # IO_println(Math_abs(10));
@@ -43,15 +58,24 @@ Engine_render_objects_push(x);
 # ;
 
 # IO_println((Math().sgn(10)));
+def SPEED = 20;
 
 # update function
 def update(delta) =
- #if(EngineIO_is_key_just_pressed(EngineIO_Key_A)) =
- # IO_println("[A] Pressed and released.");
- #; elif(EngineIO_is_key_pressed(EngineIO_Key_A)) =
- # IO_println("[A] Still being pressed.");
- #;
- #pos_x = i;
- #pos_y = i;
- #i = i + 1;
+ if(EngineIO_is_key_pressed(EngineIO_Key_A)) =
+  IO_println("[A]");
+  x.pos_x = x.pos_x - (delta * SPEED);
+ ;
+ if(EngineIO_is_key_pressed(EngineIO_Key_D)) =
+  IO_println("[D]");
+  x.pos_x = x.pos_x + (delta * SPEED);
+ ;
+ if(EngineIO_is_key_pressed(EngineIO_Key_W)) =
+  IO_println("[W]");
+  x.pos_y = x.pos_y - (delta * SPEED);
+ ;
+ if(EngineIO_is_key_pressed(EngineIO_Key_S)) =
+  IO_println("[S]");
+  x.pos_y = x.pos_y + (delta * SPEED);
+ ;
 ;

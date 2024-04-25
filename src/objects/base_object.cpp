@@ -5,6 +5,8 @@
 #include "../../include/fescript/fescript_scanner.hpp"
 #include "../../include/fescript/fescript_parser.hpp"
 #include "../../include/fescript/fescript_resolver.hpp"
+#include "../../include/fescript/fescript_array.hpp"
+#include "../../include/fescript/wrappers/fescript_base_object.hpp"
 
 namespace fresh {
 BaseObject::BaseObject() {
@@ -144,19 +146,8 @@ void BaseObject::push_object(std::shared_ptr<BaseObject> sub_object) noexcept {
 }
 
 [[nodiscard]] void BaseObject::set(const fescript::Token& name, fescript::Object value) {
-  if(name.lexeme == "pos_x") {
-    this->get_position_info().x = static_cast<idk::i32>(std::get<LongDoubleIndex>(value));
-  } else if(name.lexeme == "pos_y") {
-    this->get_position_info().y = static_cast<idk::i32>(std::get<LongDoubleIndex>(value));
-  } else if(name.lexeme == "visible") {
-    this->get_is_visible() = std::get<BoolIndex>(value);
-  } else if(name.lexeme == "disabled") {
-    this->get_is_disabled() = std::get<BoolIndex>(value);
-  } else if(name.lexeme == "width") {
-    this->get_position_info().w = static_cast<idk::i32>(std::get<LongDoubleIndex>(value));
-  } else if(name.lexeme == "height") {
-    this->get_position_info().h = static_cast<idk::i32>(std::get<LongDoubleIndex>(value));
-  } else {
+  SET_BASE_OBJECT_PROPERTIES()
+  else {
     std::cout << "Engine [language] error: BaseObject has not field named as '" << name.lexeme << "'.\n";
     std::exit(1);
   }

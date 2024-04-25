@@ -25,10 +25,12 @@
 #define FescriptCallableIndex 9
 #define FescriptBaseObjectIndex 10
 #define FescriptSpriteObjectIndex 11
+#define FescriptLabelObjectIndex 12
 
 namespace fresh {
 class BaseObject;
 class SpriteObject;
+class LabelObject;
 } // namespace fresh
 
 namespace fescript {
@@ -40,14 +42,19 @@ class FescriptDict;
 class FescriptCallable;
 
 using Object =
-  std::variant<std::string, long double, bool, std::nullptr_t,
-               std::shared_ptr<FescriptFunction>, std::shared_ptr<FescriptClass>,
+  std::variant<std::string,
+               long double,
+               bool,
+               std::nullptr_t,
+               std::shared_ptr<FescriptFunction>,
+               std::shared_ptr<FescriptClass>,
                std::shared_ptr<FescriptInstance>,
                std::shared_ptr<FescriptArray>,
                std::shared_ptr<FescriptDict>,
                std::shared_ptr<FescriptCallable>,
                std::shared_ptr<fresh::BaseObject>,
-               std::shared_ptr<fresh::SpriteObject>>;
+               std::shared_ptr<fresh::SpriteObject>,
+               std::shared_ptr<fresh::LabelObject>>;
 
 class Token {
 public:

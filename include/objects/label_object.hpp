@@ -77,6 +77,20 @@ public:
 
   void
   initialize_label_font_surface() noexcept;
+
+  [[nodiscard]] std::string to_string() {
+    return "labelobject";
+  }
+
+  [[nodiscard]] void set(const fescript::Token& name, fescript::Object value) override;
+
+  [[nodiscard]] SDL_Color& get_background_color() noexcept {
+    return this->_bg;
+  }
+
+  [[nodiscard]] SDL_Color& get_foreground_color() noexcept {
+    return this->_fg;
+  }
 protected:
   SDL_Color _bg;
   SDL_Color _fg;

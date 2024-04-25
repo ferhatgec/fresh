@@ -19,9 +19,11 @@
 
 #include "../../include/fescript/wrappers/fescript_base_object.hpp"
 #include "../../include/fescript/wrappers/fescript_sprite_object.hpp"
+#include "../../include/fescript/wrappers/fescript_label_object.hpp"
 
 #include "../../include/objects/base_object.hpp"
 #include "../../include/objects/sprite_object.hpp"
+#include "../../include/objects/label_object.hpp"
 
 namespace fescript {
 Interpreter::Interpreter() {
@@ -86,6 +88,7 @@ Interpreter::Interpreter() {
 
   this->globals->define("Engine_BaseObject", std::make_shared<BaseObjectWrapper>());
   this->globals->define("Engine_SpriteObject", std::make_shared<SpriteObjectWrapper>());
+  this->globals->define("Engine_LabelObject", std::make_shared<LabelObjectWrapper>());
   this->globals->define("Engine_render_objects_push", std::make_shared<FescriptEngineRenderObjectsPush>());
 }
 
@@ -406,68 +409,60 @@ void Interpreter::execute_block(const std::vector<std::shared_ptr<Stmt>> &statem
 
 [[nodiscard]] Object Interpreter::visit(std::shared_ptr<Get> expr) {
   Object object = this->evaluate(expr->object);
-  if (object.index() == FescriptInstanceIndex) {
-    return std::get<FescriptInstanceIndex>(object)->get(expr->name);
-  } else if(object.index() == FescriptArrayIndex) {
-    if(expr->name.literal.index() == LongDoubleIndex)
-      return std::get<FescriptArrayIndex>(object)->get(static_cast<int>(std::get<LongDoubleIndex>(expr->name.literal)));
-    if(expr->is_name_an_expr)
-      if(auto value = this->evaluate(expr->name_expr); value.index() == LongDoubleIndex)
-        return std::get<FescriptArrayIndex>(object)->get(static_cast<int>(std::get<LongDoubleIndex>(value)));
-    if(const auto& variable_value = this->look_up_variable(expr->name, expr);
+  switch(object.index()) {
+    case FescriptInstanceIndex: {
+      return std::get<FescriptInstanceIndex>(object)->get(expr->name);
+    }
+    case FescriptArrayIndex: {
+      if(expr->name.literal.index() == LongDoubleIndex)
+        return std::get<FescriptArrayIndex>(object)->get(static_cast<int>(std::get<LongDoubleIndex>(expr->name.literal)));
+      if(expr->is_name_an_expr)
+        if(auto value = this->evaluate(expr->name_expr); value.index() == LongDoubleIndex)
+          return std::get<FescriptArrayIndex>(object)->get(static_cast<int>(std::get<LongDoubleIndex>(value)));
+      if(const auto& variable_value = this->look_up_variable(expr->name, expr);
         variable_value.index() == LongDoubleIndex)
-      return std::get<FescriptArrayIndex>(object)->get(static_cast<int>(std::get<LongDoubleIndex>(variable_value)));
-
-    throw RuntimeError(expr->name, "array must take an index by integer type.");
-  } else if(object.index() == FescriptDictIndex) {
-    if(expr->is_name_an_expr) {
-      return std::get<FescriptDictIndex>(object)->get(this->evaluate(expr->name_expr));
+        return std::get<FescriptArrayIndex>(object)->get(static_cast<int>(std::get<LongDoubleIndex>(variable_value)));
+      throw RuntimeError(expr->name, "array must take an index by integer type.");
     }
-    return std::get<FescriptDictIndex>(object)->get(expr->name.literal);
-  } else if(object.index() == FescriptBaseObjectIndex) {
-    if(expr->is_name_an_expr) {
-      // TODO
-      return "TODO";
+    case FescriptDictIndex: {
+      if(expr->is_name_an_expr)
+        return std::get<FescriptDictIndex>(object)->get(this->evaluate(expr->name_expr));
+      return std::get<FescriptDictIndex>(object)->get(expr->name.literal);
     }
-    if(expr->name.lexeme == "pos_x") {
-      return static_cast<idk::f80>(std::get<FescriptBaseObjectIndex>(object)->get_position_info().x);
-    } else if(expr->name.lexeme == "pos_y") {
-      return static_cast<idk::f80>(std::get<FescriptBaseObjectIndex>(object)->get_position_info().y);
-    } else if(expr->name.lexeme == "visible") {
-      return std::get<FescriptBaseObjectIndex>(object)->get_is_visible();
-    } else if(expr->name.lexeme == "disabled") {
-      return std::get<FescriptBaseObjectIndex>(object)->get_is_disabled();
-    } else if(expr->name.lexeme == "width") {
-      return static_cast<idk::f80>(std::get<FescriptBaseObjectIndex>(object)->get_position_info().w);
-    } else if(expr->name.lexeme == "height") {
-      return static_cast<idk::f80>(std::get<FescriptBaseObjectIndex>(object)->get_position_info().h);
-    } else {
-      throw RuntimeError(expr->name, "BaseObject property cannot be found.");
+    case FescriptBaseObjectIndex: {
+      if(expr->is_name_an_expr)
+        return "TODO"; // TODO
+      RETURN_BASE_OBJECT_PROPERTIES(FescriptBaseObjectIndex)
+      else throw RuntimeError(expr->name, "BaseObject property cannot be found.");
     }
-  } else if(object.index() == FescriptSpriteObjectIndex) {
-    if(expr->is_name_an_expr) {
-      // TODO
-      return "TODO";
+    case FescriptSpriteObjectIndex: {
+      if(expr->is_name_an_expr)
+        return "TODO"; // TODO
+      RETURN_BASE_OBJECT_PROPERTIES(FescriptSpriteObjectIndex)
+      else if(expr->name.lexeme == "sprite_resource") return std::string(std::get<FescriptSpriteObjectIndex>(object)->get_sprite_resource()._texture_path.data());
+      else throw RuntimeError(expr->name, "SpriteObject property cannot be found.");
     }
-      if(expr->name.lexeme == "pos_x") {
-        return static_cast<idk::f80>(std::get<FescriptSpriteObjectIndex>(object)->get_position_info().x);
-      } else if(expr->name.lexeme == "pos_y") {
-        return static_cast<idk::f80>(std::get<FescriptSpriteObjectIndex>(object)->get_position_info().y);
-      } else if(expr->name.lexeme == "visible") {
-        return std::get<FescriptSpriteObjectIndex>(object)->get_is_visible();
-      } else if(expr->name.lexeme == "disabled") {
-        return std::get<FescriptSpriteObjectIndex>(object)->get_is_disabled();
-      } else if(expr->name.lexeme == "width") {
-        return static_cast<idk::f80>(std::get<FescriptSpriteObjectIndex>(object)->get_position_info().w);
-      } else if(expr->name.lexeme == "height") {
-        return static_cast<idk::f80>(std::get<FescriptSpriteObjectIndex>(object)->get_position_info().h);
-      } else if(expr->name.lexeme == "sprite_resource") {
-        return std::string(std::get<FescriptSpriteObjectIndex>(object)->get_sprite_resource()._texture_path.data());
-      } else {
-        throw RuntimeError(expr->name, "SpriteObject property cannot be found.");
-      }
+    case FescriptLabelObjectIndex: {
+      if(expr->is_name_an_expr)
+        return "TODO"; // TODO
+      RETURN_BASE_OBJECT_PROPERTIES(FescriptLabelObjectIndex)
+      else if(expr->name.lexeme == "background_red") return static_cast<idk::f80>(std::get<FescriptLabelObjectIndex>(object)->get_background_color().r);
+      else if(expr->name.lexeme == "background_green") return static_cast<idk::f80>(std::get<FescriptLabelObjectIndex>(object)->get_background_color().g);
+      else if(expr->name.lexeme == "background_blue") return static_cast<idk::f80>(std::get<FescriptLabelObjectIndex>(object)->get_background_color().b);
+      else if(expr->name.lexeme == "background_alpha") return static_cast<idk::f80>(std::get<FescriptLabelObjectIndex>(object)->get_background_color().a);
+      else if(expr->name.lexeme == "foreground_red") return static_cast<idk::f80>(std::get<FescriptLabelObjectIndex>(object)->get_foreground_color().r);
+      else if(expr->name.lexeme == "foreground_green") return static_cast<idk::f80>(std::get<FescriptLabelObjectIndex>(object)->get_foreground_color().g);
+      else if(expr->name.lexeme == "foreground_blue") return static_cast<idk::f80>(std::get<FescriptLabelObjectIndex>(object)->get_foreground_color().b);
+      else if(expr->name.lexeme == "foreground_alpha") return static_cast<idk::f80>(std::get<FescriptLabelObjectIndex>(object)->get_foreground_color().a);
+      else if(expr->name.lexeme == "label_text") return std::string(std::get<FescriptLabelObjectIndex>(object)->get_label_text().data());
+      else if(expr->name.lexeme == "font_size") return static_cast<idk::f80>(std::get<FescriptLabelObjectIndex>(object)->get_label_font_resource().get_font_size());
+      else if(expr->name.lexeme == "font_resource") return std::string(std::get<FescriptLabelObjectIndex>(object)->get_label_font_resource().get_font_path().data());
+      else throw RuntimeError(expr->name, "LabelObject property cannot be found.");
+    }
+    default: {
+      throw RuntimeError(expr->name, "only instances have properties.");
+    }
   }
-  throw RuntimeError(expr->name, "only instances have properties.");
 }
 
 [[nodiscard]] Object Interpreter::visit(std::shared_ptr<Grouping> expr) {
@@ -513,6 +508,10 @@ void Interpreter::execute_block(const std::vector<std::shared_ptr<Stmt>> &statem
     }
     case FescriptSpriteObjectIndex: {
       std::get<FescriptSpriteObjectIndex>(object)->set(expr->name, value);
+      return value;
+    }
+    case FescriptLabelObjectIndex: {
+      std::get<FescriptLabelObjectIndex>(object)->set(expr->name, value);
       return value;
     }
   }
@@ -640,6 +639,9 @@ std::string Interpreter::stringify(const Object &object) {
   }
   case FescriptSpriteObjectIndex: {
     return std::get<FescriptSpriteObjectIndex>(object)->to_string();
+  }
+  case FescriptLabelObjectIndex: {
+    return std::get<FescriptLabelObjectIndex>(object)->to_string();
   }
   }
   return "nil";

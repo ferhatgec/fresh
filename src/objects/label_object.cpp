@@ -1,4 +1,6 @@
 #include "../../include/freshengine.hpp"
+#include "../../include/fescript/wrappers/fescript_base_object.hpp"
+#include "../../include/fescript/fescript_array.hpp"
 
 namespace fresh {
 LabelObject::LabelObject() {
@@ -164,6 +166,31 @@ void LabelObject::initialize_label_font_surface() noexcept {
   if(!this->_label_font_texture.get_texture()) {
     std::cout << "Engine error: Cannot initialize texture for LabelObject.\n";
     return;
+  }
+}
+
+[[nodiscard]] void LabelObject::set(const fescript::Token& name, fescript::Object value) {
+  SET_BASE_OBJECT_PROPERTIES()
+  else if(name.lexeme == "background_red") this->_bg.r = static_cast<idk::i32>(std::get<LongDoubleIndex>(value));
+  else if(name.lexeme == "background_green") this->_bg.g = static_cast<idk::i32>(std::get<LongDoubleIndex>(value));
+  else if(name.lexeme == "background_blue") this->_bg.b = static_cast<idk::i32>(std::get<LongDoubleIndex>(value));
+  else if(name.lexeme == "background_alpha") this->_bg.a = static_cast<idk::i32>(std::get<LongDoubleIndex>(value));
+  else if(name.lexeme == "foreground_red") this->_fg.r = static_cast<idk::i32>(std::get<LongDoubleIndex>(value));
+  else if(name.lexeme == "foreground_green") this->_fg.g = static_cast<idk::i32>(std::get<LongDoubleIndex>(value));
+  else if(name.lexeme == "foreground_blue") this->_fg.b = static_cast<idk::i32>(std::get<LongDoubleIndex>(value));
+  else if(name.lexeme == "foreground_alpha") this->_fg.a = static_cast<idk::i32>(std::get<LongDoubleIndex>(value));
+  else if(name.lexeme == "label_text") this->_label_text = std::get<StringIndex>(value).data();
+  else if(name.lexeme == "font_size") this->_label_font_resource._font_size = static_cast<idk::i32>(std::get<LongDoubleIndex>(value));
+  else if(name.lexeme == "font_resource") {
+    // TODO: do not directly initialize labelobject when font_resource value changed.
+    // more likely, define a function that handles initialization.
+    // we actually loading and initializing font on the time.
+    this->_label_font_resource._font_path = std::get<StringIndex>(value).data();
+    this->get_label_font_resource().load_font(this->_label_font_resource._font_path);
+    this->initialize_text(this->_label_text, this->_fg, this->_bg, fresh::LabelRenderType::Solid);
+  } else {
+    std::cout << "Engine [language] error: SpriteObject has not field named as '" << name.lexeme << "'.\n";
+    std::exit(1);
   }
 }
 }// namespace fresh

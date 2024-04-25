@@ -29,6 +29,7 @@ public:
   friend class GuiButtonObject;
   friend class Engine;
   friend class Editor;
+  friend class fescript::Interpreter;
 
   BaseObject();
   BaseObject(bool disabled, bool visible, idk::i32 pos_x, idk::i32, idk::i32 width, idk::i32 height);

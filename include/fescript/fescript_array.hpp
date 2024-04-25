@@ -10,6 +10,9 @@ class FescriptArray : public std::enable_shared_from_this<FescriptArray> {
   friend class Token;
   friend class Parser;
   friend class Interpreter;
+  friend class fresh::BaseObject;
+  friend class fresh::SpriteObject;
+  friend class fresh::LabelObject;
 public:
   FescriptArray();
   ~FescriptArray();
