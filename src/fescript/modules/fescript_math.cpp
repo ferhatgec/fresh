@@ -128,4 +128,14 @@ __idk_nodiscard Object FescriptMathRound::call(Interpreter &interpreter, std::ve
   ERR_CHECK_DECIMAL("Math_round()", 1)
   return roundl(std::get<LongDoubleIndex>(arguments.front()));
 }
+
+__idk_nodiscard Object FescriptMathSgn::call(fescript::Interpreter& interpreter, std::vector <Object> arguments) {
+  ERR_CHECK_DECIMAL("Math_sgn()", 1)
+  const auto& dec = std::get<LongDoubleIndex>(arguments.front());
+  if(dec > 0)
+    return 1_f80;
+  if(dec < 0)
+    return -1_f80;
+  return 0_f80;
+}
 }

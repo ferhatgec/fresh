@@ -43,6 +43,7 @@ set files as "/Tp./src/application/window.cpp
               /Tp./src/fescript/modules/fescript_os.cpp
               /Tp./src/fescript/modules/fescript_path.cpp
               /Tp./src/fescript/modules/fescript_io.cpp
+              /Tp./src/fescript/modules/fescript_prng.cpp
               /Tp./src/fescript/modules/engine_io.cpp
               /Tp./src/fescript/modules/engine.cpp
               /Tp./src/fescript/modules/engine_window.cpp
@@ -109,6 +110,7 @@ set object_files as "window.obj
                      fescript_os.obj
                      fescript_path.obj
                      fescript_io.obj
+                     fescript_prng.obj
                      engine_io.obj
                      engine.obj
                      engine_window.obj

@@ -18,6 +18,6 @@ PATH_MODULE(IsEmpty, -1)
 PATH_MODULE(Cwd, 0)
 PATH_MODULE(Rwalk, 1)
 PATH_MODULE(Walk, 1)
-}
+} // namespace fescript
 
 #undef PATH_MODULE

@@ -13,6 +13,7 @@
 #include "../../include/fescript/modules/fescript_os.hpp"
 #include "../../include/fescript/modules/fescript_path.hpp"
 #include "../../include/fescript/modules/fescript_io.hpp"
+#include "../../include/fescript/modules/fescript_prng.hpp"
 
 #include "../../include/fescript/modules/engine_io.hpp"
 #include "../../include/fescript/modules/engine.hpp"
@@ -29,10 +30,16 @@
 #include "../../include/objects/collision_object.hpp"
 #include "../../include/objects/camera_object.hpp"
 
+#include <chrono>
+
 namespace fescript {
 Interpreter::Interpreter() {
   this->globals = std::make_shared<Environment>();
   this->environment = this->globals;
+
+  this->global_seed = std::chrono::duration_cast<std::chrono::milliseconds>(
+    std::chrono::system_clock::now().time_since_epoch()
+    ).count();
 
   this->globals->define("Math_abs", std::make_shared<FescriptMathAbs>());
   this->globals->define("Math_max", std::make_shared<FescriptMathMax>());
@@ -60,6 +67,7 @@ Interpreter::Interpreter() {
   this->globals->define("Math_floor", std::make_shared<FescriptMathFloor>());
   this->globals->define("Math_trunc", std::make_shared<FescriptMathTrunc>());
   this->globals->define("Math_round", std::make_shared<FescriptMathRound>());
+  this->globals->define("Math_sgn", std::make_shared<FescriptMathSgn>());
 
   MATH_GLOBAL_CONSTANTS()
 
@@ -83,6 +91,13 @@ Interpreter::Interpreter() {
   this->globals->define("IO_write_file", std::make_shared<FescriptIOWriteFile>());
   this->globals->define("IO_input", std::make_shared<FescriptIOInput>());
   this->globals->define("IO_char_input", std::make_shared<FescriptIOCharInput>());
+
+  this->globals->define("PRNG_get_global_seed", std::make_shared<FescriptPRNGGetGlobalSeed>());
+  this->globals->define("PRNG_set_global_seed", std::make_shared<FescriptPRNGSetGlobalSeed>());
+  this->globals->define("PRNG_generate_prn", std::make_shared<FescriptPRNGGeneratePRN>());
+  this->globals->define("PRNG_generate_prn_between", std::make_shared<FescriptPRNGGeneratePRNBetween>());
+
+  PRNG_GLOBAL_CONSTANTS()
 
   this->globals->define("EngineIO_is_key_pressed", std::make_shared<FescriptEngineIOIsKeyPressed>());
   this->globals->define("EngineIO_is_key_just_pressed", std::make_shared<FescriptEngineIOIsKeyJustPressed>());
@@ -703,5 +718,9 @@ std::string Interpreter::stringify(const Object &object) {
   }
   }
   return "nil";
+}
+
+[[nodiscard]] idk::i64& Interpreter::get_global_seed() noexcept {
+  return this->global_seed;
 }
 }// namespace fescript

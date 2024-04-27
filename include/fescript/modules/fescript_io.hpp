@@ -14,6 +14,6 @@ IO_MODULE(ReadFile, 1)
 IO_MODULE(WriteFile, 2)
 IO_MODULE(Input, -1)
 IO_MODULE(CharInput, -1)
-}
+} // namespace fescript
 
-#undef PATH_MODULE
+#undef IO_MODULE

@@ -79,7 +79,9 @@ Engine_render_objects_push(cam);
 
 # IO_println(not true);
 
-
+IO_println(PRNG_get_global_seed());
+IO_println(PRNG_generate_prn(PRNG_Lehmer) % 5);
+IO_println(PRNG_generate_prn_between(PRNG_Gech, 0, 100));
 
 # class Math =
 #  def sgn(a) =

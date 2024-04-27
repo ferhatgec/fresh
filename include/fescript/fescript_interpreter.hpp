@@ -47,8 +47,8 @@ public:
   std::vector<std::shared_ptr<Stmt>>& get_statements() noexcept;
   idk::isize& get_render_object_id() noexcept;
 
-
   [[nodiscard]] static std::string stringify(const Object &object);
+  [[nodiscard]] idk::i64& get_global_seed() noexcept;
 private:
   [[nodiscard]] Object evaluate(std::shared_ptr<Expr> expr);
   [[nodiscard]] Object look_up_variable(const Token &name, std::shared_ptr<Expr> expr);
@@ -97,5 +97,7 @@ private:
   std::shared_ptr<Environment> environment;
   std::map<std::shared_ptr<Expr>, int> locals;
   std::vector<std::shared_ptr<Stmt>> statements;
+
+  idk::i64 global_seed;
 };
 }// namespace fescript

@@ -41,6 +41,7 @@ MATH_MODULE(Ceil, 1)
 MATH_MODULE(Floor, 1)
 MATH_MODULE(Trunc, 1)
 MATH_MODULE(Round, 1)
-}
+MATH_MODULE(Sgn, 1)
+} // namespace fescript
 
 #undef MATH_MODULE
