@@ -1,5 +1,4 @@
 #include "../../../include/fescript/wrappers/fescript_base_object.hpp"
-#include "../../../include/objects/base_object.hpp"
 
 namespace fescript {
 BaseObjectWrapper::BaseObjectWrapper()

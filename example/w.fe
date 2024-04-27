@@ -7,6 +7,7 @@ x.sprite_resource = "example/icon.png";
 IO_println(x.width, x.height, x.pos_x, x.pos_y, x.sprite_resource);
 Engine_render_objects_push(x);
 
+
 def y = Engine_LabelObject();
 y.pos_x = 0;
 y.pos_y = 0;
@@ -15,11 +16,20 @@ y.height = 100;
 y.label_text = "Helloworld";
 y.background_blue = 100;
 y.background_red = 100;
-y.font_resource = "example/gch.ttf";
 y.font_size = 32;
+y.font_resource = "example/gch.ttf";
+y.init_font();
+y.init_text();
 IO_println(x, y);
-
 x.sub_groups = [y];
+
+def z = Engine_AreaObject();
+z.pos_x = 0;
+z.pos_y = 0;
+z.width = 100;
+z.height = 100;
+Engine_render_objects_push(z);
+
 
 # Engine_render_objects_push(y);
 
@@ -78,4 +88,6 @@ def update(delta) =
   IO_println("[S]");
   x.pos_y = x.pos_y + (delta * SPEED);
  ;
+
+ IO_println(z.is_colliding_with(x));
 ;

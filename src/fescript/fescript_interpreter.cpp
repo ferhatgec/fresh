@@ -20,10 +20,9 @@
 #include "../../include/fescript/wrappers/fescript_base_object.hpp"
 #include "../../include/fescript/wrappers/fescript_sprite_object.hpp"
 #include "../../include/fescript/wrappers/fescript_label_object.hpp"
+#include "../../include/fescript/wrappers/fescript_area_object.hpp"
 
-#include "../../include/objects/base_object.hpp"
-#include "../../include/objects/sprite_object.hpp"
-#include "../../include/objects/label_object.hpp"
+#include "../../include/objects/area_object.hpp"
 
 namespace fescript {
 Interpreter::Interpreter() {
@@ -89,6 +88,7 @@ Interpreter::Interpreter() {
   this->globals->define("Engine_BaseObject", std::make_shared<BaseObjectWrapper>());
   this->globals->define("Engine_SpriteObject", std::make_shared<SpriteObjectWrapper>());
   this->globals->define("Engine_LabelObject", std::make_shared<LabelObjectWrapper>());
+  this->globals->define("Engine_AreaObject", std::make_shared<AreaObjectWrapper>());
   this->globals->define("Engine_render_objects_push", std::make_shared<FescriptEngineRenderObjectsPush>());
 }
 
@@ -457,7 +457,16 @@ void Interpreter::execute_block(const std::vector<std::shared_ptr<Stmt>> &statem
       else if(expr->name.lexeme == "label_text") return std::string(std::get<FescriptLabelObjectIndex>(object)->get_label_text().data());
       else if(expr->name.lexeme == "font_size") return static_cast<idk::f80>(std::get<FescriptLabelObjectIndex>(object)->get_label_font_resource().get_font_size());
       else if(expr->name.lexeme == "font_resource") return std::string(std::get<FescriptLabelObjectIndex>(object)->get_label_font_resource().get_font_path().data());
+      else if(expr->name.lexeme == "init_font") return std::make_shared<FescriptLabelObjectMemberInitFont>(std::get<FescriptLabelObjectIndex>(object));
+      else if(expr->name.lexeme == "init_text") return std::make_shared<FescriptLabelObjectMemberInitText>(std::get<FescriptLabelObjectIndex>(object));
       else throw RuntimeError(expr->name, "LabelObject property cannot be found.");
+    }
+    case FescriptAreaObjectIndex: {
+      if(expr->is_name_an_expr)
+        return "TODO"; // TODO
+      RETURN_BASE_OBJECT_PROPERTIES(FescriptAreaObjectIndex)
+      else if(expr->name.lexeme == "is_colliding_with") return std::make_shared<FescriptAreaObjectMemberIsCollidingWith>(std::get<FescriptAreaObjectIndex>(object));
+      else throw RuntimeError(expr->name, "AreaObject property cannot be found.");
     }
     default: {
       throw RuntimeError(expr->name, "only instances have properties.");
@@ -512,6 +521,10 @@ void Interpreter::execute_block(const std::vector<std::shared_ptr<Stmt>> &statem
     }
     case FescriptLabelObjectIndex: {
       std::get<FescriptLabelObjectIndex>(object)->set(expr->name, value);
+      return value;
+    }
+    case FescriptAreaObjectIndex: {
+      std::get<FescriptAreaObjectIndex>(object)->set(expr->name, value);
       return value;
     }
   }
@@ -642,6 +655,9 @@ std::string Interpreter::stringify(const Object &object) {
   }
   case FescriptLabelObjectIndex: {
     return std::get<FescriptLabelObjectIndex>(object)->to_string();
+  }
+  case FescriptAreaObjectIndex: {
+    return std::get<FescriptAreaObjectIndex>(object)->to_string();
   }
   }
   return "nil";

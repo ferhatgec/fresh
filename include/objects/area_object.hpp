@@ -22,6 +22,12 @@ public:
   __idk_nodiscard
   bool
   is_colliding_with(std::shared_ptr<BaseObject> object) noexcept;
+
+  [[nodiscard]] std::string to_string() {
+    return "areaobject";
+  }
+
+  [[nodiscard]] void set(const fescript::Token& name, fescript::Object value) override;
 };
 } // namespace fresh
 

@@ -1,4 +1,6 @@
 #include "../../include/objects/area_object.hpp"
+#include "../../include/fescript/wrappers/fescript_base_object.hpp"
+#include "../../include/fescript/fescript_array.hpp"
 #include <iostream>
 
 namespace fresh {
@@ -51,5 +53,13 @@ AreaObject::is_colliding_with(std::shared_ptr<BaseObject> object) noexcept {// s
     return false;
 
   return (_pos_info.x < object->_pos_info.x + object->_pos_info.w && _pos_info.x + _pos_info.w > object->_pos_info.x && _pos_info.y < object->_pos_info.y + object->_pos_info.h && _pos_info.y + _pos_info.h > object->_pos_info.y);
+}
+
+[[nodiscard]] void AreaObject::set(const fescript::Token& name, fescript::Object value) {
+  SET_BASE_OBJECT_PROPERTIES()
+  else {
+    std::cout << "Engine [language] error: AreaObject has not field named as '" << name.lexeme << "'.\n";
+    std::exit(1);
+  }
 }
 }// namespace fresh

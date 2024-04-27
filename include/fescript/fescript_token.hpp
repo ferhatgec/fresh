@@ -26,11 +26,13 @@
 #define FescriptBaseObjectIndex 10
 #define FescriptSpriteObjectIndex 11
 #define FescriptLabelObjectIndex 12
+#define FescriptAreaObjectIndex 13
 
 namespace fresh {
 class BaseObject;
 class SpriteObject;
 class LabelObject;
+class AreaObject;
 } // namespace fresh
 
 namespace fescript {
@@ -54,7 +56,8 @@ using Object =
                std::shared_ptr<FescriptCallable>,
                std::shared_ptr<fresh::BaseObject>,
                std::shared_ptr<fresh::SpriteObject>,
-               std::shared_ptr<fresh::LabelObject>>;
+               std::shared_ptr<fresh::LabelObject>,
+               std::shared_ptr<fresh::AreaObject>>;
 
 class Token {
 public:

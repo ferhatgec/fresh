@@ -2,6 +2,7 @@
 #include "../../../include/render_objects.hpp"
 #include "../../../include/objects/sprite_object.hpp"
 #include "../../../include/objects/label_object.hpp"
+#include "../../../include/objects/area_object.hpp"
 
 namespace fescript {
 __idk_nodiscard Object FescriptEngineRenderObjectsPush::call(Interpreter& interpreter, std::vector <Object> arguments) {
@@ -19,6 +20,10 @@ __idk_nodiscard Object FescriptEngineRenderObjectsPush::call(Interpreter& interp
       }
       case FescriptLabelObjectIndex: {
         fresh::RenderObjects::objects_to_render.push_back(std::get<FescriptLabelObjectIndex>(argument));
+        break;
+      }
+      case FescriptAreaObjectIndex: {
+        fresh::RenderObjects::objects_to_render.push_back(std::get<FescriptAreaObjectIndex>(argument));
         break;
       }
       default: {

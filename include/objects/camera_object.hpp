@@ -15,7 +15,6 @@ public:
   CameraObject();
   ~CameraObject();
 
-
   __idk_nodiscard
   bool
   is_visible_on_camera(std::shared_ptr<BaseObject> object) noexcept;

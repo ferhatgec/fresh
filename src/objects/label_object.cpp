@@ -181,14 +181,8 @@ void LabelObject::initialize_label_font_surface() noexcept {
   else if(name.lexeme == "foreground_alpha") this->_fg.a = static_cast<idk::i32>(std::get<LongDoubleIndex>(value));
   else if(name.lexeme == "label_text") this->_label_text = std::get<StringIndex>(value).data();
   else if(name.lexeme == "font_size") this->_label_font_resource._font_size = static_cast<idk::i32>(std::get<LongDoubleIndex>(value));
-  else if(name.lexeme == "font_resource") {
-    // TODO: do not directly initialize labelobject when font_resource value changed.
-    // more likely, define a function that handles initialization.
-    // we actually loading and initializing font on the time.
-    this->_label_font_resource._font_path = std::get<StringIndex>(value).data();
-    this->get_label_font_resource().load_font(this->_label_font_resource._font_path);
-    this->initialize_text(this->_label_text, this->_fg, this->_bg, fresh::LabelRenderType::Solid);
-  } else {
+  else if(name.lexeme == "font_resource") this->_label_font_resource._font_path = std::get<StringIndex>(value).data();
+  else {
     std::cout << "Engine [language] error: SpriteObject has not field named as '" << name.lexeme << "'.\n";
     std::exit(1);
   }

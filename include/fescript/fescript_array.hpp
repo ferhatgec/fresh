@@ -13,6 +13,7 @@ class FescriptArray : public std::enable_shared_from_this<FescriptArray> {
   friend class fresh::BaseObject;
   friend class fresh::SpriteObject;
   friend class fresh::LabelObject;
+  friend class fresh::AreaObject;
 public:
   FescriptArray();
   ~FescriptArray();
