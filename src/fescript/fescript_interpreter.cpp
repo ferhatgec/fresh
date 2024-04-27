@@ -16,6 +16,7 @@
 
 #include "../../include/fescript/modules/engine_io.hpp"
 #include "../../include/fescript/modules/engine.hpp"
+#include "../../include/fescript/modules/engine_window.hpp"
 
 #include "../../include/fescript/wrappers/fescript_base_object.hpp"
 #include "../../include/fescript/wrappers/fescript_sprite_object.hpp"
@@ -60,6 +61,8 @@ Interpreter::Interpreter() {
   this->globals->define("Math_trunc", std::make_shared<FescriptMathTrunc>());
   this->globals->define("Math_round", std::make_shared<FescriptMathRound>());
 
+  MATH_GLOBAL_CONSTANTS()
+
   this->globals->define("OS_platform", std::make_shared<FescriptOSPlatform>());
   this->globals->define("OS_exec", std::make_shared<FescriptOSExec>());
   this->globals->define("OS_arch", std::make_shared<FescriptOSArch>());
@@ -88,6 +91,11 @@ Interpreter::Interpreter() {
   this->globals->define("EngineIO_is_mouse_button_just_pressed", std::make_shared<FescriptEngineIOIsMouseButtonJustPressed>());
 
   ENGINEIO_INIT_CONSTANTS()
+
+  this->globals->define("EngineWindow_get_current_window_size", std::make_shared<FescriptEngineWindowGetCurrentWindowSize>());
+  this->globals->define("EngineWindow_get_current_window_pos", std::make_shared<FescriptEngineWindowGetCurrentWindowPos>());
+  this->globals->define("EngineWindow_set_window_icon", std::make_shared<FescriptEngineWindowSetWindowIcon>());
+  this->globals->define("EngineWindow_set_window_title", std::make_shared<FescriptEngineWindowSetWindowTitle>());
 
   this->globals->define("Engine_BaseObject", std::make_shared<BaseObjectWrapper>());
   this->globals->define("Engine_SpriteObject", std::make_shared<SpriteObjectWrapper>());

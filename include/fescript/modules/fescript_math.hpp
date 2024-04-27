@@ -5,7 +5,14 @@
 #include "../fescript_callable.hpp"
 #include "../../../libs/idk/idk/types/predefined.hpp"
 
+#define MATH_GLOBAL_CONSTANT(name, value) this->globals->define(name, static_cast<idk::f80>(value));
 #define MATH_MODULE(name, arg_count) DEFINE_MODULE_CLASS(name, Math, arg_count)
+
+#define MATH_GLOBAL_CONSTANTS() \
+MATH_GLOBAL_CONSTANT("Math_Pi", __idk_pi) \
+MATH_GLOBAL_CONSTANT("Math_E", __idk_e)   \
+MATH_GLOBAL_CONSTANT("Math_Phi", __idk_phi) \
+MATH_GLOBAL_CONSTANT("Math_Tau", __idk_tau)
 
 namespace fescript {
 MATH_MODULE(Abs, 1)

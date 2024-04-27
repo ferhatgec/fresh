@@ -96,6 +96,21 @@ Engine_render_objects_push(cam);
 # IO_println((Math().sgn(10)));
 def SPEED = 20;
 
+
+IO_println(EngineWindow_get_current_window_size().0,
+           EngineWindow_get_current_window_size().1);
+
+IO_println(EngineWindow_get_current_window_pos().0,
+           EngineWindow_get_current_window_pos().1);
+
+if(EngineWindow_set_window_icon("example/block.png")) =
+ IO_println("Icon set successfully");
+; else =
+ IO_println("Icon set failure");
+;
+
+EngineWindow_set_window_title([{1:1}, 1]);
+
 # update function
 def update(delta) =
  if(EngineIO_is_key_pressed(EngineIO_Key_A)) =
@@ -115,5 +130,5 @@ def update(delta) =
   cam.pos_y = cam.pos_y + (delta * SPEED);
  ;
 
- IO_println(z.is_colliding_with(x));
+ # IO_println(z.is_colliding_with(x));
 ;

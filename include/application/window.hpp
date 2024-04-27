@@ -1,8 +1,10 @@
 #ifndef FRESHENGINE_WINDOW_HPP
 #define FRESHENGINE_WINDOW_HPP
 
+#include <tuple>
 #include "../../libs/idk/idk/types/predefined.hpp"
 #include "../../libs/idk/idk/types/stringview.hpp"
+#include "../../libs/idk/idk/types/tuple.hpp"
 #include "../../libs/SDL/include/SDL.h"
 
 namespace fresh {
@@ -55,9 +57,20 @@ public:
   bool
   set_title(idk::StringViewChar&& title) noexcept;
 
+  void
+  set_window_size(idk::i32 width, idk::i32 height) noexcept;
+
   __idk_nodiscard
   SDL_Color&
   get_default_clear_color() noexcept;
+
+  __idk_nodiscard
+  std::tuple<idk::i32, idk::i32>
+  get_window_size() noexcept;
+
+  __idk_nodiscard
+  std::tuple<idk::i32, idk::i32>
+  get_window_position() noexcept;
 private:
   idk::i32 _width { 800_i32 };
   idk::i32 _height { 600_i32 };

@@ -25,6 +25,8 @@ public:
 
   [[nodiscard]]
   std::vector<Object>& get_values() noexcept;
+
+  void push_value(Object value) noexcept;
 private:
   std::vector<Object> values;
 };

@@ -161,9 +161,43 @@ Window::set_title(idk::StringViewChar&& title) noexcept {
   return false;
 }
 
+void
+Window::set_window_size(idk::i32 width, idk::i32 height) noexcept {
+  if(this->_window) {
+    SDL_SetWindowSize(this->_window, width, height);
+  } else {
+    // window is not initialized but changing width and height
+    // will apply on window initialization.
+    this->_width = width;
+    this->_height = height;
+  }
+}
+
 __idk_nodiscard
   SDL_Color&
   Window::get_default_clear_color() noexcept {
   return this->_default_clear_color;
+}
+
+__idk_nodiscard
+std::tuple<idk::i32, idk::i32>
+Window::get_window_size() noexcept {
+  if(!this->_window) {
+    std::cout << "Engine error: Invalid Window pointer. Initialize Window first.";
+    std::exit(1);
+  }
+  SDL_GetWindowSize(this->_window, &this->_width, &this->_height);
+  return std::make_tuple(this->_width, this->_height);
+}
+
+__idk_nodiscard
+std::tuple<idk::i32, idk::i32>
+Window::get_window_position() noexcept {
+  if(!this->_window) {
+    std::cout << "Engine error: Invalid Window pointer. Initialize Window first.";
+    std::exit(1);
+  }
+  SDL_GetWindowPosition(this->_window, &this->_position_x, &this->_position_y);
+  return std::make_tuple(this->_position_x, this->_position_y);
 }
 }// namespace fresh

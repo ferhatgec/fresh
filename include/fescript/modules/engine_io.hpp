@@ -10,6 +10,7 @@
 #define ENGINEIO_GLOBAL_CONSTANT(name, value) this->globals->define(name, static_cast<idk::f80>(value));
 
 #define ENGINEIO_MODULE(name, arg_count) DEFINE_MODULE_CLASS(name, EngineIO, arg_count)
+
 #define ENGINEIO_INIT_CONSTANTS() \
 ENGINEIO_GLOBAL_CONSTANT("EngineIO_Key_A", SDL_SCANCODE_A) \
 ENGINEIO_GLOBAL_CONSTANT("EngineIO_Key_B", SDL_SCANCODE_B) \

@@ -31,4 +31,8 @@ FescriptArray::~FescriptArray() {
 std::vector<Object>& FescriptArray::get_values() noexcept {
   return this->values;
 }
+
+void FescriptArray::push_value(Object value) noexcept {
+  this->values.push_back(value);
+}
 }
