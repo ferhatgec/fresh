@@ -2,6 +2,19 @@
 #include "../../../include/objects/sprite_object.hpp"
 
 namespace fescript {
+__idk_nodiscard Object FescriptSpriteObjectMemberInitSprite::call(Interpreter& interpreter, std::vector <Object> arguments) {
+  if(!this->_self) {
+    std::cout << "Engine error: SpriteObject is not initialized, yet using SpriteObject.init_sprite() is not possible.\n";
+    std::exit(1);
+  }
+  if(!arguments.empty()) {
+    std::cout << "SpriteObject.init_sprite() must have not take any argument/s.\n";
+    std::exit(1);
+  }
+  this->_self->get_sprite_resource().load_resource(this->_self->get_sprite_resource()._texture_path);
+  return nullptr;
+}
+
 SpriteObjectWrapper::SpriteObjectWrapper() {
   this->_object_def = "spriteobject";
 }

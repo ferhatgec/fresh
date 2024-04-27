@@ -173,11 +173,8 @@ __idk_nodiscard
 
 [[nodiscard]] void SpriteObject::set(const fescript::Token& name, fescript::Object value) {
   SET_BASE_OBJECT_PROPERTIES()
-  else if(name.lexeme == "sprite_resource") {
-    this->get_sprite_resource()._texture_path = std::get<StringIndex>(value).data();
-    // TODO: wrap a function that handles load_resource in fescript. for now, we automatically load that resource.
-    this->get_sprite_resource().load_resource(this->get_sprite_resource()._texture_path);
-  } else {
+  else if(name.lexeme == "sprite_resource") this->get_sprite_resource()._texture_path = std::get<StringIndex>(value).data();
+  else {
     std::cout << "Engine [language] error: SpriteObject has no field named as '" << name.lexeme << "'.\n";
     std::exit(1);
   }

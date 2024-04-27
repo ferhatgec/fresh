@@ -4,6 +4,8 @@ x.height = 100;
 x.pos_x = 0;
 x.pos_y = 0;
 x.sprite_resource = "example/icon.png";
+x.init_sprite();
+
 IO_println(x.width, x.height, x.pos_x, x.pos_y, x.sprite_resource);
 
 Engine_render_objects_push(x);
@@ -38,6 +40,7 @@ q.height = 200;
 q.pos_x = 200;
 q.pos_y = 200;
 q.sprite_resource = "example/otobus.png";
+q.init_sprite();
 
 w.pos_x = 200;
 w.pos_y = 200;

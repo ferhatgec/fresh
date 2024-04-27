@@ -446,6 +446,7 @@ void Interpreter::execute_block(const std::vector<std::shared_ptr<Stmt>> &statem
         return "TODO"; // TODO
       RETURN_BASE_OBJECT_PROPERTIES(FescriptSpriteObjectIndex)
       else if(expr->name.lexeme == "sprite_resource") return std::string(std::get<FescriptSpriteObjectIndex>(object)->get_sprite_resource()._texture_path.data());
+      else if(expr->name.lexeme == "init_sprite") return std::make_shared<FescriptSpriteObjectMemberInitSprite>(std::get<FescriptSpriteObjectIndex>(object));
       else throw RuntimeError(expr->name, "SpriteObject property cannot be found.");
     }
     case FescriptLabelObjectIndex: {
