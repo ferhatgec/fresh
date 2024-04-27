@@ -1,5 +1,7 @@
 #include "../../include/objects/collision_object.hpp"
 #include "../../include/render_objects.hpp"
+#include "../../include/fescript/wrappers/fescript_base_object.hpp"
+#include "../../include/fescript/fescript_array.hpp"
 #include <iostream>
 
 namespace fresh {
@@ -18,7 +20,7 @@ void CollisionObject::sync() noexcept {
     return;
 
   for(auto& object : RenderObjects::objects_to_render) {
-    if(object && object->_object_def != "cameraobject")
+    if(object && (object->_object_def != "cameraobject"))
       object->_block_transform = this->is_colliding_with(object);
   }
 
@@ -30,6 +32,14 @@ void CollisionObject::sync() noexcept {
 
     if(object->_object_def != "cameraobject")// we actually sync cameraobject in engine::update()
       object->sync();
+  }
+}
+
+[[nodiscard]] void CollisionObject::set(const fescript::Token& name, fescript::Object value) {
+  SET_BASE_OBJECT_PROPERTIES()
+  else {
+    std::cout << "Engine [language] error: CollisionObject has no field named as '" << name.lexeme << "'.\n";
+    std::exit(1);
   }
 }
 }// namespace fresh

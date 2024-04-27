@@ -58,7 +58,7 @@ AreaObject::is_colliding_with(std::shared_ptr<BaseObject> object) noexcept {// s
 [[nodiscard]] void AreaObject::set(const fescript::Token& name, fescript::Object value) {
   SET_BASE_OBJECT_PROPERTIES()
   else {
-    std::cout << "Engine [language] error: AreaObject has not field named as '" << name.lexeme << "'.\n";
+    std::cout << "Engine [language] error: AreaObject has no field named as '" << name.lexeme << "'.\n";
     std::exit(1);
   }
 }

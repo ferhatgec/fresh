@@ -13,6 +13,12 @@ public:
 
   void
   sync() noexcept override;
+
+  [[nodiscard]] std::string to_string() {
+    return "collisionobject";
+  }
+
+  [[nodiscard]] void set(const fescript::Token& name, fescript::Object value) override;
 };
 } // namespace fresh
 

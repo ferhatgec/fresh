@@ -5,8 +5,8 @@ x.pos_x = 0;
 x.pos_y = 0;
 x.sprite_resource = "example/icon.png";
 IO_println(x.width, x.height, x.pos_x, x.pos_y, x.sprite_resource);
-Engine_render_objects_push(x);
 
+Engine_render_objects_push(x);
 
 def y = Engine_LabelObject();
 y.pos_x = 0;
@@ -30,6 +30,29 @@ z.width = 100;
 z.height = 100;
 Engine_render_objects_push(z);
 
+def q = Engine_SpriteObject();
+def w = Engine_CollisionObject();
+
+q.width = 200;
+q.height = 200;
+q.pos_x = 200;
+q.pos_y = 200;
+q.sprite_resource = "example/otobus.png";
+
+w.pos_x = 200;
+w.pos_y = 200;
+w.width = 200;
+w.height = 200;
+# q.sub_groups = [w];
+
+Engine_render_objects_push(q);
+
+def cam = Engine_CameraObject();
+cam.pos_x = 0;
+cam.pos_y = 0;
+cam.width = 800;
+cam.height = 600;
+Engine_render_objects_push(cam);
 
 # Engine_render_objects_push(y);
 
@@ -74,19 +97,19 @@ def SPEED = 20;
 def update(delta) =
  if(EngineIO_is_key_pressed(EngineIO_Key_A)) =
   IO_println("[A]");
-  x.pos_x = x.pos_x - (delta * SPEED);
+  cam.pos_x = cam.pos_x - (delta * SPEED);
  ;
  if(EngineIO_is_key_pressed(EngineIO_Key_D)) =
   IO_println("[D]");
-  x.pos_x = x.pos_x + (delta * SPEED);
+  cam.pos_x = cam.pos_x + (delta * SPEED);
  ;
  if(EngineIO_is_key_pressed(EngineIO_Key_W)) =
   IO_println("[W]");
-  x.pos_y = x.pos_y - (delta * SPEED);
+  cam.pos_y = cam.pos_y - (delta * SPEED);
  ;
  if(EngineIO_is_key_pressed(EngineIO_Key_S)) =
   IO_println("[S]");
-  x.pos_y = x.pos_y + (delta * SPEED);
+  cam.pos_y = cam.pos_y + (delta * SPEED);
  ;
 
  IO_println(z.is_colliding_with(x));

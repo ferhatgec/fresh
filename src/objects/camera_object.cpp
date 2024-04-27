@@ -1,4 +1,6 @@
 #include "../../include/freshengine.hpp"
+#include "../../include/fescript/wrappers/fescript_base_object.hpp"
+#include "../../include/fescript/fescript_array.hpp"
 
 namespace fresh {
 CameraObject::CameraObject() {
@@ -44,5 +46,13 @@ void CameraObject::sync() noexcept {
   }
 
   this->get_position_info();// update deltas
+}
+
+[[nodiscard]] void CameraObject::set(const fescript::Token& name, fescript::Object value) {
+  SET_BASE_OBJECT_PROPERTIES()
+  else {
+    std::cout << "Engine [language] error: CameraObject has no field named as '" << name.lexeme << "'.\n";
+    std::exit(1);
+  }
 }
 }// namespace fresh

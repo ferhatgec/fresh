@@ -21,8 +21,12 @@
 #include "../../include/fescript/wrappers/fescript_sprite_object.hpp"
 #include "../../include/fescript/wrappers/fescript_label_object.hpp"
 #include "../../include/fescript/wrappers/fescript_area_object.hpp"
+#include "../../include/fescript/wrappers/fescript_collision_object.hpp"
+#include "../../include/fescript/wrappers/fescript_camera_object.hpp"
 
 #include "../../include/objects/area_object.hpp"
+#include "../../include/objects/collision_object.hpp"
+#include "../../include/objects/camera_object.hpp"
 
 namespace fescript {
 Interpreter::Interpreter() {
@@ -89,6 +93,8 @@ Interpreter::Interpreter() {
   this->globals->define("Engine_SpriteObject", std::make_shared<SpriteObjectWrapper>());
   this->globals->define("Engine_LabelObject", std::make_shared<LabelObjectWrapper>());
   this->globals->define("Engine_AreaObject", std::make_shared<AreaObjectWrapper>());
+  this->globals->define("Engine_CollisionObject", std::make_shared<CollisionObjectWrapper>());
+  this->globals->define("Engine_CameraObject", std::make_shared<CameraObjectWrapper>());
   this->globals->define("Engine_render_objects_push", std::make_shared<FescriptEngineRenderObjectsPush>());
 }
 
@@ -468,6 +474,19 @@ void Interpreter::execute_block(const std::vector<std::shared_ptr<Stmt>> &statem
       else if(expr->name.lexeme == "is_colliding_with") return std::make_shared<FescriptAreaObjectMemberIsCollidingWith>(std::get<FescriptAreaObjectIndex>(object));
       else throw RuntimeError(expr->name, "AreaObject property cannot be found.");
     }
+    case FescriptCollisionObjectIndex: {
+      if(expr->is_name_an_expr)
+        return "TODO"; // TODO
+      RETURN_BASE_OBJECT_PROPERTIES(FescriptCollisionObjectIndex)
+      else throw RuntimeError(expr->name, "CollisionObject property cannot be found.");
+    }
+    case FescriptCameraObjectIndex: {
+      if(expr->is_name_an_expr)
+        return "TODO"; // TODO
+      RETURN_BASE_OBJECT_PROPERTIES(FescriptCameraObjectIndex)
+      else if(expr->name.lexeme == "is_visible_on_camera") return std::make_shared<FescriptCameraObjectMemberIsVisibleOnCamera>(std::get<FescriptCameraObjectIndex>(object));
+      else throw RuntimeError(expr->name, "CameraObject property cannot be found.");
+    }
     default: {
       throw RuntimeError(expr->name, "only instances have properties.");
     }
@@ -525,6 +544,14 @@ void Interpreter::execute_block(const std::vector<std::shared_ptr<Stmt>> &statem
     }
     case FescriptAreaObjectIndex: {
       std::get<FescriptAreaObjectIndex>(object)->set(expr->name, value);
+      return value;
+    }
+    case FescriptCollisionObjectIndex: {
+      std::get<FescriptCollisionObjectIndex>(object)->set(expr->name, value);
+      return value;
+    }
+    case FescriptCameraObjectIndex: {
+      std::get<FescriptCameraObjectIndex>(object)->set(expr->name, value);
       return value;
     }
   }
@@ -658,6 +685,12 @@ std::string Interpreter::stringify(const Object &object) {
   }
   case FescriptAreaObjectIndex: {
     return std::get<FescriptAreaObjectIndex>(object)->to_string();
+  }
+  case FescriptCollisionObjectIndex: {
+    return std::get<FescriptCollisionObjectIndex>(object)->to_string();
+  }
+  case FescriptCameraObjectIndex: {
+    return std::get<FescriptCameraObjectIndex>(object)->to_string();
   }
   }
   return "nil";

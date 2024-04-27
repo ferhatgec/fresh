@@ -8,6 +8,8 @@
 #include "../../objects/base_object.hpp"
 #include "../../objects/sprite_object.hpp"
 #include "../../objects/label_object.hpp"
+#include "../../objects/area_object.hpp"
+#include "../../objects/collision_object.hpp"
 
 #define RETURN_BASE_OBJECT_PROPERTIES(index) \
 if(expr->name.lexeme == "pos_x") return static_cast<idk::f80>(std::get<index>(object)->get_position_info().x); \
@@ -36,24 +38,30 @@ else if(name.lexeme == "sub_groups") {                                          
   auto array = std::get<FescriptArrayIndex>(value);                                                               \
   for(const auto& object: array->values) {                                                                       \
     switch(object.index()) {                                        \
-     case FescriptBaseObjectIndex: { \
-      this->_sub_objects.push_back(std::get<FescriptBaseObjectIndex>(object));                                    \
-      break; \
-     }                               \
-     case FescriptSpriteObjectIndex: {                                                                            \
-      this->_sub_objects.push_back(std::get<FescriptSpriteObjectIndex>(object));                                  \
-      break;\
-     }                               \
-     case FescriptLabelObjectIndex: {\
-      this->_sub_objects.push_back(std::get<FescriptLabelObjectIndex>(object));                                   \
-      break; \
-     }                               \
+     case FescriptBaseObjectIndex: { this->_sub_objects.push_back(std::get<FescriptBaseObjectIndex>(object)); break; }                               \
+     case FescriptSpriteObjectIndex: { this->_sub_objects.push_back(std::get<FescriptSpriteObjectIndex>(object)); break; }                               \
+     case FescriptLabelObjectIndex: { this->_sub_objects.push_back(std::get<FescriptLabelObjectIndex>(object)); break; }                               \
+     case FescriptAreaObjectIndex: { this->_sub_objects.push_back(std::get<FescriptAreaObjectIndex>(object)); break; }                               \
+     case FescriptCollisionObjectIndex: { this->_sub_objects.push_back(std::get<FescriptCollisionObjectIndex>(object)); break; }                     \
      default: {                      \
       std::cout << "Engine [language] error: Cannot use types those not inherited from BaseObject.";              \
       std::exit(1); \
      }\
     }                                    \
   }                                     \
+}
+
+#define RETURN_MEMBER_FUNCTION(object_fn, wrapped_fn_str) \
+  switch(arguments.front().index()) { \
+case FescriptBaseObjectIndex: { return this->_self->##object_fn(std::get<FescriptBaseObjectIndex>(arguments.front())); } \
+case FescriptSpriteObjectIndex: { return this->_self->##object_fn(std::get<FescriptSpriteObjectIndex>(arguments.front())); } \
+case FescriptLabelObjectIndex: { return this->_self->##object_fn(std::get<FescriptLabelObjectIndex>(arguments.front())); } \
+case FescriptAreaObjectIndex: { return this->_self->##object_fn(std::get<FescriptAreaObjectIndex>(arguments.front())); } \
+case FescriptCollisionObjectIndex: { return this->_self->##object_fn(std::get<FescriptCollisionObjectIndex>(arguments.front())); } \
+default: { \
+std::cout << "Engine [language] error: " wrapped_fn_str " requires objects those inherited from BaseObject.\n"; \
+std::exit(1); \
+} \
 }
 
 namespace fescript {

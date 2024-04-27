@@ -3,6 +3,8 @@
 #include "../../../include/objects/sprite_object.hpp"
 #include "../../../include/objects/label_object.hpp"
 #include "../../../include/objects/area_object.hpp"
+#include "../../../include/objects/collision_object.hpp"
+#include "../../../include/objects/camera_object.hpp"
 
 namespace fescript {
 __idk_nodiscard Object FescriptEngineRenderObjectsPush::call(Interpreter& interpreter, std::vector <Object> arguments) {
@@ -24,6 +26,14 @@ __idk_nodiscard Object FescriptEngineRenderObjectsPush::call(Interpreter& interp
       }
       case FescriptAreaObjectIndex: {
         fresh::RenderObjects::objects_to_render.push_back(std::get<FescriptAreaObjectIndex>(argument));
+        break;
+      }
+      case FescriptCollisionObjectIndex: {
+        fresh::RenderObjects::objects_to_render.push_back(std::get<FescriptCollisionObjectIndex>(argument));
+        break;
+      }
+      case FescriptCameraObjectIndex: {
+        fresh::RenderObjects::objects_to_render.push_back(std::get<FescriptCameraObjectIndex>(argument));
         break;
       }
       default: {

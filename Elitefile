@@ -49,6 +49,8 @@ set files as "/Tp./src/application/window.cpp
               /Tp./src/fescript/wrappers/fescript_sprite_object.cpp
               /Tp./src/fescript/wrappers/fescript_label_object.cpp
               /Tp./src/fescript/wrappers/fescript_area_object.cpp
+              /Tp./src/fescript/wrappers/fescript_collision_object.cpp
+              /Tp./src/fescript/wrappers/fescript_camera_object.cpp
               /Tp./src/input/keyboard_input.cpp
               /Tp./src/input/mouse_input.cpp
               /Tp./src/render_objects.cpp
@@ -112,6 +114,8 @@ set object_files as "window.obj
                      fescript_sprite_object.obj
                      fescript_label_object.obj
                      fescript_area_object.obj
+                     fescript_collision_object.obj
+                     fescript_camera_object.obj
                      keyboard_input.obj
                      mouse_input.obj
                      render_objects.obj

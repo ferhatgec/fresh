@@ -178,7 +178,7 @@ __idk_nodiscard
     // TODO: wrap a function that handles load_resource in fescript. for now, we automatically load that resource.
     this->get_sprite_resource().load_resource(this->get_sprite_resource()._texture_path);
   } else {
-    std::cout << "Engine [language] error: SpriteObject has not field named as '" << name.lexeme << "'.\n";
+    std::cout << "Engine [language] error: SpriteObject has no field named as '" << name.lexeme << "'.\n";
     std::exit(1);
   }
 }

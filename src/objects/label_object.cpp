@@ -183,7 +183,7 @@ void LabelObject::initialize_label_font_surface() noexcept {
   else if(name.lexeme == "font_size") this->_label_font_resource._font_size = static_cast<idk::i32>(std::get<LongDoubleIndex>(value));
   else if(name.lexeme == "font_resource") this->_label_font_resource._font_path = std::get<StringIndex>(value).data();
   else {
-    std::cout << "Engine [language] error: SpriteObject has not field named as '" << name.lexeme << "'.\n";
+    std::cout << "Engine [language] error: SpriteObject has no field named as '" << name.lexeme << "'.\n";
     std::exit(1);
   }
 }
