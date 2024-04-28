@@ -41,34 +41,7 @@ Interpreter::Interpreter() {
     std::chrono::system_clock::now().time_since_epoch()
     ).count();
 
-  this->globals->define("Math_abs", std::make_shared<FescriptMathAbs>());
-  this->globals->define("Math_max", std::make_shared<FescriptMathMax>());
-  this->globals->define("Math_min", std::make_shared<FescriptMathMin>());
-  this->globals->define("Math_exp", std::make_shared<FescriptMathExp>());
-  this->globals->define("Math_log", std::make_shared<FescriptMathLog>());
-  this->globals->define("Math_pow", std::make_shared<FescriptMathPow>());
-  this->globals->define("Math_sqrt", std::make_shared<FescriptMathSqrt>());
-  this->globals->define("Math_cbrt", std::make_shared<FescriptMathCbrt>());
-  this->globals->define("Math_sin", std::make_shared<FescriptMathSin>());
-  this->globals->define("Math_cos", std::make_shared<FescriptMathCos>());
-  this->globals->define("Math_tan", std::make_shared<FescriptMathTan>());
-  this->globals->define("Math_asin", std::make_shared<FescriptMathAsin>());
-  this->globals->define("Math_acos", std::make_shared<FescriptMathAcos>());
-  this->globals->define("Math_atan", std::make_shared<FescriptMathAtan>());
-  this->globals->define("Math_sinh", std::make_shared<FescriptMathSinh>());
-  this->globals->define("Math_cosh", std::make_shared<FescriptMathCosh>());
-  this->globals->define("Math_tanh", std::make_shared<FescriptMathTanh>());
-  this->globals->define("Math_asinh", std::make_shared<FescriptMathAsinh>());
-  this->globals->define("Math_acosh", std::make_shared<FescriptMathAcosh>());
-  this->globals->define("Math_atanh", std::make_shared<FescriptMathAtanh>());
-  this->globals->define("Math_erf", std::make_shared<FescriptMathErf>());
-  this->globals->define("Math_gamma", std::make_shared<FescriptMathGamma>());
-  this->globals->define("Math_ceil", std::make_shared<FescriptMathCeil>());
-  this->globals->define("Math_floor", std::make_shared<FescriptMathFloor>());
-  this->globals->define("Math_trunc", std::make_shared<FescriptMathTrunc>());
-  this->globals->define("Math_round", std::make_shared<FescriptMathRound>());
-  this->globals->define("Math_sgn", std::make_shared<FescriptMathSgn>());
-
+  MATH_GLOBAL_FUNCTIONS()
   MATH_GLOBAL_CONSTANTS()
 
   this->globals->define("OS_platform", std::make_shared<FescriptOSPlatform>());
@@ -111,6 +84,10 @@ Interpreter::Interpreter() {
   this->globals->define("EngineWindow_get_current_window_pos", std::make_shared<FescriptEngineWindowGetCurrentWindowPos>());
   this->globals->define("EngineWindow_set_window_icon", std::make_shared<FescriptEngineWindowSetWindowIcon>());
   this->globals->define("EngineWindow_set_window_title", std::make_shared<FescriptEngineWindowSetWindowTitle>());
+  this->globals->define("EngineWindow_set_window_cursor", std::make_shared<FescriptEngineWindowSetWindowCursor>());
+  this->globals->define("EngineWindow_set_window_mode", std::make_shared<FescriptEngineWindowSetWindowMode>());
+
+  ENGINEWINDOW_GLOBAL_CONSTANTS()
 
   this->globals->define("Engine_BaseObject", std::make_shared<BaseObjectWrapper>());
   this->globals->define("Engine_SpriteObject", std::make_shared<SpriteObjectWrapper>());
@@ -421,14 +398,22 @@ void Interpreter::execute_block(const std::vector<std::shared_ptr<Stmt>> &statem
   for (const std::shared_ptr<Expr> &argument : expr->arguments)
     arguments.push_back(this->evaluate(argument));
   std::shared_ptr<FescriptCallable> function;
-  if (callee.index() == FescriptFunctionIndex) {
-    function = std::get<FescriptFunctionIndex>(callee);
-  } else if (callee.index() == FescriptClassIndex) {
-    function = std::get<FescriptClassIndex>(callee);
-  } else if(callee.index() == FescriptCallableIndex) {
-    function = std::get<FescriptCallableIndex>(callee);
-  } else {
-    throw RuntimeError{expr->paren, "can only call functions and classes."};
+  switch(callee.index()) {
+    case FescriptFunctionIndex: {
+      function = std::get<FescriptFunctionIndex>(callee);
+      break;
+    }
+    case FescriptClassIndex: {
+      function = std::get<FescriptClassIndex>(callee);
+      break;
+    }
+    case FescriptCallableIndex: {
+      function = std::get<FescriptCallableIndex>(callee);
+      break;
+    }
+    default: {
+      throw RuntimeError{expr->paren, "can only call functions and classes."};
+    }
   }
   if ((arguments.size() != function->arity()) && function->arity() != -1) {
     throw RuntimeError{expr->paren, "expected " + std::to_string(function->arity()) + " arguments but got " + std::to_string(arguments.size()) + "."};
@@ -614,7 +599,8 @@ void Interpreter::execute_block(const std::vector<std::shared_ptr<Stmt>> &statem
 }
 
 [[nodiscard]] Object Interpreter::visit(std::shared_ptr<Variable> expr) {
-  // engine reserved names are has priority, so we don't need to look up from scope. they are global.
+  // TODO: reserve a keyword that returns object that linked to script. then member variables will be automatically
+  //  handled in set, assign and get nodes.
   if(expr->name.lexeme == "pos_x")
     return static_cast<idk::f80>(fresh::RenderObjects::find(this->render_object_id)->get_position_info().x);
   if(expr->name.lexeme == "pos_y")

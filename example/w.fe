@@ -112,8 +112,10 @@ if(EngineWindow_set_window_icon("example/block.png")) =
 ;
 
 EngineWindow_set_window_title([{1:1}, 1]);
+EngineWindow_set_window_cursor("example/icon.png", 32, 100);
+IO_println(Math_min(1, 2, 3, -5, 10), Math_min());
 
-# update function
+# update function, called every frame.
 def update(delta) =
  if(EngineIO_is_key_pressed(EngineIO_Key_A)) =
   IO_println("[A]");
@@ -130,7 +132,10 @@ def update(delta) =
  if(EngineIO_is_key_pressed(EngineIO_Key_S)) =
   IO_println("[S]");
   cam.pos_y = cam.pos_y + (delta * SPEED);
+
+  EngineWindow_set_window_cursor("example/street_wall.png", 32, 100);
  ;
 
+ # IO_println(Math_cosh(1));
  # IO_println(z.is_colliding_with(x));
 ;

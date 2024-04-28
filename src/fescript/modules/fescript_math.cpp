@@ -8,13 +8,27 @@ __idk_nodiscard Object FescriptMathAbs::call(Interpreter &interpreter, std::vect
 }
 
 __idk_nodiscard Object FescriptMathMax::call(Interpreter &interpreter, std::vector<Object> arguments) {
-  ERR_CHECK_DECIMAL("Math_max()", 2)
-  return fmaxl(std::get<LongDoubleIndex>(arguments[0]), std::get<LongDoubleIndex>(arguments[1]));
+  idk::f80 current_maximum = std::numeric_limits<idk::f80>().min();
+  for(const auto& arg: arguments) {
+    if(arg.index() != LongDoubleIndex) {
+      std::cout << "Engine [language] error: Math_max() must take decimal.\n";
+      std::exit(1);
+    }
+    current_maximum = fmaxl(current_maximum, std::get<LongDoubleIndex>(arg));
+  }
+  return current_maximum; // returns minimum value of long double if no argument given
 }
 
 __idk_nodiscard Object FescriptMathMin::call(Interpreter &interpreter, std::vector<Object> arguments) {
-  ERR_CHECK_DECIMAL("Math_min()", 2)
-  return fminl(std::get<LongDoubleIndex>(arguments[0]), std::get<LongDoubleIndex>(arguments[1]));
+  idk::f80 current_minimum = std::numeric_limits<idk::f80>().max();
+  for(const auto& arg: arguments) {
+    if(arg.index() != LongDoubleIndex) {
+      std::cout << "Engine [language] error: Math_min() must take decimal.\n";
+      std::exit(1);
+    }
+    current_minimum = fminl(current_minimum, std::get<LongDoubleIndex>(arg));
+  }
+  return current_minimum; // returns maximum value of long double if no argument given
 }
 
 __idk_nodiscard Object FescriptMathExp::call(Interpreter &interpreter, std::vector<Object> arguments) {
@@ -137,5 +151,15 @@ __idk_nodiscard Object FescriptMathSgn::call(fescript::Interpreter& interpreter,
   if(dec < 0)
     return -1_f80;
   return 0_f80;
+}
+
+__idk_nodiscard Object FescriptMathDegreesToRadians::call(fescript::Interpreter& interpreter, std::vector <Object> arguments) {
+  ERR_CHECK_DECIMAL("Math_degs_to_rads", 1)
+  return std::get<LongDoubleIndex>(arguments.front()) * pi_180;
+}
+
+__idk_nodiscard Object FescriptMathRadiansToDegrees::call(fescript::Interpreter& interpreter, std::vector <Object> arguments) {
+  ERR_CHECK_DECIMAL("Math_rads_to_degs", 1)
+  return std::get<LongDoubleIndex>(arguments.front()) * _180_pi;
 }
 }

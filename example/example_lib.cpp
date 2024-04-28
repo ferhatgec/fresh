@@ -147,10 +147,6 @@ public:
                                             .a = 0
                                          }, fresh::LabelRenderType::Solid);
 
-    Engine::get_instance()->get_cursor_resource().get_cursor_sprite()   = _cursor_resource;
-    Engine::get_instance()->get_cursor_resource().get_position_info().w = 68; // cursor image width
-    Engine::get_instance()->get_cursor_resource().get_position_info().h = 68; // cursor image height
-
     _icon = std::make_shared<fresh::SpriteObject>();
     _icon->get_sprite_resource().load_resource("example/character.png");
     _icon->get_position_info().w = 1024 / 8;

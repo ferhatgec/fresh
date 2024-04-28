@@ -10,6 +10,11 @@
 namespace fresh {
 class Window {
 public:
+  enum class WindowMode {
+    Fullscreen,
+    FullscreenWindowed,
+    Windowed
+  };
   friend class Engine;
   friend class Editor;
 
@@ -71,6 +76,10 @@ public:
   __idk_nodiscard
   std::tuple<idk::i32, idk::i32>
   get_window_position() noexcept;
+
+  __idk_nodiscard
+  bool
+  set_window_mode(WindowMode window_mode) noexcept;
 private:
   idk::i32 _width { 800_i32 };
   idk::i32 _height { 600_i32 };

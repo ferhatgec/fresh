@@ -200,4 +200,26 @@ Window::get_window_position() noexcept {
   SDL_GetWindowPosition(this->_window, &this->_position_x, &this->_position_y);
   return std::make_tuple(this->_position_x, this->_position_y);
 }
+
+__idk_nodiscard
+bool
+Window::set_window_mode(WindowMode window_mode) noexcept {
+  if(!this->_window) {
+    std::cout << "Engine error: Invalid Window pointer. Initialize Window first.";
+    std::exit(1);
+  }
+  return static_cast<bool>(SDL_SetWindowFullscreen(this->_window, [window_mode]() -> SDL_WindowFlags {
+    switch(window_mode) {
+      case WindowMode::Fullscreen: {
+        return SDL_WINDOW_FULLSCREEN;
+      }
+      case WindowMode::FullscreenWindowed: {
+        return SDL_WINDOW_FULLSCREEN_DESKTOP;
+      }
+      case WindowMode::Windowed: {
+        return static_cast<SDL_WindowFlags>(0);
+      }
+    }
+  }()));
+}
 }// namespace fresh
