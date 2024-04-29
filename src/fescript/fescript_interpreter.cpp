@@ -415,8 +415,14 @@ void Interpreter::execute_block(const std::vector<std::shared_ptr<Stmt>> &statem
       throw RuntimeError{expr->paren, "can only call functions and classes."};
     }
   }
-  if ((arguments.size() != function->arity()) && function->arity() != -1) {
-    throw RuntimeError{expr->paren, "expected " + std::to_string(function->arity()) + " arguments but got " + std::to_string(arguments.size()) + "."};
+  if ((arguments.size() != function->arity()) && (function->arity() != -1)) {
+    if (function->is_variadic) {
+      if (arguments.size() < function->arity())
+        throw RuntimeError{expr->paren,
+                           "expected at least " + std::to_string(function->arity()) + " arguments but got " +
+                           std::to_string(arguments.size()) + "."};
+    } else
+        throw RuntimeError{expr->paren, "expected " + std::to_string(function->arity()) + " arguments but got " + std::to_string(arguments.size()) + "."};
   }
   return function->call(*this, std::move(arguments));
 }

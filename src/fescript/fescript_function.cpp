@@ -9,6 +9,7 @@
 #include "../../include/fescript/fescript_instance.hpp"
 #include "../../include/fescript/fescript_interpreter.hpp"
 #include "../../include/fescript/fescript_stmt.hpp"
+#include "../../include/fescript/fescript_array.hpp"
 
 namespace fescript {
 FescriptFunction::FescriptFunction(std::shared_ptr<Function> declaration,
@@ -16,15 +17,30 @@ FescriptFunction::FescriptFunction(std::shared_ptr<Function> declaration,
                          bool is_initializer)
     : is_initializer{is_initializer},
       closure{std::move(closure)},
-      declaration{std::move(declaration)} {}
+      declaration{std::move(declaration)} {
+  this->is_variadic = this->declaration->is_variadic;
+}
 
 [[nodiscard]] int FescriptFunction::arity() {
-  return declaration->params.size();
+  return this->is_variadic ? (this->declaration->params.size() - 1) : this->declaration->params.size();
 }
 
 [[nodiscard]] Object FescriptFunction::call(Interpreter &interpreter, std::vector<Object> arguments) {
   auto environment = std::make_shared<Environment>(closure);
   for (std::size_t i = 0; i < this->declaration->params.size(); ++i) {
+    if(this->declaration->params[i].is_variadic) {
+      if(i + 1 >= this->declaration->params.size()) {
+        std::shared_ptr<FescriptArray> variadic_args = std::make_shared<FescriptArray>();
+        for(std::size_t j = i; j < arguments.size(); ++j) {
+          variadic_args->push_value(arguments[j]);
+        }
+        environment->define(this->declaration->params[i].lexeme, variadic_args);
+        break; // that was last argument.
+      } else {
+        std::cout << "Engine [language] error: variable that linked with variadic arguments must on the last argument of function.\n";
+        std::exit(1);
+      }
+    }
     environment->define(this->declaration->params[i].lexeme, arguments[i]);
   }
   try {

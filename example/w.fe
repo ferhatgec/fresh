@@ -115,6 +115,11 @@ EngineWindow_set_window_title([{1:1}, 1]);
 EngineWindow_set_window_cursor("example/icon.png", 32, 100);
 IO_println(Math_min(1, 2, 3, -5, 10), Math_min());
 
+
+def func(x, y...) =
+ IO_println(x, y);
+;
+
 # update function, called every frame.
 def update(delta) =
  if(EngineIO_is_key_pressed(EngineIO_Key_A)) =
@@ -138,4 +143,6 @@ def update(delta) =
 
  # IO_println(Math_cosh(1));
  # IO_println(z.is_colliding_with(x));
+
+ func();
 ;

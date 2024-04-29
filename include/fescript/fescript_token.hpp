@@ -66,7 +66,7 @@ using Object =
 
 class Token {
 public:
-  Token(TokenType type, std::string lexeme, Object literal, int line) noexcept;
+  Token(TokenType type, std::string lexeme, Object literal, int line, bool is_variadic = false) noexcept;
   Token(const Token& token) noexcept;
   Token() {}
   ~Token() noexcept;
@@ -77,6 +77,7 @@ public:
   std::string lexeme;
   Object literal;
   int line;
+  bool is_variadic;
 };
 
 static inline Token empty_token = Token(TokenType::SEMICOLON, "", std::string(""), -1);

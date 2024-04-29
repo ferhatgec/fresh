@@ -12,18 +12,20 @@
 #include "../../include/fescript/fescript_token.hpp"
 
 namespace fescript {
-Token::Token(TokenType type, std::string lexeme, Object literal, int line) noexcept
+Token::Token(TokenType type, std::string lexeme, Object literal, int line, bool is_variadic) noexcept
     : type{type},
       lexeme{lexeme},
       literal{std::move(literal)},
-      line{line} {
+      line{line},
+      is_variadic{is_variadic} {
 }
 
 Token::Token(const Token& token) noexcept
     : type{token.type},
       lexeme{token.lexeme},
       literal{token.literal},
-      line{token.line} {
+      line{token.line},
+      is_variadic{token.is_variadic} {
 }
 
 Token::~Token() noexcept {

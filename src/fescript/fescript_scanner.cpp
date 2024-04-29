@@ -26,7 +26,6 @@ void Scanner::scan_token() {
   case '{':
   case '}':
   case ',':
-  case '.':
   case '-':
   case '+':
   case ';':
@@ -36,6 +35,17 @@ void Scanner::scan_token() {
   case ':':
   case '%': {
     this->add_token(static_cast<TokenType>(c));
+    break;
+  }
+  case '.': {
+    if(this->match('.')) { // ..
+      if(this->match('.')) { // ...
+        this->add_token(TokenType::VARIADIC);
+        break;
+      }
+      this->add_token(TokenType::DOT);
+    }
+    this->add_token(TokenType::DOT);
     break;
   }
   case '!': {

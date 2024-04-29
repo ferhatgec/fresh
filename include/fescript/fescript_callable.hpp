@@ -20,5 +20,7 @@ public:
                                     std::vector<Object> arguments) = 0;
   [[nodiscard]] virtual std::string to_string() = 0;
   virtual ~FescriptCallable() = default;
+
+  bool is_variadic { false };
 };
 }// namespace fescript

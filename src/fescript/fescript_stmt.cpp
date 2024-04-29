@@ -42,9 +42,14 @@ Expression::~Expression() {
   return visitor.visit(shared_from_this());
 }
 
-Function::Function(Token name, std::vector<Token> params,
-                   std::vector<std::shared_ptr<Stmt>> body)
-    : name{std::move(name)}, params{std::move(params)}, body{std::move(body)} {}
+Function::Function(Token name,
+                   std::vector<Token> params,
+                   std::vector<std::shared_ptr<Stmt>> body,
+                   bool is_variadic)
+    : name{std::move(name)},
+      params{std::move(params)},
+      body{std::move(body)},
+      is_variadic{is_variadic} {}
 
 Function::~Function() {
 }

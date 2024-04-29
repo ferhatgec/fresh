@@ -61,11 +61,12 @@ enum TokenType {
   TRUE,
   VAR,
   WHILE,
+  VARIADIC,
 
   EOF_
 };
 
-static const std::array<std::string, 40> strings {
+static const std::array<std::string, 41> strings {
   "LEFT_PAREN", "RIGHT_PAREN", "LEFT_BRACE", "RIGHT_BRACE", "COMMA",
   "DOT", "MINUS", "PLUS", "SEMICOLON", "SLASH",
   "STAR", "PERCENT", "BANG", "BANG_EQUAL", "EQUAL", "EQUAL_EQUAL",
@@ -73,7 +74,7 @@ static const std::array<std::string, 40> strings {
   "STRING", "NUMBER", "AND", "CLASS", "ELSE", "ELIF",
   "FALSE", "FUN", "FOR", "IF", "NIL",
   "OR", "RETURN", "SUPER", "THIS",
-  "TRUE", "VAR", "WHILE", "EOF"
+  "TRUE", "VAR", "WHILE", "VARIADIC", "EOF"
 };
 
 static std::string to_string(TokenType type) {

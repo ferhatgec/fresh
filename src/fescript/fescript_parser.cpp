@@ -173,18 +173,30 @@ Parser::Parser(const std::vector<Token> &tokens)
   Token name = this->consume(TokenType::IDENTIFIER, "expect " + kind + " name.");
   this->consume(TokenType::LEFT_PAREN, "expect '(' after " + kind + " name.");
   std::vector<Token> parameters;
+  bool is_variadic { false };
   if (!this->check(TokenType::RIGHT_PAREN)) {
     do {
       if (parameters.size() >= 255) {
         error(this->peek(), "can't have more than 255 parameters.");
       }
       parameters.push_back(this->consume(TokenType::IDENTIFIER, "expect parameter name."));
-    } while (this->match({TokenType::COMMA}));
+      // there must be only 1 variadic argument,
+      // otherwise fescript cannot link arguments with their values.
+      if(this->check(TokenType::VARIADIC)) {
+        parameters.back().is_variadic = true;
+        (void)this->advance();
+        is_variadic = true;
+        break; // no argument cannot be passed to function after the variadic argument.
+      }
+    } while(this->match({TokenType::COMMA}));
+  }
+  if(is_variadic && this->check(TokenType::COMMA)) {
+    error(this->peek(), "cannot define any argument after passing the variadic argument.");
   }
   this->consume(TokenType::RIGHT_PAREN, "expect ')' after parameters.");
   this->consume(TokenType::EQUAL, "expect '=' before " + kind + " body.");
   std::vector<std::shared_ptr<Stmt>> body = this->block();
-  return std::make_shared<Function>(std::move(name), std::move(parameters), std::move(body));
+  return std::make_shared<Function>(std::move(name), std::move(parameters), std::move(body), is_variadic);
 }
 
 [[nodiscard]] std::vector<std::shared_ptr<Stmt>> Parser::block() {

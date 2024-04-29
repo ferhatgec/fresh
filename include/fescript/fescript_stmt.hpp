@@ -78,7 +78,7 @@ public:
 class Function : public Stmt, public std::enable_shared_from_this<Function> {
 public:
   Function(Token name, std::vector<Token> params,
-           std::vector<std::shared_ptr<Stmt>> body);
+           std::vector<std::shared_ptr<Stmt>> body, bool is_variadic = false);
   ~Function();
 
   [[nodiscard]] Object accept(StmtVisitor &visitor) override;
@@ -87,6 +87,7 @@ public:
   const Token name;
   const std::vector<Token> params;
   const std::vector<std::shared_ptr<Stmt>> body;
+  const bool is_variadic;
 };
 
 class If : public Stmt, public std::enable_shared_from_this<If> {
