@@ -96,6 +96,7 @@ Interpreter::Interpreter() {
   this->globals->define("Engine_CollisionObject", std::make_shared<CollisionObjectWrapper>());
   this->globals->define("Engine_CameraObject", std::make_shared<CameraObjectWrapper>());
   this->globals->define("Engine_render_objects_push", std::make_shared<FescriptEngineRenderObjectsPush>());
+  this->globals->define("Engine_load_fes", std::make_shared<FescriptEngineLoadFes>());
 }
 
 void Interpreter::interpret(
@@ -449,58 +450,15 @@ void Interpreter::execute_block(const std::vector<std::shared_ptr<Stmt>> &statem
         return std::get<FescriptDictIndex>(object)->get(this->evaluate(expr->name_expr));
       return std::get<FescriptDictIndex>(object)->get(expr->name.literal);
     }
-    case FescriptBaseObjectIndex: {
-      if(expr->is_name_an_expr)
-        return "TODO"; // TODO
-      RETURN_BASE_OBJECT_PROPERTIES(FescriptBaseObjectIndex)
-      else throw RuntimeError(expr->name, "BaseObject property cannot be found.");
-    }
-    case FescriptSpriteObjectIndex: {
-      if(expr->is_name_an_expr)
-        return "TODO"; // TODO
-      RETURN_BASE_OBJECT_PROPERTIES(FescriptSpriteObjectIndex)
-      else if(expr->name.lexeme == "sprite_resource") return std::string(std::get<FescriptSpriteObjectIndex>(object)->get_sprite_resource()._texture_path.data());
-      else if(expr->name.lexeme == "init_sprite") return std::make_shared<FescriptSpriteObjectMemberInitSprite>(std::get<FescriptSpriteObjectIndex>(object));
-      else throw RuntimeError(expr->name, "SpriteObject property cannot be found.");
-    }
-    case FescriptLabelObjectIndex: {
-      if(expr->is_name_an_expr)
-        return "TODO"; // TODO
-      RETURN_BASE_OBJECT_PROPERTIES(FescriptLabelObjectIndex)
-      else if(expr->name.lexeme == "background_red") return static_cast<idk::f80>(std::get<FescriptLabelObjectIndex>(object)->get_background_color().r);
-      else if(expr->name.lexeme == "background_green") return static_cast<idk::f80>(std::get<FescriptLabelObjectIndex>(object)->get_background_color().g);
-      else if(expr->name.lexeme == "background_blue") return static_cast<idk::f80>(std::get<FescriptLabelObjectIndex>(object)->get_background_color().b);
-      else if(expr->name.lexeme == "background_alpha") return static_cast<idk::f80>(std::get<FescriptLabelObjectIndex>(object)->get_background_color().a);
-      else if(expr->name.lexeme == "foreground_red") return static_cast<idk::f80>(std::get<FescriptLabelObjectIndex>(object)->get_foreground_color().r);
-      else if(expr->name.lexeme == "foreground_green") return static_cast<idk::f80>(std::get<FescriptLabelObjectIndex>(object)->get_foreground_color().g);
-      else if(expr->name.lexeme == "foreground_blue") return static_cast<idk::f80>(std::get<FescriptLabelObjectIndex>(object)->get_foreground_color().b);
-      else if(expr->name.lexeme == "foreground_alpha") return static_cast<idk::f80>(std::get<FescriptLabelObjectIndex>(object)->get_foreground_color().a);
-      else if(expr->name.lexeme == "label_text") return std::string(std::get<FescriptLabelObjectIndex>(object)->get_label_text().data());
-      else if(expr->name.lexeme == "font_size") return static_cast<idk::f80>(std::get<FescriptLabelObjectIndex>(object)->get_label_font_resource().get_font_size());
-      else if(expr->name.lexeme == "font_resource") return std::string(std::get<FescriptLabelObjectIndex>(object)->get_label_font_resource().get_font_path().data());
-      else if(expr->name.lexeme == "init_font") return std::make_shared<FescriptLabelObjectMemberInitFont>(std::get<FescriptLabelObjectIndex>(object));
-      else if(expr->name.lexeme == "init_text") return std::make_shared<FescriptLabelObjectMemberInitText>(std::get<FescriptLabelObjectIndex>(object));
-      else throw RuntimeError(expr->name, "LabelObject property cannot be found.");
-    }
-    case FescriptAreaObjectIndex: {
-      if(expr->is_name_an_expr)
-        return "TODO"; // TODO
-      RETURN_BASE_OBJECT_PROPERTIES(FescriptAreaObjectIndex)
-      else if(expr->name.lexeme == "is_colliding_with") return std::make_shared<FescriptAreaObjectMemberIsCollidingWith>(std::get<FescriptAreaObjectIndex>(object));
-      else throw RuntimeError(expr->name, "AreaObject property cannot be found.");
-    }
-    case FescriptCollisionObjectIndex: {
-      if(expr->is_name_an_expr)
-        return "TODO"; // TODO
-      RETURN_BASE_OBJECT_PROPERTIES(FescriptCollisionObjectIndex)
-      else throw RuntimeError(expr->name, "CollisionObject property cannot be found.");
-    }
+    case FescriptBaseObjectIndex:
+    case FescriptSpriteObjectIndex:
+    case FescriptLabelObjectIndex:
+    case FescriptAreaObjectIndex:
+    case FescriptCollisionObjectIndex:
     case FescriptCameraObjectIndex: {
       if(expr->is_name_an_expr)
         return "TODO"; // TODO
-      RETURN_BASE_OBJECT_PROPERTIES(FescriptCameraObjectIndex)
-      else if(expr->name.lexeme == "is_visible_on_camera") return std::make_shared<FescriptCameraObjectMemberIsVisibleOnCamera>(std::get<FescriptCameraObjectIndex>(object));
-      else throw RuntimeError(expr->name, "CameraObject property cannot be found.");
+      return this->get_object_property(expr->name, object);
     }
     default: {
       throw RuntimeError(expr->name, "only instances have properties.");
@@ -656,6 +614,83 @@ void Interpreter::check_number_operands(const Token &op, const Object &left,
   if (a.index() == BoolIndex && b.index() == BoolIndex)
     return std::get<BoolIndex>(a) == std::get<BoolIndex>(b);
   return false;
+}
+
+#define IS_INHERITED_BY(ptr_type) if(const auto& obj_##ptr_type = std::dynamic_pointer_cast<##ptr_type>(base_obj); obj_##ptr_type != nullptr)
+
+[[nodiscard]] Object Interpreter::get_object_property(const Token& keyword, Object value) {
+  using namespace fresh;
+  // objects that generated by FesLoaderResource are encapsulated in BaseObject,
+  // so we need to dynamic_cast that value to access object specific properties.
+  if (value.index() == FescriptBaseObjectIndex) {
+    const auto& base_obj = std::get<FescriptBaseObjectIndex>(value);
+    IS_INHERITED_BY(SpriteObject) return Interpreter::get_object_property(keyword, obj_SpriteObject);
+    else IS_INHERITED_BY(LabelObject) return Interpreter::get_object_property(keyword, obj_LabelObject);
+    else IS_INHERITED_BY(AreaObject) return Interpreter::get_object_property(keyword, obj_AreaObject);
+    else IS_INHERITED_BY(CollisionObject) return Interpreter::get_object_property(keyword, obj_CollisionObject);
+    else IS_INHERITED_BY(CameraObject) return Interpreter::get_object_property(keyword, obj_CameraObject);
+  }
+
+  switch (value.index()) {
+    case FescriptBaseObjectIndex: {
+      RETURN_BASE_OBJECT_PROPERTIES(FescriptBaseObjectIndex)
+      break;
+    }
+    case FescriptSpriteObjectIndex: {
+      RETURN_BASE_OBJECT_PROPERTIES(FescriptSpriteObjectIndex)
+      else if (keyword.lexeme == "sprite_resource") return std::string(std::get<FescriptSpriteObjectIndex>(value)->get_sprite_resource()._texture_path.data());
+      else if (keyword.lexeme == "init_sprite"    ) return std::make_shared<FescriptSpriteObjectMemberInitSprite>(std::get<FescriptSpriteObjectIndex>(value));
+      else throw RuntimeError(keyword, "SpriteObject property cannot be found.");
+    }
+    case FescriptLabelObjectIndex: {
+      RETURN_BASE_OBJECT_PROPERTIES(FescriptLabelObjectIndex)
+      else if (keyword.lexeme == "background_red"  ) return static_cast<idk::f80>(std::get<FescriptLabelObjectIndex>(value)->get_background_color().r);
+      else if (keyword.lexeme == "background_green") return static_cast<idk::f80>(std::get<FescriptLabelObjectIndex>(value)->get_background_color().g);
+      else if (keyword.lexeme == "background_blue" ) return static_cast<idk::f80>(std::get<FescriptLabelObjectIndex>(value)->get_background_color().b);
+      else if (keyword.lexeme == "background_alpha") return static_cast<idk::f80>(std::get<FescriptLabelObjectIndex>(value)->get_background_color().a);
+      else if (keyword.lexeme == "foreground_red"  ) return static_cast<idk::f80>(std::get<FescriptLabelObjectIndex>(value)->get_foreground_color().r);
+      else if (keyword.lexeme == "background_blue" ) return static_cast<idk::f80>(std::get<FescriptLabelObjectIndex>(value)->get_background_color().b);
+      else if (keyword.lexeme == "background_alpha") return static_cast<idk::f80>(std::get<FescriptLabelObjectIndex>(value)->get_background_color().a);
+      else if (keyword.lexeme == "foreground_red"  ) return static_cast<idk::f80>(std::get<FescriptLabelObjectIndex>(value)->get_foreground_color().r);
+      else if (keyword.lexeme == "foreground_green") return static_cast<idk::f80>(std::get<FescriptLabelObjectIndex>(value)->get_foreground_color().g);
+      else if (keyword.lexeme == "foreground_blue" ) return static_cast<idk::f80>(std::get<FescriptLabelObjectIndex>(value)->get_foreground_color().b);
+      else if (keyword.lexeme == "foreground_alpha") return static_cast<idk::f80>(std::get<FescriptLabelObjectIndex>(value)->get_foreground_color().a);
+      else if (keyword.lexeme == "label_text"      ) return std::string(std::get<FescriptLabelObjectIndex>(value)->get_label_text().data());
+      else if (keyword.lexeme == "font_size"       ) return static_cast<idk::f80>(std::get<FescriptLabelObjectIndex>(value)->get_label_font_resource().get_font_size());
+      else if (keyword.lexeme == "font_resource"   ) return std::string(std::get<FescriptLabelObjectIndex>(value)->get_label_font_resource().get_font_path().data());
+      else if (keyword.lexeme == "init_font"       ) return std::make_shared<FescriptLabelObjectMemberInitFont>(std::get<FescriptLabelObjectIndex>(value));
+      else if (keyword.lexeme == "init_text"       ) return std::make_shared<FescriptLabelObjectMemberInitText>(std::get<FescriptLabelObjectIndex>(value));
+      else throw RuntimeError(keyword, "LabelObject property cannot be found.");
+    }
+    case FescriptAreaObjectIndex: {
+      RETURN_BASE_OBJECT_PROPERTIES(FescriptAreaObjectIndex)
+      else if (keyword.lexeme == "is_colliding_with") return std::make_shared<FescriptAreaObjectMemberIsCollidingWith>(std::get<FescriptAreaObjectIndex>(value));
+      else throw RuntimeError(keyword, "AreaObject property cannot be found.");
+    }
+    case FescriptCollisionObjectIndex: {
+      RETURN_BASE_OBJECT_PROPERTIES(FescriptCollisionObjectIndex)
+      else throw RuntimeError(keyword, "CollisionObject property cannot be found.");
+    }
+    case FescriptCameraObjectIndex: {
+      RETURN_BASE_OBJECT_PROPERTIES(FescriptCameraObjectIndex)
+      else if (keyword.lexeme == "is_visible_on_camera") return std::make_shared<FescriptCameraObjectMemberIsVisibleOnCamera>(std::get<FescriptCameraObjectIndex>(value));
+      else throw RuntimeError(keyword, "CameraObject property cannot be found.");
+    }
+    default: {
+      std::cout << "Engine error: Invalid pointer passed to get_object_property!\n";
+      std::exit(1);
+    }
+  }
+}
+
+[[nodiscard]] Object Interpreter::baseobject_to_fescript_object(std::shared_ptr <fresh::BaseObject> base_obj) noexcept {
+  using namespace fresh;
+  IS_INHERITED_BY(SpriteObject) return obj_SpriteObject;
+  else IS_INHERITED_BY(LabelObject) return obj_LabelObject;
+  else IS_INHERITED_BY(AreaObject) return obj_AreaObject;
+  else IS_INHERITED_BY(CollisionObject) return obj_CollisionObject;
+  else IS_INHERITED_BY(CameraObject) return obj_CameraObject;
+  else return base_obj;
 }
 
 std::string Interpreter::stringify(const Object &object) {

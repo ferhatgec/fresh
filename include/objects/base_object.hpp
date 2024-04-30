@@ -17,7 +17,7 @@
 namespace fresh {
 // BaseObject is must be inherited if any object gonna be rendered with any position
 // visibility etc. data.
-class BaseObject {
+class BaseObject : public std::enable_shared_from_this<BaseObject> {
 public:
   friend class SpriteObject; // all predefined objects are friend class of BaseObject by default.
   friend class LabelObject;
@@ -111,9 +111,12 @@ public:
 
   __idk_nodiscard
   void load_fescript_rt(const idk::StringViewChar& script, bool is_file = false) noexcept;
+
+  void push_to_sub_objects(std::shared_ptr<BaseObject> obj) noexcept;
 protected:
   idk::StringViewChar _object_def;
   std::vector<std::shared_ptr<BaseObject>> _sub_objects;
+  std::shared_ptr<BaseObject> _parent = nullptr;
 
   bool _disabled { false };
   bool _visible { true };

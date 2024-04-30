@@ -1,6 +1,7 @@
 #include "../../include/objects/area_object.hpp"
 #include "../../include/fescript/wrappers/fescript_base_object.hpp"
 #include "../../include/fescript/fescript_array.hpp"
+#include "../../include/objects/camera_object.hpp"
 #include <iostream>
 
 namespace fresh {

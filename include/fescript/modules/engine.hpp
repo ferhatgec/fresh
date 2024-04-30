@@ -9,4 +9,5 @@
 
 namespace fescript {
 ENGINE_MODULE(RenderObjectsPush, 1)
+ENGINE_MODULE(LoadFes, 1)
 } // namespace fescript

@@ -25,7 +25,7 @@ void FesLoaderResource::load_fes(const idk::StringViewChar& file_or_raw_text, bo
 }
 
 void FesLoaderResource::load_fes(idk::StringViewChar&& file_or_raw_text, bool file) noexcept {
-  this->scene_fes_file_path = idk::move(file_or_raw_text);
+  this->scene_fes_file_path = std::move(file_or_raw_text);
   this->_parser.get_tokenizer().load_from(this->scene_fes_file_path, file);
   this->_parser.get_tokenizer().tokenize();
   this->_parser.parse();
@@ -36,11 +36,17 @@ void FesLoaderResource::generate_objects() noexcept {
 }
 
 __idk_nodiscard
-  BaseObject*
-  FesLoaderResource::_generate_object(std::shared_ptr<fes::FesObjectAST> object_node) noexcept {
+std::shared_ptr<BaseObject>
+FesLoaderResource::return_generated_objects() noexcept {
+  return std::move(this->_generate_with_return());
+}
+
+__idk_nodiscard
+std::shared_ptr<BaseObject>
+FesLoaderResource::_generate_object(std::shared_ptr<fes::FesObjectAST> object_node) noexcept {
   switch(object_node->_object_type) {
   case fes::Keywords::Color: {
-    fresh::EditorProjectColorObject* object = new fresh::EditorProjectColorObject();
+    std::shared_ptr<fresh::EditorProjectColorObject> object = std::make_shared<fresh::EditorProjectColorObject>();
     auto casted_obj = std::dynamic_pointer_cast<fes::FesColorObjectAST>(object_node);
 
     object->get_position_info().x = object_node->_position_x;
@@ -65,11 +71,11 @@ __idk_nodiscard
     object->_blue = casted_obj->_blue;
     object->_alpha = casted_obj->_alpha;
 
-    return dynamic_cast<BaseObject*>(object);
+    return std::move(object);
   }
 
   case fes::Keywords::File: {
-    fresh::EditorProjectFileObject* object = new fresh::EditorProjectFileObject();
+    std::shared_ptr<fresh::EditorProjectFileObject> object = std::make_shared<fresh::EditorProjectFileObject>();
     object->get_position_info().x = object_node->_position_x;
     object->get_position_info().y = object_node->_position_y;
     object->get_position_info().w = object_node->_width;
@@ -89,11 +95,11 @@ __idk_nodiscard
 
     object->_file_path = std::dynamic_pointer_cast<fes::FesFileObjectAST>(object_node)->_file_path;
 
-    return dynamic_cast<BaseObject*>(object);
+    return std::move(object);
   }
 
   case fes::Keywords::Project: {
-    fresh::EditorProjectObject* object = new fresh::EditorProjectObject();
+    std::shared_ptr<fresh::EditorProjectObject> object = std::make_shared<fresh::EditorProjectObject>();
     auto casted_obj = std::dynamic_pointer_cast<fes::FesProjectObjectAST>(object_node);
 
     object->get_position_info().x = object_node->_position_x;
@@ -127,15 +133,16 @@ __idk_nodiscard
     object->_default_fes_file = casted_obj->_default_fes_file;
 
     for(auto& preloaded_fes_file : casted_obj->_preloaded_fes_files) {
-      object->_preloaded_fes_files.push_back(std::shared_ptr<fresh::EditorProjectFileObject>(
-        dynamic_cast<fresh::EditorProjectFileObject*>(this->_generate_object(idk::move(preloaded_fes_file)))));
+      object->_preloaded_fes_files.push_back(
+        std::dynamic_pointer_cast<fresh::EditorProjectFileObject>(this->_generate_object(std::move(preloaded_fes_file)))
+          );
     }
 
-    return dynamic_cast<BaseObject*>(object);
+    return std::move(object);
   }
 
   case fes::Keywords::GuiButtonObject: {
-    fresh::GuiButtonObject* object = new fresh::GuiButtonObject();
+    std::shared_ptr<fresh::GuiButtonObject> object = std::make_shared<fresh::GuiButtonObject>();
     auto casted_obj = std::dynamic_pointer_cast<fes::FesGuiButtonObjectAST>(object_node);
 
     object->get_position_info().x = object_node->_position_x;
@@ -158,88 +165,78 @@ __idk_nodiscard
     if(casted_obj->_sprite_object.get()) {
       auto x = std::dynamic_pointer_cast<fes::FesObjectAST>(casted_obj->_sprite_object);
 
-      object->get_sprite_object() = std::shared_ptr<SpriteObject>(
-        dynamic_cast<SpriteObject*>(this->_generate_object(x)));
+      object->get_sprite_object() = std::dynamic_pointer_cast<SpriteObject>(this->_generate_object(x));
     }
 
     if(casted_obj->_on_clicked_sprite_object.get()) {
       auto x = std::dynamic_pointer_cast<fes::FesObjectAST>(casted_obj->_on_clicked_sprite_object);
 
-      object->get_on_clicked_sprite_object() = std::shared_ptr<SpriteObject>(
-        dynamic_cast<SpriteObject*>(this->_generate_object(x)));
+      object->get_on_clicked_sprite_object() = std::dynamic_pointer_cast<SpriteObject>(this->_generate_object(x));
     }
 
     if(casted_obj->_on_hover_sprite_object.get()) {
       auto x = std::dynamic_pointer_cast<fes::FesObjectAST>(casted_obj->_on_hover_sprite_object);
 
-      object->get_on_hover_sprite_object() = std::shared_ptr<SpriteObject>(
-        dynamic_cast<SpriteObject*>(this->_generate_object(x)));
+      object->get_on_hover_sprite_object() = std::dynamic_pointer_cast<SpriteObject>(this->_generate_object(x));
     }
 
     if(casted_obj->_label_object.get()) {
       auto x = std::dynamic_pointer_cast<fes::FesObjectAST>(casted_obj->_label_object);
 
-      object->get_label_object() = std::shared_ptr<LabelObject>(
-        dynamic_cast<LabelObject*>(this->_generate_object(
-          x)));
+      object->get_label_object() = std::dynamic_pointer_cast<LabelObject>(this->_generate_object(x));
     }
 
     if(casted_obj->_on_clicked_label_object.get()) {
       auto x = std::dynamic_pointer_cast<fes::FesObjectAST>(casted_obj->_on_clicked_label_object);
 
-      object->get_on_clicked_label_object() = std::shared_ptr<LabelObject>(
-        dynamic_cast<LabelObject*>(this->_generate_object(
-          x)));
+      object->get_on_clicked_label_object() = std::dynamic_pointer_cast<LabelObject>(this->_generate_object(x));
     }
 
     if(casted_obj->_on_hover_label_object.get()) {
       auto x = std::dynamic_pointer_cast<fes::FesObjectAST>(casted_obj->_on_hover_label_object);
 
-      object->get_on_hover_label_object() = std::shared_ptr<LabelObject>(
-        dynamic_cast<LabelObject*>(this->_generate_object(
-          x)));
+      object->get_on_hover_label_object() = std::dynamic_pointer_cast<LabelObject>(this->_generate_object(x));
     }
 
     for(auto& node : object_node->_sub_groups) {
-      std::shared_ptr<BaseObject> _object = std::shared_ptr<BaseObject>(this->_generate_object(node));
-      object->push_object(idk::move(_object));
+      object->push_object(std::move(this->_generate_object(node)));
     }
 
-    return dynamic_cast<BaseObject*>(object);
+    return std::move(object);
   }
 
   case fes::Keywords::GuiBaseObject: {
-    auto ptr = this->_generate_baseobject_ptr<fresh::GuiBaseObject>(idk::move(object_node));
+    auto ptr = this->_generate_baseobject_ptr<fresh::GuiBaseObject>(std::move(object_node));
     ptr->_object_def = "guibaseobject";
     return ptr;
   }
 
   case fes::Keywords::AreaObject: {
-    auto ptr = this->_generate_baseobject_ptr<fresh::AreaObject>(idk::move(object_node));
+    auto ptr = this->_generate_baseobject_ptr<fresh::AreaObject>(std::move(object_node));
     ptr->_object_def = "areaobject";
     return ptr;
   }
 
   case fes::Keywords::BaseObject: {
-    auto ptr = this->_generate_baseobject_ptr<fresh::BaseObject>(idk::move(object_node));
+    auto ptr = this->_generate_baseobject_ptr<fresh::BaseObject>(std::move(object_node));
     ptr->_object_def = "baseobject";
     return ptr;
   }
 
   case fes::Keywords::CameraObject: {
-    auto ptr = this->_generate_baseobject_ptr<fresh::CameraObject>(idk::move(object_node));
+    auto ptr = this->_generate_baseobject_ptr<fresh::CameraObject>(std::move(object_node));
     ptr->_object_def = "cameraobject";
     return ptr;
   }
 
   case fes::Keywords::CollisionObject: {
-    auto ptr = this->_generate_baseobject_ptr<fresh::CollisionObject>(idk::move(object_node));
+    auto ptr = this->_generate_baseobject_ptr<fresh::CollisionObject>(std::move(object_node));
     ptr->_object_def = "collisionobject";
     return ptr;
   }
 
   case fes::Keywords::LabelObject: {
-    fresh::LabelObject* object = new fresh::LabelObject();
+    std::shared_ptr<fresh::LabelObject> object = std::make_shared<fresh::LabelObject>();
     auto casted_obj = std::dynamic_pointer_cast<fresh::fes::FesLabelObjectAST>(object_node);
 
     object->get_position_info().x = object_node->_position_x;
@@ -277,16 +274,15 @@ __idk_nodiscard
                             fresh::LabelRenderType::Solid);
 
     for(auto& node : object_node->_sub_groups) {
-      std::shared_ptr<BaseObject> _object = std::shared_ptr<BaseObject>(this->_generate_object(node));
-      object->push_object(idk::move(_object));
+      object->push_object(std::move(this->_generate_object(node)));
     }
 
     object->load_fescript_rt(casted_obj->_fescript_path, true);
-    return dynamic_cast<BaseObject*>(object);
-  }// change this
+    return std::move(object);
+  } // change this
 
   case fes::Keywords::SpriteObject: {
-    fresh::SpriteObject* object = new fresh::SpriteObject();
+    std::shared_ptr<fresh::SpriteObject> object = std::make_shared<fresh::SpriteObject>();
 
     object->get_position_info().x = object_node->_position_x;
     object->get_position_info().y = object_node->_position_y;
@@ -304,23 +300,23 @@ __idk_nodiscard
     object->_disabled = object_node->_disabled;
     object->_visible = object_node->_visible;
 
-    object->_sprite_resource.load_resource(dynamic_cast<fresh::fes::FesSpriteObjectAST*>(object_node.get())->_sprite_path);
+    object->_sprite_resource.load_resource(std::dynamic_pointer_cast<fresh::fes::FesSpriteObjectAST>(object_node)->_sprite_path);
 
     for(auto& node : object_node->_sub_groups) {
-      std::shared_ptr<BaseObject> _object = std::shared_ptr<BaseObject>(this->_generate_object(node));
+      auto _object = this->_generate_object(node);
       if((_object->_object_def == "projectobject") || (_object->_object_def == "fileobject") || (_object->_object_def == "colorobject")) {
         continue;
       }
-      object->push_object(idk::move(_object));
+      object->push_object(std::move(_object));
     }
 
     object->load_fescript_rt(object_node->_fescript_path, true);
-    return dynamic_cast<BaseObject*>(object);
+    return std::move(object);
   }
 
   default: {
     std::cout << "Engine error: Undefined object type found in FesLoaderResource.\n";
-    auto ptr = this->_generate_baseobject_ptr<fresh::BaseObject>(idk::move(object_node));
+    auto ptr = this->_generate_baseobject_ptr<fresh::BaseObject>(std::move(object_node));
     ptr->_object_def = "baseobject";
     ptr->load_fescript_rt(object_node->_fescript_path, true);
     return ptr;
@@ -330,7 +326,7 @@ __idk_nodiscard
 
 void FesLoaderResource::_generate() noexcept {
   for(auto& node : this->_parser._objects->_sub_groups) {
-    std::shared_ptr<BaseObject> _object = std::shared_ptr<BaseObject>(this->_generate_object(node));
+    auto _object = this->_generate_object(node);
 
     if((_object->_object_def == "projectobject") || (_object->_object_def == "fileobject") || (_object->_object_def == "colorobject")) {
       continue;
@@ -340,11 +336,28 @@ void FesLoaderResource::_generate() noexcept {
   }
 }
 
+__idk_nodiscard
+std::shared_ptr<BaseObject>
+FesLoaderResource::_generate_with_return() noexcept {
+  std::shared_ptr<BaseObject> obj = std::make_shared<BaseObject>();
+  for(auto& node: this->_parser._objects->_sub_groups) {
+    auto _object = std::move(this->_generate_object(node));
+    if((_object->_object_def == "projectobject")
+      || (_object->_object_def == "fileobject")
+      || (_object->_object_def == "colorobject")) {
+      continue;
+    }
+    obj->push_to_sub_objects(std::move(_object));
+    // obj->_sub_objects.push_back(_object);
+  }
+  return std::move(obj);
+}
+
 template<typename ObjectClassType>
 __idk_nodiscard
-  BaseObject*
-  FesLoaderResource::_generate_baseobject_ptr(std::shared_ptr<fes::FesObjectAST> object_node) noexcept {
-  ObjectClassType* object = new ObjectClassType();
+std::shared_ptr<BaseObject>
+FesLoaderResource::_generate_baseobject_ptr(std::shared_ptr<fes::FesObjectAST> object_node) noexcept {
+  std::shared_ptr<ObjectClassType> object = std::make_shared<ObjectClassType>();
 
   object->get_position_info().x = object_node->_position_x;
   object->get_position_info().y = object_node->_position_y;
@@ -362,19 +375,18 @@ __idk_nodiscard
   object->_visible = object_node->_visible;
 
   for(auto& node : object_node->_sub_groups) {
-    std::shared_ptr<BaseObject> _object = std::shared_ptr<BaseObject>(this->_generate_object(node));
-    object->push_object(idk::move(_object));
+    object->push_object(std::move(this->_generate_object(node)));
   }
 
   object->load_fescript_rt(object_node->_fescript_path, true);
-  return dynamic_cast<BaseObject*>(object);
+  return std::move(object);
 }
 
 #define INDENT() fes_data.push_back(idk::StringViewChar(" ") * FesLoaderResource::_space_indentation)
 
 __idk_nodiscard
-  idk::StringViewChar
-  FesLoaderResource::convert_into_fes() noexcept {
+idk::StringViewChar
+FesLoaderResource::convert_into_fes() noexcept {
   return this->_convert_list(this->_parser._objects);
 }
 
@@ -625,7 +637,7 @@ __idk_nodiscard
   case fes::Keywords::LabelObject: {
     fes_data.push_back("LabelObject,\n");
     ++FesLoaderResource::_space_indentation;
-    auto casted_obj = idk::move(std::dynamic_pointer_cast<fes::FesLabelObjectAST>(object_node));
+    auto casted_obj = std::move(std::dynamic_pointer_cast<fes::FesLabelObjectAST>(object_node));
 
     INDENT();
     fes_data.push_back("name = \"" + object_node->_name + "\",\n");
@@ -729,7 +741,7 @@ FesLoaderResource::_convert_render_objects() noexcept {
   std::shared_ptr<fes::FesObjectAST> render_object_list = std::make_shared<fes::FesObjectAST>();
 
   for(auto& obj: RenderObjects::objects_to_render) {
-    render_object_list->_sub_groups.push_back(idk::move(this->_convert_object_from_render_objects(obj)));
+    render_object_list->_sub_groups.push_back(std::move(this->_convert_object_from_render_objects(obj)));
   }
 
   return this->_convert_list(render_object_list);
@@ -739,56 +751,56 @@ __idk_nodiscard
 std::shared_ptr<fes::FesObjectAST>
 FesLoaderResource::_convert_object_from_render_objects(std::shared_ptr<BaseObject> object_node) noexcept {
   if(object_node->_object_def == "guibaseobject") {
-    return idk::move(this->_convert_object_from_base_object<fes::FesGuiBaseObjectAST>(object_node));
+    return std::move(this->_convert_object_from_base_object<fes::FesGuiBaseObjectAST>(object_node));
   } else if(object_node->_object_def == "guibuttonobject") {
-    return idk::move(this->_convert_object_from_base_object<fes::FesGuiButtonObjectAST>(
+    return std::move(this->_convert_object_from_base_object<fes::FesGuiButtonObjectAST>(
         object_node,
         [this](std::shared_ptr<fes::FesGuiButtonObjectAST>& obj, const std::shared_ptr<BaseObject>& object_node){
         obj->_on_clicked_sprite_object =
-          idk::move(std::dynamic_pointer_cast<fes::FesSpriteObjectAST>(
+          std::move(std::dynamic_pointer_cast<fes::FesSpriteObjectAST>(
             this->_convert_object_from_render_objects(
               std::dynamic_pointer_cast<GuiButtonObject>(object_node)->get_on_clicked_sprite_object()
             )));
 
         obj->_on_clicked_label_object =
-          idk::move(std::dynamic_pointer_cast<fes::FesLabelObjectAST>(
+          std::move(std::dynamic_pointer_cast<fes::FesLabelObjectAST>(
             this->_convert_object_from_render_objects(
               std::dynamic_pointer_cast<GuiButtonObject>(object_node)->get_on_clicked_label_object()
                 )));
 
         obj->_on_hover_sprite_object =
-          idk::move(std::dynamic_pointer_cast<fes::FesSpriteObjectAST>(
+          std::move(std::dynamic_pointer_cast<fes::FesSpriteObjectAST>(
             this->_convert_object_from_render_objects(
                 std::dynamic_pointer_cast<GuiButtonObject>(object_node)->get_on_hover_sprite_object()
               )));
 
         obj->_on_hover_label_object =
-          idk::move(std::dynamic_pointer_cast<fes::FesLabelObjectAST>(
+          std::move(std::dynamic_pointer_cast<fes::FesLabelObjectAST>(
             this->_convert_object_from_render_objects(
                 std::dynamic_pointer_cast<GuiButtonObject>(object_node)->get_on_hover_label_object()
               )));
 
         obj->_sprite_object =
-          idk::move(std::dynamic_pointer_cast<fes::FesSpriteObjectAST>(
+          std::move(std::dynamic_pointer_cast<fes::FesSpriteObjectAST>(
             this->_convert_object_from_render_objects(
                 std::dynamic_pointer_cast<GuiButtonObject>(object_node)->get_sprite_object()
               )));
 
         obj->_label_object =
-          idk::move(std::dynamic_pointer_cast<fes::FesLabelObjectAST>(
+          std::move(std::dynamic_pointer_cast<fes::FesLabelObjectAST>(
             this->_convert_object_from_render_objects(
                 std::dynamic_pointer_cast<GuiButtonObject>(object_node)->get_label_object()
               )));
       }
       ));
   } else if(object_node->_object_def == "areaobject") {
-    return idk::move(this->_convert_object_from_base_object<fes::FesAreaObjectAST>(object_node));
+    return std::move(this->_convert_object_from_base_object<fes::FesAreaObjectAST>(object_node));
   } else if(object_node->_object_def == "cameraobject") {
-    return idk::move(this->_convert_object_from_base_object<fes::FesCameraObjectAST>(object_node));
+    return std::move(this->_convert_object_from_base_object<fes::FesCameraObjectAST>(object_node));
   } else if(object_node->_object_def == "collisionobject") {
-    return idk::move(this->_convert_object_from_base_object<fes::FesCollisionObjectAST>(object_node));
+    return std::move(this->_convert_object_from_base_object<fes::FesCollisionObjectAST>(object_node));
   } else if(object_node->_object_def == "labelobject") {
-    return idk::move(this->_convert_object_from_base_object<fes::FesLabelObjectAST>(
+    return std::move(this->_convert_object_from_base_object<fes::FesLabelObjectAST>(
       object_node,
       [](std::shared_ptr<fes::FesLabelObjectAST>& obj, const std::shared_ptr<BaseObject>& object_node) {
           auto casted_obj = std::dynamic_pointer_cast<LabelObject>(object_node);
@@ -808,14 +820,14 @@ FesLoaderResource::_convert_object_from_render_objects(std::shared_ptr<BaseObjec
         }
       ));
   } else if(object_node->_object_def == "spriteobject") {
-    return idk::move(this->_convert_object_from_base_object<fes::FesSpriteObjectAST>(
+    return std::move(this->_convert_object_from_base_object<fes::FesSpriteObjectAST>(
              object_node,
              [](std::shared_ptr<fes::FesSpriteObjectAST>& obj, const std::shared_ptr<BaseObject>& object_node) {
                 obj->_sprite_path = std::dynamic_pointer_cast<SpriteObject>(object_node)->get_sprite_resource()._texture_path;
              }
     ));
   } else if(object_node->_object_def == "baseobject") {
-    return idk::move(this->_convert_object_from_base_object<fes::FesGuiBaseObjectAST>(object_node));
+    return std::move(this->_convert_object_from_base_object<fes::FesGuiBaseObjectAST>(object_node));
   }
 }
 
@@ -832,7 +844,7 @@ FesLoaderResource::_convert_base_object_properties(std::shared_ptr<fes::FesObjec
   conv_obj->_visible = object_node->_visible;
   conv_obj->_fescript_path = object_node->script_file_name;
   for(auto& sub_obj: object_node->_sub_objects) {
-    conv_obj->_sub_groups.push_back(idk::move(this->_convert_object_from_render_objects(sub_obj)));
+    conv_obj->_sub_groups.push_back(std::move(this->_convert_object_from_render_objects(sub_obj)));
   }
 }
-}// namespace fresh
+} // namespace fresh

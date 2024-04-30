@@ -7,6 +7,7 @@
 #include "../../include/fescript/fescript_resolver.hpp"
 #include "../../include/fescript/fescript_array.hpp"
 #include "../../include/fescript/wrappers/fescript_base_object.hpp"
+#include "../../include/objects/camera_object.hpp"
 
 namespace fresh {
 BaseObject::BaseObject() {
@@ -142,7 +143,8 @@ void BaseObject::push_object(std::shared_ptr<BaseObject> sub_object) noexcept {
     return;
   }
 
-  this->_sub_objects.push_back(idk::move(sub_object));
+  this->push_to_sub_objects(sub_object);
+  // this->_sub_objects.push_back(idk::move(sub_object));
 }
 
 [[nodiscard]] void BaseObject::set(const fescript::Token& name, fescript::Object value) {
@@ -200,6 +202,14 @@ void BaseObject::load_fescript_rt(const idk::StringViewChar& script, bool is_fil
   this->_code.interpret(this->_code.get_statements());
 }
 
+void BaseObject::push_to_sub_objects(std::shared_ptr<BaseObject> obj) noexcept {
+  if(!obj) {
+    std::cout << "Engine error: Invalid BaseObject/-inherited object passed to push_to_sub_objects()!\n";
+    std::exit(1);
+  }
+  obj->_parent = shared_from_this();
+  this->_sub_objects.push_back(obj);
+}
 /*
 template<typename KeyType>
 KeyType&

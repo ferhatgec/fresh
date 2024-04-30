@@ -38,6 +38,10 @@ public:
   generate_objects() noexcept;
 
   __idk_nodiscard
+  std::shared_ptr<BaseObject>
+  return_generated_objects() noexcept;
+
+  __idk_nodiscard
   idk::StringViewChar
   convert_into_fes() noexcept;
 
@@ -70,7 +74,7 @@ private:
     std::shared_ptr<Type> obj = std::make_shared<Type>();
     FesLoaderResource::_convert_base_object_properties(obj, object_node);
     extra(obj, object_node); // additional function that takes obj and object_node as argument.
-    return idk::move(obj);
+    return std::move(obj);
   }
 
   void
@@ -78,15 +82,19 @@ private:
                                  const std::shared_ptr<BaseObject>& object_node) noexcept;
 
   __idk_nodiscard
-  BaseObject*
+  std::shared_ptr<BaseObject>
   _generate_object(std::shared_ptr<fes::FesObjectAST> object_node) noexcept;
 
   void
   _generate() noexcept;
 
+  __idk_nodiscard
+  std::shared_ptr<BaseObject>
+  _generate_with_return() noexcept;
+
   template<typename ObjectClassType>
   __idk_nodiscard
-  BaseObject*
+  std::shared_ptr<BaseObject>
   _generate_baseobject_ptr(std::shared_ptr<fes::FesObjectAST> object_node) noexcept;
 
   idk::u64 _object_ids { 0_u64 };

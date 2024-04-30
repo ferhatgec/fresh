@@ -1306,8 +1306,10 @@ void Editor::_create_render_object(std::shared_ptr<BaseObject> obj) noexcept {
             std::cout << "Editor error: Editor::_state is assigned with data that related with guibuttonobject."
                          "Current selected node either is not guibuttonobject or there's no any node being selected.\n";
           }
-        } else
-          render_obj->_sub_objects.push_back(idk::move(obj));
+        } else {
+          render_obj->push_to_sub_objects(obj);
+          // render_obj->_sub_objects.push_back(idk::move(obj));
+        }
 
         if(!Editor::_state.is_empty())
           Editor::_state.clear();

@@ -19,7 +19,7 @@ FescriptArray::~FescriptArray() {
 [[nodiscard]] std::string FescriptArray::to_string() {
   std::string as_text = "[";
   for(std::size_t i = 0; i < this->values.size(); ++i) {
-    as_text.append(Token::to_string(this->values[i]));
+    as_text.append(Interpreter::stringify(this->values[i]));
     if(i + 1 < this->values.size())
       as_text.append(", ");
   }

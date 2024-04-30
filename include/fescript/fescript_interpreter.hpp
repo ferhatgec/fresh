@@ -65,6 +65,9 @@ private:
   [[nodiscard]] bool is_truthy(const Object &object);
   [[nodiscard]] bool is_equal(const Object &a, const Object &b);
 
+  [[nodiscard]] static Object get_object_property(const Token& keyword, Object value);
+  [[nodiscard]] static Object baseobject_to_fescript_object(std::shared_ptr<fresh::BaseObject> base_obj) noexcept;
+
   [[nodiscard]] Object visit(std::shared_ptr<Block> stmt) override;
   [[nodiscard]] Object visit(std::shared_ptr<Class> stmt) override;
   [[nodiscard]] Object visit(std::shared_ptr<Expression> stmt) override;

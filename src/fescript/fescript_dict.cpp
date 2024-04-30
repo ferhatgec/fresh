@@ -19,9 +19,9 @@ FescriptDict::~FescriptDict() {
 [[nodiscard]] std::string FescriptDict::to_string() {
   std::string as_text = "{";
   for(auto& [key, value]: this->dictionary) {
-    as_text.append(Token::to_string(key));
+    as_text.append(Interpreter::stringify(key));
     as_text.push_back(':');
-    as_text.append(Token::to_string(value) + ", ");
+    as_text.append(Interpreter::stringify(value) + ", ");
   }
   if(as_text.length() > 1) { // at least one element is found.
     as_text.pop_back(); // removing whitespace

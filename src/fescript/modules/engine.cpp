@@ -5,6 +5,7 @@
 #include "../../../include/objects/area_object.hpp"
 #include "../../../include/objects/collision_object.hpp"
 #include "../../../include/objects/camera_object.hpp"
+#include "../../../include/resources/fes_loader_resource.hpp"
 
 namespace fescript {
 __idk_nodiscard Object FescriptEngineRenderObjectsPush::call(Interpreter& interpreter, std::vector <Object> arguments) {
@@ -42,5 +43,12 @@ __idk_nodiscard Object FescriptEngineRenderObjectsPush::call(Interpreter& interp
       }
     }
   }
+}
+
+__idk_nodiscard Object FescriptEngineLoadFes::call(Interpreter& interpreter, std::vector <Object> arguments) {
+  ERR_CHECK_STRING("Engine_load_fes()", 1)
+  fresh::FesLoaderResource fes_loader;
+  fes_loader.load_fes(std::get<StringIndex>(arguments.front()).data());
+  return std::move(fes_loader.return_generated_objects());
 }
 } // namespace fescript

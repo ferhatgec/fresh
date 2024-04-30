@@ -12,19 +12,23 @@
 #include "../../objects/collision_object.hpp"
 
 #define RETURN_BASE_OBJECT_PROPERTIES(index) \
-if(expr->name.lexeme == "pos_x") return static_cast<idk::f80>(std::get<index>(object)->get_position_info().x); \
-else if(expr->name.lexeme == "pos_y") return static_cast<idk::f80>(std::get<index>(object)->get_position_info().y); \
-else if(expr->name.lexeme == "visible") return std::get<index>(object)->get_is_visible();  \
-else if(expr->name.lexeme == "disabled") return std::get<index>(object)->get_is_disabled();  \
-else if(expr->name.lexeme == "width") return static_cast<idk::f80>(std::get<index>(object)->get_position_info().w);  \
-else if(expr->name.lexeme == "height") return static_cast<idk::f80>(std::get<index>(object)->get_position_info().h);\
-else if(expr->name.lexeme == "sub_groups") { \
- auto array = std::make_shared<FescriptArray>();                                                               \
- for(const auto& object: std::get<index>(object)->_sub_objects) {                                                    \
-  array->values.push_back(object);                                            \
- }                                           \
- return std::move(array); \
-}
+if(keyword.lexeme == "pos_x") return static_cast<idk::f80>(std::get<index>(value)->get_position_info().x); \
+else if(keyword.lexeme == "pos_y") return static_cast<idk::f80>(std::get<index>(value)->get_position_info().y); \
+else if(keyword.lexeme == "visible") return std::get<index>(value)->get_is_visible();  \
+else if(keyword.lexeme == "disabled") return std::get<index>(value)->get_is_disabled();  \
+else if(keyword.lexeme == "width") return static_cast<idk::f80>(std::get<index>(value)->get_position_info().w);  \
+else if(keyword.lexeme == "height") return static_cast<idk::f80>(std::get<index>(value)->get_position_info().h);\
+else if(keyword.lexeme == "name") return std::string(std::get<index>(value)->_name.data());                \
+else if(keyword.lexeme == "object_def") return std::string(std::get<index>(value)->_object_def.data());                                             \
+else if(keyword.lexeme == "sub_groups") {    \
+  auto array = std::make_shared<FescriptArray>();                                                            \
+  for(const auto& object: std::get<index>(value)->_sub_objects) {                                          \
+    array->values.push_back(Interpreter::baseobject_to_fescript_object(object));                                            \
+  }                                           \
+  return std::move(array); \
+ }
+
+
 
 #define SET_BASE_OBJECT_PROPERTIES() \
 if(name.lexeme == "pos_x") this->get_position_info().x = static_cast<idk::i32>(std::get<LongDoubleIndex>(value)); \
@@ -38,11 +42,12 @@ else if(name.lexeme == "sub_groups") {                                          
   auto array = std::get<FescriptArrayIndex>(value);                                                               \
   for(const auto& object: array->values) {                                                                       \
     switch(object.index()) {                                        \
-     case FescriptBaseObjectIndex: { this->_sub_objects.push_back(std::get<FescriptBaseObjectIndex>(object)); break; }                               \
-     case FescriptSpriteObjectIndex: { this->_sub_objects.push_back(std::get<FescriptSpriteObjectIndex>(object)); break; }                               \
-     case FescriptLabelObjectIndex: { this->_sub_objects.push_back(std::get<FescriptLabelObjectIndex>(object)); break; }                               \
-     case FescriptAreaObjectIndex: { this->_sub_objects.push_back(std::get<FescriptAreaObjectIndex>(object)); break; }                               \
-     case FescriptCollisionObjectIndex: { this->_sub_objects.push_back(std::get<FescriptCollisionObjectIndex>(object)); break; }                     \
+     case FescriptBaseObjectIndex: { this->push_to_sub_objects(std::get<FescriptBaseObjectIndex>(object)); break; }                               \
+     case FescriptSpriteObjectIndex: { this->push_to_sub_objects(std::get<FescriptSpriteObjectIndex>(object)); break; }                               \
+     case FescriptLabelObjectIndex: { this->push_to_sub_objects(std::get<FescriptLabelObjectIndex>(object)); break; }                               \
+     case FescriptAreaObjectIndex: { this->push_to_sub_objects(std::get<FescriptAreaObjectIndex>(object)); break; }                               \
+     case FescriptCollisionObjectIndex: { this->push_to_sub_objects(std::get<FescriptCollisionObjectIndex>(object)); break; }                     \
+     case FescriptCameraObjectIndex: { this->push_to_sub_objects(std::get<FescriptCameraObjectIndex>(object)); break; }                                \
      default: {                      \
       std::cout << "Engine [language] error: Cannot use types those not inherited from BaseObject.";              \
       std::exit(1); \
@@ -58,6 +63,7 @@ case FescriptSpriteObjectIndex: { return this->_self->##object_fn(std::get<Fescr
 case FescriptLabelObjectIndex: { return this->_self->##object_fn(std::get<FescriptLabelObjectIndex>(arguments.front())); } \
 case FescriptAreaObjectIndex: { return this->_self->##object_fn(std::get<FescriptAreaObjectIndex>(arguments.front())); } \
 case FescriptCollisionObjectIndex: { return this->_self->##object_fn(std::get<FescriptCollisionObjectIndex>(arguments.front())); } \
+case FescriptCameraObjectIndex: { return this->_self->##object_fn(std::get<FescriptCameraObjectIndex>(arguments.front())); }                                                          \
 default: { \
 std::cout << "Engine [language] error: " wrapped_fn_str " requires objects those inherited from BaseObject.\n"; \
 std::exit(1); \
