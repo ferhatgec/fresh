@@ -49,6 +49,11 @@ public:
 
   [[nodiscard]] static std::string stringify(const Object &object);
   [[nodiscard]] idk::i64& get_global_seed() noexcept;
+
+  [[nodiscard]] static Object get_object_property(const Token& keyword, Object value);
+  [[nodiscard]] static Object baseobject_to_fescript_object(std::shared_ptr<fresh::BaseObject> base_obj) noexcept;
+
+  [[nodiscard]] std::shared_ptr<fresh::BaseObject>& get_parent_object() noexcept;
 private:
   [[nodiscard]] Object evaluate(std::shared_ptr<Expr> expr);
   [[nodiscard]] Object look_up_variable(const Token &name, std::shared_ptr<Expr> expr);
@@ -64,9 +69,6 @@ private:
 
   [[nodiscard]] bool is_truthy(const Object &object);
   [[nodiscard]] bool is_equal(const Object &a, const Object &b);
-
-  [[nodiscard]] static Object get_object_property(const Token& keyword, Object value);
-  [[nodiscard]] static Object baseobject_to_fescript_object(std::shared_ptr<fresh::BaseObject> base_obj) noexcept;
 
   [[nodiscard]] Object visit(std::shared_ptr<Block> stmt) override;
   [[nodiscard]] Object visit(std::shared_ptr<Class> stmt) override;
@@ -101,6 +103,9 @@ private:
   std::map<std::shared_ptr<Expr>, int> locals;
   std::vector<std::shared_ptr<Stmt>> statements;
 
+  std::shared_ptr<fresh::BaseObject> _parent_object;
   idk::i64 global_seed;
+
+  bool is_initialized { false };
 };
 }// namespace fescript

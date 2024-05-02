@@ -113,10 +113,18 @@ public:
   void load_fescript_rt(const idk::StringViewChar& script, bool is_file = false) noexcept;
 
   void push_to_sub_objects(std::shared_ptr<BaseObject> obj) noexcept;
+
+  __idk_nodiscard
+  std::shared_ptr<BaseObject>
+  get_object_by_path(const std::string& path) noexcept;
 protected:
   idk::StringViewChar _object_def;
   std::vector<std::shared_ptr<BaseObject>> _sub_objects;
   std::shared_ptr<BaseObject> _parent = nullptr;
+
+  __idk_nodiscard
+  std::shared_ptr<BaseObject>
+  _get_object_by_single_path(const std::string& path) noexcept;
 
   bool _disabled { false };
   bool _visible { true };

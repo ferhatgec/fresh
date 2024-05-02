@@ -6,8 +6,17 @@
 #include "../../../include/objects/collision_object.hpp"
 #include "../../../include/objects/camera_object.hpp"
 #include "../../../include/resources/fes_loader_resource.hpp"
+#include "../../../include/freshengine.hpp"
 
 namespace fescript {
+[[nodiscard]] Object FescriptEngineGetObject::call(Interpreter &interpreter, std::vector<Object> arguments) {
+  ERR_CHECK_STRING("Engine_get_object()", 1)
+  // TODO:
+  return Interpreter::baseobject_to_fescript_object(
+    interpreter.get_parent_object()->get_object_by_path(std::get<StringIndex>(arguments.front()))
+    );
+}
+
 __idk_nodiscard Object FescriptEngineRenderObjectsPush::call(Interpreter& interpreter, std::vector <Object> arguments) {
   if(arguments.empty())
     return false;
@@ -50,5 +59,19 @@ __idk_nodiscard Object FescriptEngineLoadFes::call(Interpreter& interpreter, std
   fresh::FesLoaderResource fes_loader;
   fes_loader.load_fes(std::get<StringIndex>(arguments.front()).data());
   return std::move(fes_loader.return_generated_objects());
+}
+
+//Engine::get_instance()->link_camera
+__idk_nodiscard Object FescriptEngineLinkCamera::call(Interpreter& interpreter, std::vector <Object> arguments) {
+  if(arguments.empty()) {
+    std::cout << "Engine [language] error: Engine_link_camera() cannot be empty.\n";
+    std::exit(1);
+  }
+  if(arguments.front().index() != FescriptCameraObjectIndex) {
+    std::cout << "Engine [language] error: Cannot link object which is not CameraObject.";
+    std::exit(1);
+  }
+  fresh::Engine::get_instance()->link_camera(std::get<FescriptCameraObjectIndex>(arguments.front()));
+  return nullptr;
 }
 } // namespace fescript

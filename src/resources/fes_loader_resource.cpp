@@ -2,6 +2,8 @@
 #include "../../include/freshengine.hpp"
 #include <string>
 
+// TODO: wrap scene name and resolution properties into BaseObject, so scene objects will not be pushed into Fes list;
+// be pushed into sub_groups of this generated BaseObject's sub_groups.
 namespace fresh {
 idk::isize FesLoaderResource::_space_indentation{0_isize};
 
@@ -328,11 +330,16 @@ void FesLoaderResource::_generate() noexcept {
   for(auto& node : this->_parser._objects->_sub_groups) {
     auto _object = this->_generate_object(node);
 
-    if((_object->_object_def == "projectobject") || (_object->_object_def == "fileobject") || (_object->_object_def == "colorobject")) {
+    if((_object->_object_def == "projectobject") ||
+      (_object->_object_def == "fileobject") ||
+      (_object->_object_def == "colorobject")) {
       continue;
     }
 
-    RenderObjects::objects_to_render.push_back(_object);
+    if(_object->_object_def == "baseobject") {
+      for(auto& render_object: _object->_sub_objects)
+        RenderObjects::objects_to_render.push_back(render_object);
+    }
   }
 }
 
@@ -347,7 +354,13 @@ FesLoaderResource::_generate_with_return() noexcept {
       || (_object->_object_def == "colorobject")) {
       continue;
     }
-    obj->push_to_sub_objects(std::move(_object));
+    if(_object->_object_def == "baseobject") {
+      for(auto& render_object: _object->_sub_objects)
+        obj->push_to_sub_objects(render_object);
+        // RenderObjects::objects_to_render.push_back(render_object);
+    }
+
+    // obj->push_to_sub_objects(std::move(_object));
     // obj->_sub_objects.push_back(_object);
   }
   return std::move(obj);

@@ -20,6 +20,7 @@ ENGINEWINDOW_MODULE(SetWindowIcon, 1)
 ENGINEWINDOW_MODULE(SetWindowTitle, 1)
 ENGINEWINDOW_MODULE(SetWindowCursor, 3)
 ENGINEWINDOW_MODULE(SetWindowMode, 1)
+ENGINEWINDOW_MODULE(SetDefaultClearColor, 4)
 } // namespace fescript
 
 #undef ENGINEWINDOW_MODULE

@@ -1,22 +1,37 @@
 {
-[SpriteObject,
-name = "Scene.fes",
-group_id = auto,
-disabled = false,
-visible = true,
-width = 789,
-height = 299,
-position_x = 10,
-position_y = -30,
-sprite_resource = "",
-script_resource = "example/w.fe",
-sub_groups = {};
-],
-[CameraObject,
-    group_id        = auto,
-   disabled        = false, visible         = true,
-    width           = 80, height          = 40,
-    position_x      = 40, position_y      = 40,
-    sprite_resource = "";
-    ];
+[BaseObject,
+ name = "Scene",
+ group_id = auto,
+ sub_groups = {
+  [SpriteObject,
+   name = "Scene.fes",
+   group_id = auto,
+   disabled = false,
+   visible = true,
+   width = 789,
+   height = 299,
+   position_x = 10,
+   position_y = -30,
+   sprite_resource = "",
+   script_resource = "example/w.fe",
+   sub_groups = {
+    [SpriteObject,
+      name = "InnerSpriteObject",
+      group_id = auto,
+      disabled = false,
+      visible = true,
+      width = 100,
+      height = 100,
+      position_x = 10,
+      position_y = -30,
+      sprite_resource = "",
+      script_resource = "example/inner_sprite_object.fe",
+      sub_groups = {
+
+      };
+     ];
+   };
+  ];
+ };
+];
 };

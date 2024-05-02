@@ -82,4 +82,16 @@ __idk_nodiscard Object FescriptEngineWindowSetWindowMode::call(Interpreter& inte
     }
   }());
 }
+
+// output: nil
+__idk_nodiscard Object FescriptEngineWindowSetDefaultClearColor::call(Interpreter& interpreter, std::vector <Object> arguments) {
+  ERR_CHECK_DECIMAL("EngineWindow_set_default_clear_color()", 4)
+  fresh::Engine::get_instance()->get_window()->get_default_clear_color() = SDL_Color {
+    .r = static_cast<idk::u8>(std::get<LongDoubleIndex>(arguments[0])),
+    .g = static_cast<idk::u8>(std::get<LongDoubleIndex>(arguments[1])),
+    .b = static_cast<idk::u8>(std::get<LongDoubleIndex>(arguments[2])),
+    .a = static_cast<idk::u8>(std::get<LongDoubleIndex>(arguments[3]))
+  };
+  return nullptr;
+}
 } // namespace fescript

@@ -56,6 +56,7 @@ cam.pos_y = 0;
 cam.width = 800;
 cam.height = 600;
 Engine_render_objects_push(cam);
+Engine_link_camera(cam);
 
 # Engine_render_objects_push(y);
 
@@ -76,7 +77,6 @@ Engine_render_objects_push(cam);
 # IO_println(IO_write_file("test.txt", "test!"));
 
 # IO_println(IO_char_input("input a character: "));
-
 # IO_println(not true);
 
 IO_println(PRNG_get_global_seed());
@@ -122,6 +122,14 @@ IO_println(Math_min(1, 2, 3, -5, 10), Math_min());
 
 def func(x, y...) =
  IO_println(x, y);
+;
+
+EngineWindow_set_default_clear_color(255, 255, 255, 255);
+
+def Value;
+# called right before update(delta).
+def init(delta) =
+ Value = Engine_get_object("InnerSpriteObject").sub_groups;
 ;
 
 # update function, called every frame.

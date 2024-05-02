@@ -86,6 +86,7 @@ Interpreter::Interpreter() {
   this->globals->define("EngineWindow_set_window_title", std::make_shared<FescriptEngineWindowSetWindowTitle>());
   this->globals->define("EngineWindow_set_window_cursor", std::make_shared<FescriptEngineWindowSetWindowCursor>());
   this->globals->define("EngineWindow_set_window_mode", std::make_shared<FescriptEngineWindowSetWindowMode>());
+  this->globals->define("EngineWindow_set_default_clear_color", std::make_shared<FescriptEngineWindowSetDefaultClearColor>());
 
   ENGINEWINDOW_GLOBAL_CONSTANTS()
 
@@ -97,6 +98,8 @@ Interpreter::Interpreter() {
   this->globals->define("Engine_CameraObject", std::make_shared<CameraObjectWrapper>());
   this->globals->define("Engine_render_objects_push", std::make_shared<FescriptEngineRenderObjectsPush>());
   this->globals->define("Engine_load_fes", std::make_shared<FescriptEngineLoadFes>());
+  this->globals->define("Engine_get_object", std::make_shared<FescriptEngineGetObject>());
+  this->globals->define("Engine_link_camera", std::make_shared<FescriptEngineLinkCamera>());
 }
 
 void Interpreter::interpret(
@@ -107,7 +110,8 @@ void Interpreter::interpret(
       for(const std::shared_ptr<Stmt>& statement: statements) {
         if(auto cast_ptr = std::dynamic_pointer_cast<Function>(statement);
           cast_ptr != nullptr) {
-          if((this->current_state == State::Update && cast_ptr->name.lexeme == "update")) {
+          if((this->current_state == State::Update && cast_ptr->name.lexeme == "update")
+            || (this->current_state == State::Init && cast_ptr->name.lexeme == "init")) {
             this->execute(statement);
             break;
           }
@@ -129,6 +133,10 @@ void Interpreter::interpret(
 }
 
 void Interpreter::interpret_update() {
+  if(!this->is_initialized) {
+    this->interpret_init();
+    this->is_initialized = true;
+  }
   this->current_state = State::Update;
   this->interpret(this->statements);
   this->current_state = State::Invalid;
@@ -230,7 +238,8 @@ void Interpreter::execute_block(const std::vector<std::shared_ptr<Stmt>> &statem
 [[nodiscard]] Object Interpreter::visit(std::shared_ptr<Function> stmt) {
   if(auto it = this->globals->values.find(stmt->name.lexeme); it != this->globals->values.end()) {
     if((it->second.index() == FescriptFunctionIndex || it->second.index() == FescriptCallableIndex)
-      && !(stmt->name.lexeme == "update" && this->current_state == State::Update)) {
+      && !(stmt->name.lexeme == "update" && this->current_state == State::Update)
+      && !(stmt->name.lexeme == "init" && this->current_state == State::Init)) {
       std::cout << "Engine [language] error: There is already a function named as '" << stmt->name.lexeme << "'.\n";
       std::exit(1);
     }
@@ -745,6 +754,10 @@ std::string Interpreter::stringify(const Object &object) {
   }
   }
   return "nil";
+}
+
+[[nodiscard]] std::shared_ptr<fresh::BaseObject>& Interpreter::get_parent_object() noexcept {
+  return this->_parent_object;
 }
 
 [[nodiscard]] idk::i64& Interpreter::get_global_seed() noexcept {

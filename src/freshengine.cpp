@@ -102,6 +102,8 @@ void Engine::run() {
     this->update();
 
     for(auto& object : fresh::RenderObjects::objects_to_render) {
+      // FIXME: sync camera pos_x, pos_y, width and height with window width and height.
+      // override pos_x and pos_y as 0.
       if(object.get()) {
         if(Engine::get_instance()->_camera_object.get()) {
           if(Engine::get_instance()->_camera_object->is_visible_on_camera(object)) {

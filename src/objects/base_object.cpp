@@ -1,6 +1,6 @@
 #include <iostream>
 #include <fstream>
-
+#include <filesystem>
 #include "../../include/objects/base_object.hpp"
 #include "../../include/fescript/fescript_scanner.hpp"
 #include "../../include/fescript/fescript_parser.hpp"
@@ -197,6 +197,7 @@ void BaseObject::load_fescript_rt(const idk::StringViewChar& script, bool is_fil
   }
   this->_code.get_statements() = statements;
   this->_code.get_render_object_id() = this->_object_id;
+  this->_code.get_parent_object() = shared_from_this();
   // we run interpreter first to calculate first values of variables.
   // it will prevent variable not found in scope style problems.
   this->_code.interpret(this->_code.get_statements());
@@ -210,6 +211,32 @@ void BaseObject::push_to_sub_objects(std::shared_ptr<BaseObject> obj) noexcept {
   obj->_parent = shared_from_this();
   this->_sub_objects.push_back(obj);
 }
+
+__idk_nodiscard
+std::shared_ptr<BaseObject>
+BaseObject::get_object_by_path(const std::string& path) noexcept {
+  std::shared_ptr<BaseObject> current = shared_from_this();
+  for(const auto& entry: std::filesystem::path(path))
+    current = this->_get_object_by_single_path(entry.string());
+  return current;
+}
+
+__idk_nodiscard
+std::shared_ptr<BaseObject>
+BaseObject::_get_object_by_single_path(const std::string& path) noexcept {
+  if(path == "." || path.empty())
+    return shared_from_this();
+  if(path == "..")
+    return this->_parent;
+  for(auto& sub_obj: this->_sub_objects) {
+    if(sub_obj->_name == path.data()) {
+      return sub_obj;
+    }
+  }
+  std::cout << "Engine [language] error: Cannot find '" << path << "' in sub objects of" << this->_name << " object.\n";
+  std::exit(1);
+}
+
 /*
 template<typename KeyType>
 KeyType&
