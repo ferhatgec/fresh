@@ -1,0 +1,62 @@
+def Character;
+def AreaObj;
+def SPEED = 10;
+def Velocity = 0;
+
+def jumpStr = 4;
+def speedX = 0;
+def speedY = 0;
+def gravity = 0.3;
+def friction = 0.95;
+def runStr = 0.1;
+
+def left = 0;
+def right = 0;
+def up = 0;
+def onGround = 0;
+def ground = 525;
+
+def init(delta) =
+ Character = Engine_get_object("Game_Character");
+ AreaObj = Engine_get_object("Wall");
+ Character = Character.sub_groups.0;
+;
+
+def update(delta) =
+ if(EngineIO_is_key_pressed(EngineIO_Key_A)) =
+   IO_println("a press");
+   left = 1;
+  ;
+  if(EngineIO_is_key_pressed(EngineIO_Key_D)) =
+   IO_println("d press");
+   right = 1;
+  ;
+  if(EngineIO_is_key_pressed(EngineIO_Key_W)) =
+   IO_println("w press");
+   up = 1;
+  ;
+  if(EngineIO_is_key_released(EngineIO_Key_A)) =
+   IO_println("a release");
+   left = 0;
+  ;
+  if(EngineIO_is_key_released(EngineIO_Key_D)) =
+   IO_println("d release");
+   right = 0;
+  ;
+  if(EngineIO_is_key_released(EngineIO_Key_W)) =
+   IO_println("w release");
+   up = 0;
+  ;
+
+  speedX = speedX + (right * runStr) - (left * runStr);
+  Character.pos_x = Character.pos_x + speedX * friction;
+  speedY = speedY - (onGround * up * jumpStr) - gravity;
+  Character.pos_y = Character.pos_y - speedY;
+  if((Character.pos_y + Character.height) >= ground) =
+   speedY = 0;
+   Character.pos_y = ground - Character.height;
+   onGround = 1;
+  ; else =
+   onGround = 0;
+  ;
+;

@@ -141,6 +141,14 @@ public:
   idk::StringViewChar _default_fes_file = "";
   idk::Vector<std::shared_ptr<FesFileObjectAST>> _preloaded_fes_files;
 };
+
+class FesImportObjectAST : public FesObjectAST {
+public:
+  FesImportObjectAST();
+  ~FesImportObjectAST();
+
+  idk::StringViewChar _import_path;
+};
 }
 }
 

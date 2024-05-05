@@ -19,7 +19,7 @@ public:
                                                         SDL_WINDOWPOS_CENTERED,
                                                         SDL_WINDOWPOS_CENTERED);
     Engine::get_instance()->get_window()->init_window();
-    this->_resource.load_fes("example/scene.fes");
+    this->_resource.load_fes("example/test/scene.fes");
     this->_resource.generate_objects();
   }
 

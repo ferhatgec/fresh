@@ -1,0 +1,20 @@
+{
+[BaseObject,
+ name = "Main_Menu",
+ disabled = false,
+ visible = true,
+ position_x = 0,
+ position_y = 0,
+ width = 200,
+ height = 202,
+ script_resource = "example/test/scene.fe",
+ sub_groups = {
+  [Import,
+   path="example/test/character.fes";
+  ],
+  [Import,
+   path="example/test/wall.fes";
+  ];
+ };
+];
+};

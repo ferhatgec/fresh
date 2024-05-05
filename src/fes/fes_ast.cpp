@@ -136,5 +136,12 @@ FesProjectObjectAST::FesProjectObjectAST() {
 
 FesProjectObjectAST::~FesProjectObjectAST() {
 }
+
+FesImportObjectAST::FesImportObjectAST() {
+  this->_object_type = Keywords::Import;
+}
+
+FesImportObjectAST::~FesImportObjectAST() {
+}
 }// namespace fes
 }// namespace fresh

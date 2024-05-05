@@ -69,6 +69,7 @@ enum Keywords {
   Project, // Project
   Color, // Color
   File, // File
+  Import, // Import
 
   GuiButtonObject, // GuiButtonObject
   GuiBaseObject, // GuiBaseObject

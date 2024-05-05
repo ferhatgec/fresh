@@ -14,7 +14,7 @@ CollisionObject::~CollisionObject() {
 }
 
 void CollisionObject::sync() noexcept {
-  this->get_position_info();// update deltas
+  this->get_position_info(); // update deltas
   this->_code.interpret_update();
 
   if(this->_disabled)

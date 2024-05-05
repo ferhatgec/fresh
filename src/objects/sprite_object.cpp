@@ -14,6 +14,7 @@ SpriteObject::SpriteObject() {
   this->_object_def = "spriteobject";
   this->_object_id = id::object_id;
   ++id::object_id;
+  std::cout << this->_pos_info.w << ":" << this->_pos_info.h << '\n';
 }
 
 SpriteObject::SpriteObject(SpriteObject* sprite_object) {
@@ -25,6 +26,7 @@ SpriteObject::SpriteObject(SpriteObject* sprite_object) {
     this->_object_def = sprite_object->_object_def;
     this->_object_id = sprite_object->_object_id;
     this->_pos_info = sprite_object->_pos_info;
+    this->_copy_last_pos_info = this->_pos_info;
     this->_visible = sprite_object->_visible;
     this->_disabled = sprite_object->_disabled;
 
@@ -38,6 +40,7 @@ SpriteObject::SpriteObject(SpriteObject* sprite_object) {
 
 SpriteObject::SpriteObject(const SpriteResource& sprite_resource, const BaseObject& metadata) {
   this->_pos_info = metadata._pos_info;
+  this->_copy_last_pos_info = this->_pos_info;
   this->_visible = metadata._visible;
   this->_disabled = metadata._disabled;
 
@@ -54,6 +57,7 @@ SpriteObject::SpriteObject(const SpriteResource& sprite_resource, const BaseObje
 
 SpriteObject::SpriteObject(SpriteResource&& sprite_resource, BaseObject&& metadata) {
   this->_pos_info = idk::move(metadata._pos_info);
+  this->_copy_last_pos_info = this->_pos_info;
   this->_visible = idk::move(metadata._visible);
   this->_disabled = idk::move(metadata._disabled);
 
@@ -84,15 +88,10 @@ void SpriteObject::sync() noexcept {
   if(this->_disabled || !this->_visible)
     return;
 
-  SDL_RenderCopy(Engine::get_instance()->get_window()->get_renderer(),
+  SDL_RenderCopyF(Engine::get_instance()->get_window()->get_renderer(),
                  this->_sprite_resource.get_texture(), NULL, &this->_pos_info);
 
   for(auto& object : this->_sub_objects) {
-    object->get_position_info().x += this->delta_x();
-    object->get_position_info().y += this->delta_y();
-    object->get_position_info().w += this->delta_w();
-    object->get_position_info().h += this->delta_h();
-
     if(object->_object_def != "cameraobject")// we actually sync cameraobject in engine::update()
       object->sync();
   }
@@ -110,7 +109,7 @@ void SpriteObject::sync() noexcept {
     } else if(Engine::get_instance()->get_mouse_input().is_button_pressed(SDL_BUTTON_LEFT)
               || Editor::_editor_focus_group_id == this->_object_id) {
       Editor::_editor_focus_group_id = this->_object_id;
-      SDL_Rect gizmo_x, gizmo_y;
+      SDL_FRect gizmo_x, gizmo_y;
       auto coords = this->get_position_info();
       gizmo_x.w = 64;
       gizmo_x.h = 16;
@@ -123,16 +122,16 @@ void SpriteObject::sync() noexcept {
       gizmo_y.x = coords.x + coords.w / 2;
       gizmo_y.y = (coords.y + coords.h / 2) - 56;
 
-      SDL_Rect _draw = this->get_position_info();
+      SDL_FRect _draw = this->get_position_info();
 
       _draw.w += 5;
       _draw.h += 5;
 
       SDL_RenderDrawRect(Engine::get_instance()->get_window()->get_renderer(),
                          &_draw);
-      SDL_RenderCopy(Engine::get_instance()->get_window()->get_renderer(),
+      SDL_RenderCopyF(Engine::get_instance()->get_window()->get_renderer(),
                      Editor::_gizmo_x_axis, NULL, &gizmo_x);
-      SDL_RenderCopy(Engine::get_instance()->get_window()->get_renderer(),
+      SDL_RenderCopyF(Engine::get_instance()->get_window()->get_renderer(),
                      Editor::_gizmo_y_axis, NULL, &gizmo_y);
     }
   }

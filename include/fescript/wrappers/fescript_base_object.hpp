@@ -31,12 +31,12 @@ else if(keyword.lexeme == "sub_groups") {    \
 
 
 #define SET_BASE_OBJECT_PROPERTIES() \
-if(name.lexeme == "pos_x") this->get_position_info().x = static_cast<idk::i32>(std::get<LongDoubleIndex>(value)); \
-else if(name.lexeme == "pos_y") this->get_position_info().y = static_cast<idk::i32>(std::get<LongDoubleIndex>(value)); \
+if(name.lexeme == "pos_x") this->get_position_info().x = static_cast<idk::f32>(std::get<LongDoubleIndex>(value)); \
+else if(name.lexeme == "pos_y") this->get_position_info().y = static_cast<idk::f32>(std::get<LongDoubleIndex>(value)); \
 else if(name.lexeme == "visible") this->get_is_visible() = std::get<BoolIndex>(value); \
 else if(name.lexeme == "disabled") this->get_is_disabled() = std::get<BoolIndex>(value); \
-else if(name.lexeme == "width") this->get_position_info().w = static_cast<idk::i32>(std::get<LongDoubleIndex>(value)); \
-else if(name.lexeme == "height") this->get_position_info().h = static_cast<idk::i32>(std::get<LongDoubleIndex>(value));\
+else if(name.lexeme == "width") this->get_position_info().w = static_cast<idk::f32>(std::get<LongDoubleIndex>(value)); \
+else if(name.lexeme == "height") this->get_position_info().h = static_cast<idk::f32>(std::get<LongDoubleIndex>(value));\
 else if(name.lexeme == "sub_groups") {                                                                            \
   this->_sub_objects.clear();                                   \
   auto array = std::get<FescriptArrayIndex>(value);                                                               \

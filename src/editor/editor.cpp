@@ -1060,7 +1060,7 @@ void Editor::_walk_over_render_objects(std::shared_ptr<BaseObject>& obj, idk::is
 
     Editor::_add_element([this, obj]() {
       this->_operation_handler.before_push_from_init(fes::Keywords::Width, obj->get_position_info().w);
-      if(ImGui::SliderInt(std::to_string(obj->get_position_info().w).data(),&obj->get_position_info().w, 0, 4096)) {
+      if(ImGui::SliderFloat(std::to_string(obj->get_position_info().w).data(),&obj->get_position_info().w, 0, 4096)) {
         // operation handler here.
         this->_operation_handler.before_push_to_init(obj->get_position_info().w);
       }
@@ -1071,7 +1071,7 @@ void Editor::_walk_over_render_objects(std::shared_ptr<BaseObject>& obj, idk::is
 
     Editor::_add_element([this, obj]() {
       this->_operation_handler.before_push_from_init(fes::Keywords::Height, obj->get_position_info().h);
-      if(ImGui::SliderInt(std::to_string(obj->get_position_info().h).data(),&obj->get_position_info().h, 0, 4096)) {
+      if(ImGui::SliderFloat(std::to_string(obj->get_position_info().h).data(),&obj->get_position_info().h, 0, 4096)) {
         // operation handler here.
         this->_operation_handler.before_push_to_init(obj->get_position_info().h);
       }
@@ -1082,7 +1082,7 @@ void Editor::_walk_over_render_objects(std::shared_ptr<BaseObject>& obj, idk::is
 
     Editor::_add_element([this, obj]() {
       this->_operation_handler.before_push_from_init(fes::Keywords::PositionX, obj->get_position_info().x);
-      if(ImGui::SliderInt(std::to_string(obj->get_position_info().x).data(),&obj->get_position_info().x, -8192, 8192)) {
+      if(ImGui::SliderFloat(std::to_string(obj->get_position_info().x).data(),&obj->get_position_info().x, -8192, 8192)) {
         // operation handler here.
         this->_operation_handler.before_push_to_init(obj->get_position_info().x);
       }
@@ -1093,7 +1093,7 @@ void Editor::_walk_over_render_objects(std::shared_ptr<BaseObject>& obj, idk::is
 
     Editor::_add_element([this, obj]() {
       this->_operation_handler.before_push_from_init(fes::Keywords::PositionY, obj->get_position_info().y);
-      if(ImGui::SliderInt(std::to_string(obj->get_position_info().y).data(),&obj->get_position_info().y,
+      if(ImGui::SliderFloat(std::to_string(obj->get_position_info().y).data(),&obj->get_position_info().y,
                           -8192,8192)) { // FIXME: those limits are enough for us. otherwise slider being nonsensitive on small intervals.
         // operation handler here.
         this->_operation_handler.before_push_to_init(obj->get_position_info().y);

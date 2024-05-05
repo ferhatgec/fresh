@@ -59,7 +59,7 @@ void LabelObject::initialize_text(idk::StringViewChar&& label_text,
 }
 
 void LabelObject::sync() noexcept {
-  this->get_position_info();// update deltas
+  this->get_position_info(); // update deltas
   this->_code.interpret_update();
 
   if(this->_disabled
@@ -69,7 +69,7 @@ void LabelObject::sync() noexcept {
      || this->_label_font_resource.get_font_size() <= 0)
     return;
 
-  SDL_RenderCopy(Engine::get_instance()->get_window()->get_renderer(),
+  SDL_RenderCopyF(Engine::get_instance()->get_window()->get_renderer(),
                  this->_label_font_texture.get_texture(),
                  NULL,
                  &this->_pos_info);

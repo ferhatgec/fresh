@@ -3,6 +3,9 @@
  name = "Scene",
  group_id = auto,
  sub_groups = {
+  [Import,
+   path = "example/character.fes";
+  ],
   [SpriteObject,
    name = "Scene.fes",
    group_id = auto,
@@ -22,13 +25,11 @@
       visible = true,
       width = 100,
       height = 100,
-      position_x = 10,
-      position_y = -30,
+      position_x = 0,
+      position_y = 0,
       sprite_resource = "",
       script_resource = "example/inner_sprite_object.fe",
-      sub_groups = {
-
-      };
+      sub_groups = {};
      ];
    };
   ];

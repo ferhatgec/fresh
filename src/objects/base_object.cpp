@@ -10,6 +10,7 @@
 #include "../../include/objects/camera_object.hpp"
 
 namespace fresh {
+bool is_first { false };
 BaseObject::BaseObject() {
   this->_pos_info.x = 0;
   this->_pos_info.y = 0;
@@ -31,8 +32,8 @@ BaseObject::BaseObject(bool disabled, bool visible, idk::i32 pos_x, idk::i32 pos
   this->_pos_info.y = pos_y;
   this->_pos_info.w = width;
   this->_pos_info.h = height;
-  this->_copy_last_pos_info.x = 0;
-  this->_copy_last_pos_info.y = 0;
+  this->_copy_last_pos_info.x = width;
+  this->_copy_last_pos_info.y = height;
   this->_object_id = id::object_id;
   this->_object_def = "baseobject";
   this->script_content = "";
@@ -61,16 +62,20 @@ void BaseObject::set_visible(bool visible) noexcept {
 }
 
 void BaseObject::sync() noexcept {
-//  std::cout << "Engine info: BaseObject::sync() is not overridden, override sync(), otherwise your changes won't be passed to renderer.\n";
+  this->get_position_info();
+  this->_code.interpret_update();
+
+  for(auto& object : this->_sub_objects) {
+    if(object->_object_def != "cameraobject") // we actually sync cameraobject in engine::update()
+      object->sync();
+  }
 }
 
 __idk_nodiscard
-  SDL_Rect&
+SDL_FRect&
   BaseObject::get_position_info() noexcept {
   if(this->_block_transform) {
     this->_block_transform = false;
-    // FIXME: collision resolution is so sh*t. fuck physics.
-
     if(this->delta_x() >= 0) {
       this->_pos_info.x += (this->delta_x() != 0) ? -1 : 0;
     } else {
@@ -87,8 +92,8 @@ __idk_nodiscard
       if(object) {
         object->get_position_info().x += this->delta_x();
         object->get_position_info().y += this->delta_y();
-        object->get_position_info().w += this->delta_w();
-        object->get_position_info().h += this->delta_h();
+        // object->get_position_info().w += this->delta_w();
+        // object->get_position_info().h += this->delta_h();
       }
     }
 
@@ -99,11 +104,12 @@ __idk_nodiscard
     if(object) {
       object->get_position_info().x += this->delta_x();
       object->get_position_info().y += this->delta_y();
-      object->get_position_info().w += this->delta_w();
-      object->get_position_info().h += this->delta_h();
+      // FIXME: height change of parent object generates delta_h > 0,
+      //   * which shouldn't happen outside of editor.
+      // object->get_position_info().w += this->delta_w();
+      // object->get_position_info().h += this->delta_h();
     }
   }
-
   this->_copy_last_pos_info = this->_pos_info;
   return this->_pos_info;
 }
@@ -114,26 +120,26 @@ BaseObject::get_object_id() noexcept {
 }
 
 __idk_nodiscard
-  idk::i64
-  BaseObject::delta_x() noexcept {
+idk::f32
+BaseObject::delta_x() noexcept {
   return this->_pos_info.x - this->_copy_last_pos_info.x;
 }
 
 __idk_nodiscard
-  idk::i64
-  BaseObject::delta_y() noexcept {
+idk::f32
+BaseObject::delta_y() noexcept {
   return this->_pos_info.y - this->_copy_last_pos_info.y;
 }
 
 __idk_nodiscard
-  idk::i64
-  BaseObject::delta_w() noexcept {
+idk::f32
+BaseObject::delta_w() noexcept {
   return this->_pos_info.w - this->_copy_last_pos_info.w;
 }
 
 __idk_nodiscard
-  idk::i64
-  BaseObject::delta_h() noexcept {
+idk::f32
+BaseObject::delta_h() noexcept {
   return this->_pos_info.h - this->_copy_last_pos_info.h;
 }
 
@@ -201,6 +207,7 @@ void BaseObject::load_fescript_rt(const idk::StringViewChar& script, bool is_fil
   // we run interpreter first to calculate first values of variables.
   // it will prevent variable not found in scope style problems.
   this->_code.interpret(this->_code.get_statements());
+  std::cout << this->_name << " " << this->script_file_name << '\n';
 }
 
 void BaseObject::push_to_sub_objects(std::shared_ptr<BaseObject> obj) noexcept {
@@ -234,7 +241,7 @@ BaseObject::_get_object_by_single_path(const std::string& path) noexcept {
     }
   }
   std::cout << "Engine [language] error: Cannot find '" << path << "' in sub objects of" << this->_name << " object.\n";
-  std::exit(1);
+  return shared_from_this();
 }
 
 /*

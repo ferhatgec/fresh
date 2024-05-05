@@ -8,7 +8,7 @@ namespace fresh {
 AreaObject::AreaObject() {
 }
 
-AreaObject::AreaObject(SDL_Rect pos_info) {
+AreaObject::AreaObject(SDL_FRect pos_info) {
   this->_object_def = "areaobject";
   this->_pos_info = pos_info;
 }

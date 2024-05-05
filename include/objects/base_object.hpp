@@ -54,7 +54,7 @@ public:
   sync() noexcept; // sync your *object*, pass through the renderer every frame
 
   __idk_nodiscard
-  virtual SDL_Rect&
+  virtual SDL_FRect&
   get_position_info() noexcept;
 
   __idk_nodiscard
@@ -62,19 +62,19 @@ public:
   get_object_id() noexcept;
 
   __idk_nodiscard
-  idk::i64
+  idk::f32
   delta_x() noexcept;
 
   __idk_nodiscard
-  idk::i64
+  idk::f32
   delta_y() noexcept;
 
   __idk_nodiscard
-  idk::i64
+  idk::f32
   delta_w() noexcept;
 
   __idk_nodiscard
-  idk::i64
+  idk::f32
   delta_h() noexcept;
 
   void
@@ -87,8 +87,8 @@ public:
   }
 
   template<>
-  SDL_Rect&
-  get_property<SDL_Rect>() noexcept {
+  SDL_FRect&
+  get_property<SDL_FRect>() noexcept {
     return this->_pos_info;
   }
 
@@ -130,9 +130,9 @@ protected:
   bool _visible { true };
   bool _block_transform { false };
 
-  SDL_Rect _pos_info;
-  SDL_Rect _blocked_pos_info; // we return this to block the changing of _pos_info.
-  SDL_Rect _copy_last_pos_info; // it's here to calculate velocity
+  SDL_FRect _pos_info;
+  SDL_FRect _blocked_pos_info; // we return this to block the changing of _pos_info.
+  SDL_FRect _copy_last_pos_info; // it's here to calculate velocity
   idk::i64 _object_id;
 
   idk::StringViewChar _name;
@@ -140,6 +140,7 @@ protected:
   fescript::Interpreter _code;
   idk::StringViewChar script_file_name;
   idk::StringViewChar script_content;
+  idk::StringViewChar imported_from;
 };
 } // namespace fresh
 

@@ -12,7 +12,7 @@ public:
   friend class FesLoaderResource;
 
   AreaObject();
-  AreaObject(SDL_Rect pos_info);
+  AreaObject(SDL_FRect pos_info);
   AreaObject(std::shared_ptr<BaseObject> base_object);
   ~AreaObject();
 

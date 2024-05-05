@@ -72,7 +72,7 @@ void Engine::run() {
   idk::u64 _start_loop;
   Uint64 delta_now = SDL_GetPerformanceCounter();
   Uint64 delta_prev = 0;
-
+  SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "2");
   while(Engine::get_instance()->_engine_running) {
     _start_loop = SDL_GetTicks64();
     delta_prev = delta_now;

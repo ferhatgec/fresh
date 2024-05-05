@@ -203,6 +203,7 @@ void FesTokenizer::_check_and_push() noexcept {
     push("Color", Keywords::Color);
     pushe("File", Keywords::File);
     pushe("Project", Keywords::Project);
+    pushe("Import", Keywords::Import);
     pushe("GuiButtonObject", Keywords::GuiButtonObject);
     pushe("GuiBaseObject", Keywords::GuiBaseObject);
     pushe("AreaObject", Keywords::AreaObject);

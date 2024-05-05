@@ -1,0 +1,26 @@
+{
+ [BaseObject,
+  name = "Character",
+  group_id = auto,
+  disabled = false,
+  visible = true,
+  position_x = 0,
+  position_y = 0,
+  width = 400,
+  height = 400,
+  sub_groups = {
+   [SpriteObject,
+    name = "Test12345",
+    group_id = auto,
+    disabled = false,
+    visible = true,
+    width = 400,
+    height = 400,
+    position_x = 0,
+    position_y = 0,
+    sprite_resource = "example/cursor.png",
+    sub_groups = {};
+   ];
+  };
+ ];
+};

@@ -99,7 +99,7 @@ IO_println(PRNG_generate_prn_between(PRNG_Gech, 0, 100));
 def SPEED = 20;
 
 def QQ = Engine_load_fes("example/scene_1.fes");
-IO_println(QQ.sub_groups.0);
+IO_println(QQ.sub_groups.0.sub_groups);
 IO_println(QQ.sub_groups);
 IO_println(QQ.sub_groups.0.sprite_resource);
 

@@ -1,0 +1,24 @@
+{
+[BaseObject,
+ name = "Game_Character",
+ disabled = false,
+ visible = true,
+ position_x = 0,
+ position_y = 0,
+ width = 100,
+ height = 150,
+ sub_groups = {
+  [SpriteObject,
+   name = "Game_Character_Sprite",
+   width = 100,
+   height = 150,
+   disabled = false,
+   visible = true,
+   position_x = 0,
+   position_y = 0,
+   sprite_resource = "example/test/character.png",
+   sub_groups = {};
+  ];
+ };
+];
+};

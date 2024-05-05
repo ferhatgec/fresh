@@ -146,7 +146,7 @@ void FesParser::parse_variable(std::shared_ptr<FesObjectAST>& object_node) noexc
 
           case Keywords::FontSize: {
             if(object_node->_object_type == Keywords::SpriteObject)
-              dynamic_cast<FesLabelObjectAST*>(object_node.get())->_font_size = static_cast<idk::u32>(_value);
+              std::dynamic_pointer_cast<FesLabelObjectAST>(object_node)->_font_size = static_cast<idk::u32>(_value);
             break;
           }
 
@@ -157,24 +157,24 @@ void FesParser::parse_variable(std::shared_ptr<FesObjectAST>& object_node) noexc
             if(object_node->_object_type == Keywords::Color) {
               switch(_variable._second) {
               case Keywords::Red: {
-                dynamic_cast<FesColorObjectAST*>(object_node.get())->_red = static_cast<idk::u32>(_value);
+                std::dynamic_pointer_cast<FesColorObjectAST>(object_node)->_red = static_cast<idk::u32>(_value);
                 break;
               }
               case Keywords::Green: {
-                dynamic_cast<FesColorObjectAST*>(object_node.get())->_green = static_cast<idk::u32>(_value);
+                std::dynamic_pointer_cast<FesColorObjectAST>(object_node)->_green = static_cast<idk::u32>(_value);
                 break;
               }
               case Keywords::Blue: {
-                dynamic_cast<FesColorObjectAST*>(object_node.get())->_blue = static_cast<idk::u32>(_value);
+                std::dynamic_pointer_cast<FesColorObjectAST>(object_node)->_blue = static_cast<idk::u32>(_value);
                 break;
               }
               case Keywords::Alpha: {
-                dynamic_cast<FesColorObjectAST*>(object_node.get())->_alpha = static_cast<idk::u32>(_value);
+                std::dynamic_pointer_cast<FesColorObjectAST>(object_node)->_alpha = static_cast<idk::u32>(_value);
                 break;
               }
               default: {
                 break;
-              }// never reach
+              }
               }
             }
             break;
@@ -191,35 +191,35 @@ void FesParser::parse_variable(std::shared_ptr<FesObjectAST>& object_node) noexc
             if(object_node->_object_type == Keywords::LabelObject) {
               switch(_variable._second) {
               case Keywords::BackgroundRed: {
-                dynamic_cast<FesLabelObjectAST*>(object_node.get())->_bg_color->_red = static_cast<idk::u32>(_value);
+                std::dynamic_pointer_cast<FesLabelObjectAST>(object_node)->_bg_color->_red = static_cast<idk::u32>(_value);
                 break;
               }
               case Keywords::BackgroundGreen: {
-                dynamic_cast<FesLabelObjectAST*>(object_node.get())->_bg_color->_green = static_cast<idk::u32>(_value);
+                std::dynamic_pointer_cast<FesLabelObjectAST>(object_node)->_bg_color->_green = static_cast<idk::u32>(_value);
                 break;
               }
               case Keywords::BackgroundBlue: {
-                dynamic_cast<FesLabelObjectAST*>(object_node.get())->_bg_color->_blue = static_cast<idk::u32>(_value);
+                std::dynamic_pointer_cast<FesLabelObjectAST>(object_node)->_bg_color->_blue = static_cast<idk::u32>(_value);
                 break;
               }
               case Keywords::BackgroundAlpha: {
-                dynamic_cast<FesLabelObjectAST*>(object_node.get())->_bg_color->_alpha = static_cast<idk::u32>(_value);
+                std::dynamic_pointer_cast<FesLabelObjectAST>(object_node)->_bg_color->_alpha = static_cast<idk::u32>(_value);
                 break;
               }
               case Keywords::ForegroundRed: {
-                dynamic_cast<FesLabelObjectAST*>(object_node.get())->_fg_color->_red = static_cast<idk::u32>(_value);
+                std::dynamic_pointer_cast<FesLabelObjectAST>(object_node)->_fg_color->_red = static_cast<idk::u32>(_value);
                 break;
               }
               case Keywords::ForegroundGreen: {
-                dynamic_cast<FesLabelObjectAST*>(object_node.get())->_fg_color->_green = static_cast<idk::u32>(_value);
+                std::dynamic_pointer_cast<FesLabelObjectAST>(object_node)->_fg_color->_green = static_cast<idk::u32>(_value);
                 break;
               }
               case Keywords::ForegroundBlue: {
-                dynamic_cast<FesLabelObjectAST*>(object_node.get())->_fg_color->_blue = static_cast<idk::u32>(_value);
+                std::dynamic_pointer_cast<FesLabelObjectAST>(object_node)->_fg_color->_blue = static_cast<idk::u32>(_value);
                 break;
               }
               case Keywords::ForegroundAlpha: {
-                dynamic_cast<FesLabelObjectAST*>(object_node.get())->_fg_color->_alpha = static_cast<idk::u32>(_value);
+                std::dynamic_pointer_cast<FesLabelObjectAST>(object_node)->_fg_color->_alpha = static_cast<idk::u32>(_value);
                 break;
               }
               default: {
@@ -234,9 +234,9 @@ void FesParser::parse_variable(std::shared_ptr<FesObjectAST>& object_node) noexc
           case Keywords::DefaultWindowSizeHeight: {
             if(object_node->_object_type == Keywords::Project) {
               if(_variable._second == Keywords::DefaultWindowSizeWidth) {
-                dynamic_cast<FesProjectObjectAST*>(object_node.get())->_default_window_size_w = static_cast<idk::i32>(_value);
+                std::dynamic_pointer_cast<FesProjectObjectAST>(object_node)->_default_window_size_w = static_cast<idk::i32>(_value);
               } else {
-                dynamic_cast<FesProjectObjectAST*>(object_node.get())->_default_window_size_h = static_cast<idk::i32>(_value);
+                std::dynamic_pointer_cast<FesProjectObjectAST>(object_node)->_default_window_size_h = static_cast<idk::i32>(_value);
               }
             }
             break;
@@ -262,7 +262,7 @@ void FesParser::parse_variable(std::shared_ptr<FesObjectAST>& object_node) noexc
 
       case Keywords::SpriteResource: {
         if(object_node->_object_type == Keywords::SpriteObject)
-          dynamic_cast<FesSpriteObjectAST*>(object_node.get())->_sprite_path = _variable_data.first();
+          std::dynamic_pointer_cast<FesSpriteObjectAST>(object_node)->_sprite_path = _variable_data.first();
 
         break;
       }
@@ -274,13 +274,13 @@ void FesParser::parse_variable(std::shared_ptr<FesObjectAST>& object_node) noexc
 
       case Keywords::LabelText: {
         if(object_node->_object_type == Keywords::LabelObject)
-          dynamic_cast<FesLabelObjectAST*>(object_node.get())->_label_text = _variable_data.first();
+          std::dynamic_pointer_cast<FesLabelObjectAST>(object_node)->_label_text = _variable_data.first();
         break;
       }
 
       case Keywords::FontResource: {
         if(object_node->_object_type == Keywords::LabelObject)
-          dynamic_cast<FesLabelObjectAST*>(object_node.get())->_label_path = _variable_data.first();
+          std::dynamic_pointer_cast<FesLabelObjectAST>(object_node)->_label_path = _variable_data.first();
         break;
       }
 
@@ -300,21 +300,23 @@ void FesParser::parse_variable(std::shared_ptr<FesObjectAST>& object_node) noexc
 
       case Keywords::ProjectName: {
         if(object_node->_object_type == Keywords::Project) {
-          dynamic_cast<FesProjectObjectAST*>(object_node.get())->_project_name = _variable_data.first();
+          std::dynamic_pointer_cast<FesProjectObjectAST>(object_node)->_project_name = _variable_data.first();
         }
         break;
       }
 
       case Keywords::DefaultFesFile: {
         if(object_node->_object_type == Keywords::Project) {
-          dynamic_cast<FesProjectObjectAST*>(object_node.get())->_default_fes_file = _variable_data.first();
+          std::dynamic_pointer_cast<FesProjectObjectAST>(object_node)->_default_fes_file = _variable_data.first();
         }
         break;
       }
 
       case Keywords::Path: {
         if(object_node->_object_type == Keywords::File) {
-          dynamic_cast<FesFileObjectAST*>(object_node.get())->_file_path = _variable_data.first();
+          std::dynamic_pointer_cast<FesFileObjectAST>(object_node)->_file_path = _variable_data.first();
+        } else if(object_node->_object_type == Keywords::Import) {
+          std::dynamic_pointer_cast<FesImportObjectAST>(object_node)->_import_path = _variable_data.first();
         }
         break;
       }
@@ -323,7 +325,7 @@ void FesParser::parse_variable(std::shared_ptr<FesObjectAST>& object_node) noexc
         if(object_node->_object_type == Keywords::Project) {
           ++i;
           auto color_object_ptr = std::dynamic_pointer_cast<FesObjectAST>(
-            dynamic_cast<FesProjectObjectAST*>(object_node.get())->_default_clear_color);
+            std::dynamic_pointer_cast<FesProjectObjectAST>(object_node)->_default_clear_color);
 
           this->parse_list(color_object_ptr);
 
@@ -332,10 +334,10 @@ void FesParser::parse_variable(std::shared_ptr<FesObjectAST>& object_node) noexc
             return;
           }
 
-          dynamic_cast<FesProjectObjectAST*>(object_node.get())->_default_clear_color =
+          std::dynamic_pointer_cast<FesProjectObjectAST>(object_node)->_default_clear_color =
             std::dynamic_pointer_cast<FesColorObjectAST>(color_object_ptr->_sub_groups.at_without_check_reference(0));
 
-          dynamic_cast<FesProjectObjectAST*>(object_node.get())->_default_clear_color->_object_type = Keywords::Color;
+          std::dynamic_pointer_cast<FesProjectObjectAST>(object_node)->_default_clear_color->_object_type = Keywords::Color;
         } else {
           std::cout << "Engine error: FesParser cannot handle DefaultClearColor for types that are not has member/s like that.\n";
         }
@@ -354,7 +356,7 @@ void FesParser::parse_variable(std::shared_ptr<FesObjectAST>& object_node) noexc
         if(object_node->_object_type == Keywords::GuiButtonObject) {
           ++i;
           auto sprite_object_ptr = std::dynamic_pointer_cast<FesObjectAST>(
-            dynamic_cast<FesGuiButtonObjectAST*>(object_node.get())->_sprite_object);
+            std::dynamic_pointer_cast<FesGuiButtonObjectAST>(object_node)->_sprite_object);
 
           this->parse_list(sprite_object_ptr);
 
@@ -363,10 +365,10 @@ void FesParser::parse_variable(std::shared_ptr<FesObjectAST>& object_node) noexc
             return;
           }
 
-          dynamic_cast<FesGuiButtonObjectAST*>(object_node.get())->_sprite_object =
+          std::dynamic_pointer_cast<FesGuiButtonObjectAST>(object_node)->_sprite_object =
             std::dynamic_pointer_cast<FesSpriteObjectAST>(sprite_object_ptr->_sub_groups.at_without_check_reference(0));
 
-          dynamic_cast<FesGuiButtonObjectAST*>(object_node.get())->_sprite_object->_object_type = Keywords::SpriteObject;
+          std::dynamic_pointer_cast<FesGuiButtonObjectAST>(object_node)->_sprite_object->_object_type = Keywords::SpriteObject;
         } else {
           std::cout << "Engine error: FesParser cannot handle SpriteObjectProperty for types that are not has member/s like that.\n";
         }
@@ -378,7 +380,7 @@ void FesParser::parse_variable(std::shared_ptr<FesObjectAST>& object_node) noexc
         if(object_node->_object_type == Keywords::GuiButtonObject) {
           ++i;
           auto sprite_object_ptr = std::dynamic_pointer_cast<FesObjectAST>(
-            dynamic_cast<FesGuiButtonObjectAST*>(object_node.get())->_on_clicked_sprite_object);
+            std::dynamic_pointer_cast<FesGuiButtonObjectAST>(object_node)->_on_clicked_sprite_object);
 
           this->parse_list(sprite_object_ptr);
 
@@ -387,10 +389,10 @@ void FesParser::parse_variable(std::shared_ptr<FesObjectAST>& object_node) noexc
             std::exit(1);
           }
 
-          dynamic_cast<FesGuiButtonObjectAST*>(object_node.get())->_on_clicked_sprite_object =
+          std::dynamic_pointer_cast<FesGuiButtonObjectAST>(object_node)->_on_clicked_sprite_object =
             std::dynamic_pointer_cast<FesSpriteObjectAST>(sprite_object_ptr->_sub_groups.at_without_check_reference(0));
 
-          dynamic_cast<FesGuiButtonObjectAST*>(object_node.get())->_on_clicked_sprite_object->_object_type = Keywords::SpriteObject;
+          std::dynamic_pointer_cast<FesGuiButtonObjectAST>(object_node)->_on_clicked_sprite_object->_object_type = Keywords::SpriteObject;
         } else {
           std::cout << "Engine error: FesParser cannot handle OnClickedSpriteObjectProperty for types that are not has member/s like that.\n";
         }
@@ -402,7 +404,7 @@ void FesParser::parse_variable(std::shared_ptr<FesObjectAST>& object_node) noexc
         if(object_node->_object_type == Keywords::GuiButtonObject) {
           ++i;
           auto sprite_object_ptr = std::dynamic_pointer_cast<FesObjectAST>(
-            dynamic_cast<FesGuiButtonObjectAST*>(object_node.get())->_on_hover_sprite_object);
+            std::dynamic_pointer_cast<FesGuiButtonObjectAST>(object_node)->_on_hover_sprite_object);
 
           this->parse_list(sprite_object_ptr);
 
@@ -411,10 +413,10 @@ void FesParser::parse_variable(std::shared_ptr<FesObjectAST>& object_node) noexc
             std::exit(1);
           }
 
-          dynamic_cast<FesGuiButtonObjectAST*>(object_node.get())->_on_hover_sprite_object =
+          std::dynamic_pointer_cast<FesGuiButtonObjectAST>(object_node)->_on_hover_sprite_object =
             std::dynamic_pointer_cast<FesSpriteObjectAST>(sprite_object_ptr->_sub_groups.at_without_check_reference(0));
 
-          dynamic_cast<FesGuiButtonObjectAST*>(object_node.get())->_on_hover_sprite_object->_object_type = Keywords::SpriteObject;
+          std::dynamic_pointer_cast<FesGuiButtonObjectAST>(object_node)->_on_hover_sprite_object->_object_type = Keywords::SpriteObject;
         } else {
           std::cout << "Engine error: FesParser cannot handle SpriteObjectProperty for types that are not has member/s like that.\n";
         }
@@ -425,7 +427,7 @@ void FesParser::parse_variable(std::shared_ptr<FesObjectAST>& object_node) noexc
       case Keywords::LabelObjectProperty: {
         if(object_node->_object_type == Keywords::GuiButtonObject) {
           ++i;
-          auto label_object_ptr = std::dynamic_pointer_cast<FesObjectAST>(dynamic_cast<FesGuiButtonObjectAST*>(object_node.get())->_label_object);
+          auto label_object_ptr = std::dynamic_pointer_cast<FesObjectAST>(std::dynamic_pointer_cast<FesGuiButtonObjectAST>(object_node)->_label_object);
 
           this->parse_list(label_object_ptr);
 
@@ -434,10 +436,10 @@ void FesParser::parse_variable(std::shared_ptr<FesObjectAST>& object_node) noexc
             std::exit(1);
           }
 
-          dynamic_cast<FesGuiButtonObjectAST*>(object_node.get())->_label_object =
+          std::dynamic_pointer_cast<FesGuiButtonObjectAST>(object_node)->_label_object =
             std::dynamic_pointer_cast<FesLabelObjectAST>(label_object_ptr->_sub_groups.at_without_check_reference(0));
 
-          dynamic_cast<FesGuiButtonObjectAST*>(object_node.get())->_label_object->_object_type = Keywords::LabelObject;
+          std::dynamic_pointer_cast<FesGuiButtonObjectAST>(object_node)->_label_object->_object_type = Keywords::LabelObject;
         } else {
           std::cout << "Engine error: FesParser cannot handle LabelObjectProperty for types that are not has member/s like that.\n";
         }
@@ -448,7 +450,7 @@ void FesParser::parse_variable(std::shared_ptr<FesObjectAST>& object_node) noexc
       case Keywords::OnClickedLabelObjectProperty: {
         if(object_node->_object_type == Keywords::GuiButtonObject) {
           ++i;
-          auto label_object_ptr = std::dynamic_pointer_cast<FesObjectAST>(dynamic_cast<FesGuiButtonObjectAST*>(object_node.get())->_on_clicked_label_object);
+          auto label_object_ptr = std::dynamic_pointer_cast<FesObjectAST>(std::dynamic_pointer_cast<FesGuiButtonObjectAST>(object_node)->_on_clicked_label_object);
 
           this->parse_list(label_object_ptr);
 
@@ -457,10 +459,10 @@ void FesParser::parse_variable(std::shared_ptr<FesObjectAST>& object_node) noexc
             std::exit(1);
           }
 
-          dynamic_cast<FesGuiButtonObjectAST*>(object_node.get())->_on_clicked_label_object =
+          std::dynamic_pointer_cast<FesGuiButtonObjectAST>(object_node)->_on_clicked_label_object =
             std::dynamic_pointer_cast<FesLabelObjectAST>(label_object_ptr->_sub_groups.at_without_check_reference(0));
 
-          dynamic_cast<FesGuiButtonObjectAST*>(object_node.get())->_on_clicked_label_object->_object_type = Keywords::LabelObject;
+          std::dynamic_pointer_cast<FesGuiButtonObjectAST>(object_node)->_on_clicked_label_object->_object_type = Keywords::LabelObject;
         } else {
           std::cout << "Engine error: FesParser cannot handle OnClickedLabelObjectProperty for types that are not has member/s like that.\n";
         }
@@ -471,7 +473,9 @@ void FesParser::parse_variable(std::shared_ptr<FesObjectAST>& object_node) noexc
       case Keywords::OnHoverLabelObjectProperty: {
         if(object_node->_object_type == Keywords::GuiButtonObject) {
           ++i;
-          auto label_object_ptr = std::dynamic_pointer_cast<FesObjectAST>(dynamic_cast<FesGuiButtonObjectAST*>(object_node.get())->_on_hover_label_object);
+          auto label_object_ptr = std::dynamic_pointer_cast<FesObjectAST>(
+            std::dynamic_pointer_cast<FesGuiButtonObjectAST>(object_node)->_on_hover_label_object
+            );
 
           this->parse_list(label_object_ptr);
 
@@ -480,10 +484,10 @@ void FesParser::parse_variable(std::shared_ptr<FesObjectAST>& object_node) noexc
             std::exit(1);
           }
 
-          dynamic_cast<FesGuiButtonObjectAST*>(object_node.get())->_on_hover_label_object =
+          std::dynamic_pointer_cast<FesGuiButtonObjectAST>(object_node)->_on_hover_label_object =
             std::dynamic_pointer_cast<FesLabelObjectAST>(label_object_ptr->_sub_groups.at_without_check_reference(0));
 
-          dynamic_cast<FesGuiButtonObjectAST*>(object_node.get())->_on_hover_label_object->_object_type = Keywords::LabelObject;
+          std::dynamic_pointer_cast<FesGuiButtonObjectAST>(object_node)->_on_hover_label_object->_object_type = Keywords::LabelObject;
         } else {
           std::cout << "Engine error: FesParser cannot handle OnHoverLabelObjectProperty for types that are not has member/s like that.\n";
         }
@@ -523,16 +527,15 @@ void FesParser::parse_list(std::shared_ptr<FesObjectAST>& object_node) noexcept 
       if(object_node->_object_type == Keywords::Project) {
         std::cout << "Fes error: Using ColorObject in ProjectObject within a list is not possible, no member can handle this.\n";
       } else
-        object_node->_sub_groups.push_back(std::shared_ptr<FesObjectAST>(dynamic_cast<FesObjectAST*>(new FesColorObjectAST())));
+        object_node->_sub_groups.push_back(std::make_shared<FesColorObjectAST>());
       break;
     }
 
     case Keywords::File: {
       if(object_node->_object_type == Keywords::Project) {
-        std::dynamic_pointer_cast<fes::FesProjectObjectAST>(object_node)->_preloaded_fes_files.push_back(
-          std::shared_ptr<FesFileObjectAST>(dynamic_cast<FesFileObjectAST*>(new FesFileObjectAST())));
+        std::dynamic_pointer_cast<fes::FesProjectObjectAST>(object_node)->_preloaded_fes_files.push_back(std::make_shared<FesFileObjectAST>());
       } else
-        object_node->_sub_groups.push_back(std::shared_ptr<FesObjectAST>(dynamic_cast<FesObjectAST*>(new FesFileObjectAST())));
+        object_node->_sub_groups.push_back(std::make_shared<FesFileObjectAST>());
       break;
     }
 
@@ -540,7 +543,15 @@ void FesParser::parse_list(std::shared_ptr<FesObjectAST>& object_node) noexcept 
       if(object_node->_object_type == Keywords::Project) {
         std::cout << "Fes error: Using ProjectObject in ProjectObject within a list is not possible, no member can handle this.\n";
       } else
-        object_node->_sub_groups.push_back(std::shared_ptr<FesObjectAST>(dynamic_cast<FesObjectAST*>(new FesProjectObjectAST())));
+        object_node->_sub_groups.push_back(std::make_shared<FesProjectObjectAST>());
+      break;
+    }
+
+    case Keywords::Import: {
+      if(object_node->_object_type == Keywords::Project)
+        std::cout << "Fes error: Using Import in ProjectObject within a list is not possible, no member can handle this.\n";
+      else
+        object_node->_sub_groups.push_back(std::make_shared<FesImportObjectAST>());
       break;
     }
 
@@ -548,7 +559,7 @@ void FesParser::parse_list(std::shared_ptr<FesObjectAST>& object_node) noexcept 
       if(object_node->_object_type == Keywords::GuiButtonObject) {
         std::cout << "Fes error: Using ProjectObject in ProjectObject within a list is not possible, no member can handle this.\n";
       } else
-        object_node->_sub_groups.push_back(std::shared_ptr<FesObjectAST>(dynamic_cast<FesObjectAST*>(new FesGuiButtonObjectAST())));
+        object_node->_sub_groups.push_back(std::make_shared<FesGuiButtonObjectAST>());
       break;
     }
 
@@ -556,7 +567,7 @@ void FesParser::parse_list(std::shared_ptr<FesObjectAST>& object_node) noexcept 
       if(object_node->_object_type == Keywords::Project) {
         std::cout << "Fes error: Using GuiBaseObject in ProjectObject within a list is not possible, no member can handle this.\n";
       } else
-        object_node->_sub_groups.push_back(std::shared_ptr<FesObjectAST>(dynamic_cast<FesObjectAST*>(new FesGuiBaseObjectAST())));
+        object_node->_sub_groups.push_back(std::make_shared<FesGuiBaseObjectAST>());
       break;
     }
 
@@ -564,7 +575,7 @@ void FesParser::parse_list(std::shared_ptr<FesObjectAST>& object_node) noexcept 
       if(object_node->_object_type == Keywords::Project) {
         std::cout << "Fes error: Using AreaObject in ProjectObject within a list is not possible, no member can handle this.\n";
       } else
-        object_node->_sub_groups.push_back(std::shared_ptr<FesObjectAST>(dynamic_cast<FesObjectAST*>(new FesAreaObjectAST())));
+        object_node->_sub_groups.push_back(std::make_shared<FesAreaObjectAST>());
       break;
     }
 
@@ -572,7 +583,7 @@ void FesParser::parse_list(std::shared_ptr<FesObjectAST>& object_node) noexcept 
       if(object_node->_object_type == Keywords::Project) {
         std::cout << "Fes error: Using BaseObject in ProjectObject within a list is not possible, no member can handle this.\n";
       } else
-        object_node->_sub_groups.push_back(std::shared_ptr<FesObjectAST>(dynamic_cast<FesObjectAST*>(new FesObjectAST())));
+        object_node->_sub_groups.push_back(std::make_shared<FesObjectAST>());
       break;
     }
 
@@ -580,7 +591,7 @@ void FesParser::parse_list(std::shared_ptr<FesObjectAST>& object_node) noexcept 
       if(object_node->_object_type == Keywords::Project) {
         std::cout << "Fes error: Using CameraObject in ProjectObject within a list is not possible, no member can handle this.\n";
       } else
-        object_node->_sub_groups.push_back(std::shared_ptr<FesObjectAST>(dynamic_cast<FesObjectAST*>(new FesCameraObjectAST())));
+        object_node->_sub_groups.push_back(std::make_shared<FesCameraObjectAST>());
       break;
     }
 
@@ -588,7 +599,7 @@ void FesParser::parse_list(std::shared_ptr<FesObjectAST>& object_node) noexcept 
       if(object_node->_object_type == Keywords::Project) {
         std::cout << "Fes error: Using CollisionObject in ProjectObject within a list is not possible, no member can handle this.\n";
       } else
-        object_node->_sub_groups.push_back(std::shared_ptr<FesObjectAST>(dynamic_cast<FesObjectAST*>(new FesCollisionObjectAST())));
+        object_node->_sub_groups.push_back(std::make_shared<FesCollisionObjectAST>());
       break;
     }
 
@@ -596,7 +607,7 @@ void FesParser::parse_list(std::shared_ptr<FesObjectAST>& object_node) noexcept 
       if(object_node->_object_type == Keywords::Project) {
         std::cout << "Fes error: Using LabelObject in ProjectObject within a list is not possible, no member can handle this.\n";
       } else
-        object_node->_sub_groups.push_back(std::shared_ptr<FesObjectAST>(dynamic_cast<FesObjectAST*>(new FesLabelObjectAST())));
+        object_node->_sub_groups.push_back(std::make_shared<FesLabelObjectAST>());
       break;
     }
 
@@ -604,7 +615,7 @@ void FesParser::parse_list(std::shared_ptr<FesObjectAST>& object_node) noexcept 
       if(object_node->_object_type == Keywords::Project) {
         std::cout << "Fes error: Using SpriteObject in ProjectObject within a list is not possible, no member can handle this.\n";
       } else
-        object_node->_sub_groups.push_back(std::shared_ptr<FesObjectAST>(dynamic_cast<FesObjectAST*>(new FesSpriteObjectAST())));
+        object_node->_sub_groups.push_back(std::make_shared<FesSpriteObjectAST>());
       break;
     }
     }
@@ -624,7 +635,6 @@ void FesParser::parse_list(std::shared_ptr<FesObjectAST>& object_node) noexcept 
   }
 }
 
-// [asdasd, x = ..]
 void FesParser::parse_object(std::shared_ptr<FesObjectAST> object_node) noexcept {
   if((accesstok(i)._second < Keywords::Int) && (accesstok(i)._second > Keywords::PositionY)) {
     object_node->_object_type = accesstok(i)._second;

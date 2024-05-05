@@ -31,8 +31,8 @@ __idk_nodiscard
 }
 
 __idk_nodiscard
-  SDL_Rect&
-  CursorResource::get_position_info() noexcept {
+SDL_Rect&
+CursorResource::get_position_info() noexcept {
   return this->_pos_info;
 }
 
@@ -49,16 +49,16 @@ void CursorResource::show_cursor(bool show) noexcept {
 }
 
 __idk_nodiscard
-  CursorResource&
-  CursorResource::operator=(const CursorResource& right) noexcept {
+CursorResource&
+CursorResource::operator=(const CursorResource& right) noexcept {
   this->_cursor_sprite = right._cursor_sprite;
   this->_pos_info = right._pos_info;
   return *this;
 }
 
 __idk_nodiscard
-  CursorResource&
-  CursorResource::operator=(CursorResource&& right) noexcept {
+CursorResource&
+CursorResource::operator=(CursorResource&& right) noexcept {
   this->_cursor_sprite = idk::move(right._cursor_sprite);
   this->_pos_info = idk::move(right._pos_info);
   return *this;

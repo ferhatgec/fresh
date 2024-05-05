@@ -365,7 +365,7 @@ void Interpreter::execute_block(const std::vector<std::shared_ptr<Stmt>> &statem
   }
   case TokenType::PLUS: {
     if (left.index() == LongDoubleIndex && right.index() == LongDoubleIndex) {
-      return std::get<LongDoubleIndex>(left) + std::get<LongDoubleIndex>(right);
+      return static_cast<idk::f80>(std::get<LongDoubleIndex>(left) + std::get<LongDoubleIndex>(right));
     }
     if (left.index() == StringIndex && right.index() == StringIndex) {
       return std::get<StringIndex>(left) + std::get<StringIndex>(right);

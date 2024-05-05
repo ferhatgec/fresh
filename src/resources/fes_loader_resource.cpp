@@ -14,8 +14,8 @@ FesLoaderResource::~FesLoaderResource() {
 }
 
 __idk_nodiscard
-  fes::FesParser&
-  FesLoaderResource::get_fes_parser() noexcept {
+fes::FesParser&
+FesLoaderResource::get_fes_parser() noexcept {
   return this->_parser;
 }
 
@@ -47,6 +47,22 @@ __idk_nodiscard
 std::shared_ptr<BaseObject>
 FesLoaderResource::_generate_object(std::shared_ptr<fes::FesObjectAST> object_node) noexcept {
   switch(object_node->_object_type) {
+    case fes::Keywords::Import: {
+      FesLoaderResource resource;
+      resource.load_fes(std::dynamic_pointer_cast<fes::FesImportObjectAST>(object_node)->_import_path);
+      auto obj = resource.return_generated_objects();
+      obj->imported_from = std::dynamic_pointer_cast<fes::FesImportObjectAST>(object_node)->_import_path;
+      // every .fes object must start with scene object (baseobject)
+      // so, we wrap that baseobject into another baseobject's sub_groups. to verify that, we may check for
+      // obj->_sub_objects.size() == 1. it always must be true if given conditions are passed.
+      /*if(obj->_sub_objects.size() != 1) {
+        std::cout << "Engine error: Given Import object found the scene file but that file does not start with BaseObject,"
+                     "which contains name of scene, width and height parameters and child objects.\n";
+        std::exit(1);
+      }*/
+      return std::move(obj);
+    }
+
   case fes::Keywords::Color: {
     std::shared_ptr<fresh::EditorProjectColorObject> object = std::make_shared<fresh::EditorProjectColorObject>();
     auto casted_obj = std::dynamic_pointer_cast<fes::FesColorObjectAST>(object_node);
@@ -320,14 +336,13 @@ FesLoaderResource::_generate_object(std::shared_ptr<fes::FesObjectAST> object_no
     std::cout << "Engine error: Undefined object type found in FesLoaderResource.\n";
     auto ptr = this->_generate_baseobject_ptr<fresh::BaseObject>(std::move(object_node));
     ptr->_object_def = "baseobject";
-    ptr->load_fescript_rt(object_node->_fescript_path, true);
     return ptr;
   }
   }
 }
 
 void FesLoaderResource::_generate() noexcept {
-  for(auto& node : this->_parser._objects->_sub_groups) {
+  for(auto& node: this->_parser._objects->_sub_groups) {
     auto _object = this->_generate_object(node);
 
     if((_object->_object_def == "projectobject") ||
@@ -336,10 +351,11 @@ void FesLoaderResource::_generate() noexcept {
       continue;
     }
 
-    if(_object->_object_def == "baseobject") {
+    /*if(_object->_object_def == "baseobject") {
       for(auto& render_object: _object->_sub_objects)
         RenderObjects::objects_to_render.push_back(render_object);
-    }
+    }*/
+    RenderObjects::objects_to_render.push_back(_object);
   }
 }
 
@@ -347,23 +363,11 @@ __idk_nodiscard
 std::shared_ptr<BaseObject>
 FesLoaderResource::_generate_with_return() noexcept {
   std::shared_ptr<BaseObject> obj = std::make_shared<BaseObject>();
-  for(auto& node: this->_parser._objects->_sub_groups) {
-    auto _object = std::move(this->_generate_object(node));
-    if((_object->_object_def == "projectobject")
-      || (_object->_object_def == "fileobject")
-      || (_object->_object_def == "colorobject")) {
-      continue;
-    }
-    if(_object->_object_def == "baseobject") {
-      for(auto& render_object: _object->_sub_objects)
-        obj->push_to_sub_objects(render_object);
-        // RenderObjects::objects_to_render.push_back(render_object);
-    }
-
-    // obj->push_to_sub_objects(std::move(_object));
-    // obj->_sub_objects.push_back(_object);
+  if(this->_parser._objects->_sub_groups.size() != 1) {
+    std::cout << "Engine error: Scene files must contain BaseObject, child objects must be inside of that BaseObject's sub_groups.\n";
+    std::exit(1);
   }
-  return std::move(obj);
+  return std::move(this->_generate_object(this->_parser._objects->_sub_groups.front()));
 }
 
 template<typename ObjectClassType>
@@ -442,6 +446,16 @@ __idk_nodiscard
   fes_data.push_back('[');
 
   switch(object_node->_object_type) {
+    case fes::Keywords::Import: {
+      auto casted_obj = std::dynamic_pointer_cast<fes::FesImportObjectAST>(object_node);
+      fes_data.push_back("Import,\n");
+      ++FesLoaderResource::_space_indentation;
+      INDENT();
+      fes_data.push_back("path = " + casted_obj->_import_path + ";\n");
+      --FesLoaderResource::_space_indentation;
+      break;
+    }
+
   case fes::Keywords::Color: {
     auto casted_obj = std::dynamic_pointer_cast<fes::FesColorObjectAST>(object_node);
     fes_data.push_back("Color,\n");
@@ -763,6 +777,12 @@ FesLoaderResource::_convert_render_objects() noexcept {
 __idk_nodiscard
 std::shared_ptr<fes::FesObjectAST>
 FesLoaderResource::_convert_object_from_render_objects(std::shared_ptr<BaseObject> object_node) noexcept {
+  if(!object_node->imported_from.is_empty()) {
+    return std::move(this->_convert_object_from_base_object<fes::FesImportObjectAST>(
+      object_node, [](std::shared_ptr<fes::FesImportObjectAST>& obj, const std::shared_ptr<BaseObject>& object_node) {
+        obj->_import_path = object_node->imported_from;
+      }));
+  }
   if(object_node->_object_def == "guibaseobject") {
     return std::move(this->_convert_object_from_base_object<fes::FesGuiBaseObjectAST>(object_node));
   } else if(object_node->_object_def == "guibuttonobject") {
