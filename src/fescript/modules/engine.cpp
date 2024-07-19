@@ -5,6 +5,10 @@
 #include "../../../include/objects/area_object.hpp"
 #include "../../../include/objects/collision_object.hpp"
 #include "../../../include/objects/camera_object.hpp"
+#include "../../../include/objects/animation_player_object.hpp"
+#include "../../../include/objects/animation_frame_object.hpp"
+#include <objects/circle_object.hpp>
+#include <objects/polygon_object.hpp>
 #include "../../../include/resources/fes_loader_resource.hpp"
 #include "../../../include/freshengine.hpp"
 
@@ -46,6 +50,22 @@ __idk_nodiscard Object FescriptEngineRenderObjectsPush::call(Interpreter& interp
         fresh::RenderObjects::objects_to_render.push_back(std::get<FescriptCameraObjectIndex>(argument));
         break;
       }
+      case FescriptAnimationPlayerObjectIndex: {
+        fresh::RenderObjects::objects_to_render.push_back(std::get<FescriptAnimationPlayerObjectIndex>(argument));
+        break;
+      }
+      case FescriptAnimationFrameObjectIndex: {
+        fresh::RenderObjects::objects_to_render.push_back(std::get<FescriptAnimationFrameObjectIndex>(argument));
+        break;
+      }
+      case FescriptCircleObjectIndex: {
+        fresh::RenderObjects::objects_to_render.push_back(std::get<FescriptCircleObjectIndex>(argument));
+        break;
+      }
+      case FescriptPolygonObjectIndex: {
+        fresh::RenderObjects::objects_to_render.push_back(std::get<FescriptPolygonObjectIndex>(argument));
+        break;
+      }
       default: {
         std::cout << "Engine [language] error: Some arguments of Engine_render_objects_push() is not inherited from BaseObject.\n";
         std::exit(1);
@@ -61,7 +81,6 @@ __idk_nodiscard Object FescriptEngineLoadFes::call(Interpreter& interpreter, std
   return std::move(fes_loader.return_generated_objects());
 }
 
-//Engine::get_instance()->link_camera
 __idk_nodiscard Object FescriptEngineLinkCamera::call(Interpreter& interpreter, std::vector <Object> arguments) {
   if(arguments.empty()) {
     std::cout << "Engine [language] error: Engine_link_camera() cannot be empty.\n";

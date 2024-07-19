@@ -48,7 +48,7 @@ public:
   get_on_hover_sprite_object() noexcept;
 
   void
-  sync() noexcept override;
+  sync(bool is_sync_with_camera = false) noexcept override;
 protected:
   std::function<void()> _button_hover = []() -> void {};
   std::function<void()> _button_clicked = []() -> void {};

@@ -40,7 +40,7 @@ Window::~Window() {
     SDL_DestroyWindow(this->_window);
   }
 
-  SDL_Quit();// goodbye SDL!
+  SDL_Quit(); // goodbye SDL!
 }
 
 void Window::init_window() noexcept {
@@ -55,7 +55,11 @@ void Window::init_window() noexcept {
                                    this->_position_y,
                                    this->_width,
                                    this->_height,
-                                   SDL_WINDOW_SHOWN | SDL_WINDOW_RESIZABLE);// TODO: flags will be added later.
+                                   SDL_WINDOW_SHOWN |
+                                   SDL_WINDOW_RESIZABLE |
+                                   SDL_WINDOW_OPENGL); // TODO: flags will be added later.
+                                                       // macOS OpenGL API is deprecated,
+                                                       // we should split them later.
 
   if(!this->_window) {
     // window initialization failed!
@@ -75,8 +79,8 @@ void Window::init_window() noexcept {
 }
 
 __idk_nodiscard
-  SDL_Renderer*&
-  Window::get_renderer() noexcept {
+SDL_Renderer*&
+Window::get_renderer() noexcept {
   if(!this->_window) {// no initialization made up.
     std::cout << "Engine error: Initialize window first! Then call Window::get_renderer().\n";
   }
@@ -89,6 +93,12 @@ __idk_nodiscard
   }
 
   return this->_renderer;
+}
+
+__idk_nodiscard
+SDL_Window*&
+Window::get_raw_window() noexcept {
+  return this->_window;
 }
 
 __idk_nodiscard
@@ -161,6 +171,11 @@ Window::set_title(idk::StringViewChar&& title) noexcept {
   return false;
 }
 
+__idk_nodiscard
+idk::StringViewChar Window::get_title() noexcept {
+  return idk::StringViewChar(SDL_GetWindowTitle(this->_window));
+}
+
 void
 Window::set_window_size(idk::i32 width, idk::i32 height) noexcept {
   if(this->_window) {
@@ -221,5 +236,37 @@ Window::set_window_mode(WindowMode window_mode) noexcept {
       }
     }
   }()));
+}
+
+__idk_nodiscard bool Window::maximize() noexcept {
+  SDL_MaximizeWindow(this->_window);
+  return this->is_maximized();
+}
+
+__idk_nodiscard bool Window::minimize() noexcept {
+  SDL_MinimizeWindow(this->_window);
+  return this->is_minimized();
+}
+
+void Window::restore() noexcept {
+  SDL_RestoreWindow(this->_window);
+}
+
+__idk_nodiscard bool Window::is_maximized() noexcept {
+  return SDL_GetWindowFlags(this->_window) & SDL_WINDOW_MAXIMIZED;
+}
+
+__idk_nodiscard bool Window::is_minimized() noexcept {
+  return SDL_GetWindowFlags(this->_window) & SDL_WINDOW_MINIMIZED;
+}
+
+__idk_nodiscard bool Window::set_opacity(idk::f32 opacity) noexcept {
+  return SDL_SetWindowOpacity(this->_window, opacity) == 0;
+}
+
+__idk_nodiscard idk::f32 Window::get_opacity() noexcept {
+  idk::f32 opacity;
+  SDL_GetWindowOpacity(this->_window, &opacity);
+  return opacity;
 }
 }// namespace fresh

@@ -1,6 +1,6 @@
 #include "../../../include/fescript/wrappers/fescript_area_object.hpp"
 #include "../../../include/objects/area_object.hpp"
-#include "../../include/objects/camera_object.hpp"
+#include "../../../include/objects/camera_object.hpp"
 
 namespace fescript {
 __idk_nodiscard Object FescriptAreaObjectMemberIsCollidingWith::call(Interpreter& interpreter, std::vector <Object> arguments) {

@@ -6,11 +6,11 @@
 
 #include <fstream>
 
-#include "../include/fescript_error.hpp"
-#include "../include/fescript_interpreter.hpp"
-#include "../include/fescript_parser.hpp"
-#include "../include/fescript_resolver.hpp"
-#include "../include/fescript_scanner.hpp"
+#include "../../include/fescript/fescript_error.hpp"
+#include "../../include/fescript/fescript_interpreter.hpp"
+#include "../../include/fescript/fescript_parser.hpp"
+#include "../../include/fescript/fescript_resolver.hpp"
+#include "../../include/fescript/fescript_scanner.hpp"
 
 using namespace fescript;
 

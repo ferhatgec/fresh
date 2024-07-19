@@ -9,6 +9,16 @@
  height = 202,
  script_resource = "example/test/scene.fe",
  sub_groups = {
+  [SpriteObject,
+     name = "Game_Character_Sprite",
+     width = 100,
+     height = 150,
+     disabled = false,
+     visible = true,
+     position_x = 150,
+     position_y = 100,
+     sprite_resource = "example/test/character.png";
+  ],
   [Import,
    path="example/test/character.fes";
   ],

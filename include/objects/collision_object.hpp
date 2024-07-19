@@ -12,7 +12,7 @@ public:
   ~CollisionObject();
 
   void
-  sync() noexcept override;
+  sync(bool is_sync_with_camera = false) noexcept override;
 
   [[nodiscard]] std::string to_string() {
     return "collisionobject";

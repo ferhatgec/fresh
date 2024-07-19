@@ -9,7 +9,7 @@
 #include "../../include/fescript/fescript_dict.hpp"
 #include "../../include/fescript/fescript_function.hpp"
 #include "../../include/fescript/fescript_instance.hpp"
-#include "../../include/fescript/fescript_token.hpp"
+#include "../../include/fescript/fescript_interpreter.hpp"
 
 namespace fescript {
 Token::Token(TokenType type, std::string lexeme, Object literal, int line, bool is_variadic) noexcept
@@ -47,45 +47,6 @@ Token::~Token() noexcept {
 }
 
 [[nodiscard]] std::string Token::to_string(const Object& object) noexcept {
-  std::string literal_text;
-  switch (object.index()) {
-  case StringIndex: {
-    literal_text = std::get<StringIndex>(object);
-    break;
-  }
-  case LongDoubleIndex: {
-    literal_text = std::to_string(std::get<LongDoubleIndex>(object));
-    break;
-  }
-  case BoolIndex: {
-    literal_text = std::get<BoolIndex>(object) ? "true" : "false";
-    break;
-  }
-  case FescriptFunctionIndex: {
-    literal_text = std::get<FescriptFunctionIndex>(object)->to_string();
-    break;
-  }
-  case FescriptClassIndex: {
-    literal_text = std::get<FescriptClassIndex>(object)->to_string();
-    break;
-  }
-  case FescriptInstanceIndex: {
-    literal_text = std::get<FescriptInstanceIndex>(object)->to_string();
-    break;
-  }
-  case FescriptArrayIndex: {
-    literal_text = std::get<FescriptArrayIndex>(object)->to_string();
-    break;
-  }
-  case FescriptDictIndex: {
-    literal_text = std::get<FescriptDictIndex>(object)->to_string();
-    break;
-  }
-  default: {
-    literal_text = "nil";
-    break;
-  }
-  }
-  return literal_text;
+  return Interpreter::stringify(object);
 }
 }// namespace fescript

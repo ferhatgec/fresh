@@ -3,7 +3,7 @@
 #include "../../include/fescript/fescript_array.hpp"
 
 namespace fresh {
-CameraObject::CameraObject() {
+CameraObject::CameraObject() : _zoom_level{1.0f}, _scale_ratio_w{1.0f}, _scale_ratio_h{1.0f} {
   this->_object_def = "cameraobject";
 }
 
@@ -23,29 +23,29 @@ CameraObject::is_visible_on_camera(std::shared_ptr<fresh::BaseObject> object) no
            || (object->_pos_info.y + object->_pos_info.h < 0));
 }
 
-void CameraObject::sync() noexcept {
+void CameraObject::sync(bool is_sync_with_camera) noexcept {
+  this->_pos_info.w = 400;
+  this->_pos_info.h = 300;
   this->_code.interpret_update();
+  APPLY_DELTAS()
+}
 
-  for(auto& object : fresh::RenderObjects::objects_to_render) {
-    if(object->_object_def != "cameraobject") {
-      object->get_position_info().x =
-        object->get_position_info().x - this->delta_x();
-      object->get_position_info().y =
-        object->get_position_info().y - this->delta_y();
-    }
-  }
+void CameraObject::apply(std::shared_ptr<BaseObject> obj) noexcept {
+  SDL_FRect new_pos = obj->_pos_info;
+  new_pos.x -= this->_pos_info.x * this->_zoom_level;
+  new_pos.y -= this->_pos_info.y * this->_zoom_level;
+  new_pos.w *= this->_zoom_level;
+  new_pos.h *= this->_zoom_level;
+  obj->_render_pos_info = new_pos;
+}
 
-  for(auto& object : this->_sub_objects) {
-    object->get_position_info().x += this->delta_x();
-    object->get_position_info().y += this->delta_y();
-    object->get_position_info().w += this->delta_w();
-    object->get_position_info().h += this->delta_h();
+void CameraObject::set_zoom(idk::f32 new_zoom) noexcept {
+  this->_zoom_level = new_zoom;
+}
 
-    if(object->_object_def != "cameraobject")// we actually do sync cameraobject in engine::update()
-      object->sync();
-  }
-
-  this->get_position_info();// update deltas
+void CameraObject::move(idk::f32 dx, idk::f32 dy) noexcept {
+  this->_pos_info.x += dx;
+  this->_pos_info.y += dy;
 }
 
 [[nodiscard]] void CameraObject::set(const fescript::Token& name, fescript::Object value) {

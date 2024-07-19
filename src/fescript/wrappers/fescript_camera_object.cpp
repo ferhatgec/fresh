@@ -14,6 +14,19 @@ __idk_nodiscard Object FescriptCameraObjectMemberIsVisibleOnCamera::call(Interpr
   RETURN_MEMBER_FUNCTION(is_visible_on_camera, "CameraObject.is_visible_on_camera()")
 }
 
+__idk_nodiscard Object FescriptCameraObjectMemberMove::call(Interpreter& interpreter, std::vector <Object> arguments) {
+  if(!this->_self) {
+    std::cout << "Engine error: CameraObject is not initialized, yet using CameraObject.is_visible_on_camera() is not possible.\n";
+    std::exit(1);
+  }
+  if(arguments.size() < 2) {
+    std::cout << "CameraObject.move() must take 2 arguments.\n";
+    std::exit(1);
+  }
+  this->_self->move(std::get<LongDoubleIndex>(arguments[0]), std::get<LongDoubleIndex>(arguments[1]));
+  return nullptr;
+}
+
 CameraObjectWrapper::CameraObjectWrapper() {
   this->_object_def = "cameraobject";
 }

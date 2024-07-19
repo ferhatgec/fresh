@@ -16,6 +16,12 @@ class FescriptArray : public std::enable_shared_from_this<FescriptArray> {
   friend class fresh::AreaObject;
   friend class fresh::CollisionObject;
   friend class fresh::CameraObject;
+  friend class fresh::AnimationPlayerObject;
+  friend class fresh::AnimationFrameObject;
+  friend class fresh::MusicPlayerObject;
+  friend class fresh::AudioPlayerObject;
+  friend class fresh::CircleObject;
+  friend class fresh::PolygonObject;
 public:
   FescriptArray();
   ~FescriptArray();

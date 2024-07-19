@@ -64,7 +64,7 @@ __idk_nodiscard
   return this->_on_hover_sprite_object;
 }
 
-void GuiButtonObject::sync() noexcept {
+void GuiButtonObject::sync(bool is_sync_with_camera) noexcept {
   this->_base_object->get_position_info() = this->_pos_info;
 
   // sorry for that but i don't think there is any better way. if there, please let me know thank you
@@ -99,8 +99,8 @@ void GuiButtonObject::sync() noexcept {
         this->_label_object.swap(_ref_on_clicked_label_obj);
 
       this->get_button_clicked_callback()();
-      this->_sprite_object->sync();
-      this->_label_object->sync();
+      this->_sprite_object->sync(is_sync_with_camera);
+      this->_label_object->sync(is_sync_with_camera);
 
       if(std::shared_ptr<SpriteObject>& _ref_sprite_obj = this->_sprite_object; _ref_sprite_obj.get()) {
         _ref_sprite_obj.swap(this->get_on_clicked_sprite_object());
@@ -119,8 +119,8 @@ void GuiButtonObject::sync() noexcept {
         this->_label_object.swap(_ref_on_hover_label_obj);
 
       this->get_button_hover_callback()();
-      this->_sprite_object->sync();
-      this->_label_object->sync();
+      this->_sprite_object->sync(is_sync_with_camera);
+      this->_label_object->sync(is_sync_with_camera);
 
       if(std::shared_ptr<SpriteObject>& _ref_sprite_obj = this->_sprite_object; _ref_sprite_obj.get()) {
         _ref_sprite_obj.swap(this->get_on_hover_sprite_object());
@@ -134,7 +134,7 @@ void GuiButtonObject::sync() noexcept {
     return;
   }
 
-  this->_sprite_object->sync();
-  this->_label_object->sync();
+  this->_sprite_object->sync(is_sync_with_camera);
+  this->_label_object->sync(is_sync_with_camera);
 }
 }// namespace fresh

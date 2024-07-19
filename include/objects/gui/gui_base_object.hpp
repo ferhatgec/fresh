@@ -23,7 +23,7 @@ public:
   is_mouse_hover() noexcept;
 
   void
-  sync() noexcept override;
+  sync(bool is_sync_with_camera = false) noexcept override;
 protected:
   std::function<void()> _mouse_hover_cb = []() -> void {};
 };

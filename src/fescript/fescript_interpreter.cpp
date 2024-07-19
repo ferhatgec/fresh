@@ -4,31 +4,40 @@
 // Distributed under the terms of the MIT License.
 //
 
-#include "../../include/fescript/fescript_array.hpp"
-#include "../../include/fescript/fescript_dict.hpp"
-#include "../../include/fescript/fescript_interpreter.hpp"
-#include "../../include/render_objects.hpp"
+#include <fescript/fescript_array.hpp>
+#include <fescript/fescript_dict.hpp>
+#include <fescript/fescript_interpreter.hpp>
+#include <render_objects.hpp>
 
-#include "../../include/fescript/modules/fescript_math.hpp"
-#include "../../include/fescript/modules/fescript_os.hpp"
-#include "../../include/fescript/modules/fescript_path.hpp"
-#include "../../include/fescript/modules/fescript_io.hpp"
-#include "../../include/fescript/modules/fescript_prng.hpp"
+#include <fescript/modules/fescript_math.hpp>
+#include <fescript/modules/fescript_os.hpp>
+#include <fescript/modules/fescript_path.hpp>
+#include <fescript/modules/fescript_io.hpp>
+#include <fescript/modules/fescript_prng.hpp>
 
-#include "../../include/fescript/modules/engine_io.hpp"
-#include "../../include/fescript/modules/engine.hpp"
-#include "../../include/fescript/modules/engine_window.hpp"
+#include <fescript/modules/engine_io.hpp>
+#include <fescript/modules/engine.hpp>
+#include <fescript/modules/engine_window.hpp>
 
-#include "../../include/fescript/wrappers/fescript_base_object.hpp"
-#include "../../include/fescript/wrappers/fescript_sprite_object.hpp"
-#include "../../include/fescript/wrappers/fescript_label_object.hpp"
-#include "../../include/fescript/wrappers/fescript_area_object.hpp"
-#include "../../include/fescript/wrappers/fescript_collision_object.hpp"
-#include "../../include/fescript/wrappers/fescript_camera_object.hpp"
+#include <fescript/wrappers/fescript_base_object.hpp>
+#include <fescript/wrappers/fescript_sprite_object.hpp>
+#include <fescript/wrappers/fescript_label_object.hpp>
+#include <fescript/wrappers/fescript_area_object.hpp>
+#include <fescript/wrappers/fescript_collision_object.hpp>
+#include <fescript/wrappers/fescript_camera_object.hpp>
+#include <fescript/wrappers/fescript_animation_player_object.hpp>
+#include <fescript/wrappers/fescript_animation_frame_object.hpp>
+#include <fescript/wrappers/fescript_music_player_object.hpp>
+#include <fescript/wrappers/fescript_audio_player_object.hpp>
+#include <fescript/wrappers/fescript_circle_object.hpp>
+#include <fescript/wrappers/fescript_polygon_object.hpp>
 
-#include "../../include/objects/area_object.hpp"
-#include "../../include/objects/collision_object.hpp"
-#include "../../include/objects/camera_object.hpp"
+#include <objects/camera_object.hpp>
+#include <objects/animation_player_object.hpp>
+#include <objects/music_player_object.hpp>
+#include <objects/audio_player_object.hpp>
+#include <objects/circle_object.hpp>
+#include <objects/polygon_object.hpp>
 
 #include <chrono>
 
@@ -47,6 +56,8 @@ Interpreter::Interpreter() {
   this->globals->define("OS_platform", std::make_shared<FescriptOSPlatform>());
   this->globals->define("OS_exec", std::make_shared<FescriptOSExec>());
   this->globals->define("OS_arch", std::make_shared<FescriptOSArch>());
+  this->globals->define("OS_get_clipboard_text", std::make_shared<FescriptOSGetClipboardText>());
+  this->globals->define("OS_set_clipboard_text", std::make_shared<FescriptOSSetClipboardText>());
 
   this->globals->define("Path_exists", std::make_shared<FescriptPathExists>());
   this->globals->define("Path_is_dir", std::make_shared<FescriptPathIsDir>());
@@ -84,9 +95,20 @@ Interpreter::Interpreter() {
   this->globals->define("EngineWindow_get_current_window_pos", std::make_shared<FescriptEngineWindowGetCurrentWindowPos>());
   this->globals->define("EngineWindow_set_window_icon", std::make_shared<FescriptEngineWindowSetWindowIcon>());
   this->globals->define("EngineWindow_set_window_title", std::make_shared<FescriptEngineWindowSetWindowTitle>());
+  this->globals->define("EngineWindow_get_window_title", std::make_shared<FescriptEngineWindowGetWindowTitle>());
   this->globals->define("EngineWindow_set_window_cursor", std::make_shared<FescriptEngineWindowSetWindowCursor>());
   this->globals->define("EngineWindow_set_window_mode", std::make_shared<FescriptEngineWindowSetWindowMode>());
+  this->globals->define("EngineWindow_get_window_mode", std::make_shared<FescriptEngineWindowGetWindowMode>());
   this->globals->define("EngineWindow_set_default_clear_color", std::make_shared<FescriptEngineWindowSetDefaultClearColor>());
+  this->globals->define("EngineWindow_set_vsync", std::make_shared<FescriptEngineWindowSetVSync>());
+  this->globals->define("EngineWindow_close_window", std::make_shared<FescriptEngineWindowCloseWindow>());
+  this->globals->define("EngineWindow_maximize_window", std::make_shared<FescriptEngineWindowMaximizeWindow>());
+  this->globals->define("EngineWindow_minimize_window", std::make_shared<FescriptEngineWindowMinimizeWindow>());
+  this->globals->define("EngineWindow_restore_window", std::make_shared<FescriptEngineWindowRestoreWindow>());
+  this->globals->define("EngineWindow_is_window_maximized", std::make_shared<FescriptEngineWindowIsWindowMaximized>());
+  this->globals->define("EngineWindow_is_window_minimized", std::make_shared<FescriptEngineWindowIsWindowMinimized>());
+  this->globals->define("EngineWindow_set_window_opacity", std::make_shared<FescriptEngineWindowSetWindowOpacity>());
+  this->globals->define("EngineWindow_get_window_opacity", std::make_shared<FescriptEngineWindowGetWindowOpacity>());
 
   ENGINEWINDOW_GLOBAL_CONSTANTS()
 
@@ -96,7 +118,15 @@ Interpreter::Interpreter() {
   this->globals->define("Engine_AreaObject", std::make_shared<AreaObjectWrapper>());
   this->globals->define("Engine_CollisionObject", std::make_shared<CollisionObjectWrapper>());
   this->globals->define("Engine_CameraObject", std::make_shared<CameraObjectWrapper>());
+  this->globals->define("Engine_AnimationPlayerObject", std::make_shared<AnimationPlayerObjectWrapper>());
+  this->globals->define("Engine_AnimationFrameObject", std::make_shared<AnimationFrameObjectWrapper>());
+  this->globals->define("Engine_MusicPlayerObject", std::make_shared<MusicPlayerObjectWrapper>());
+  this->globals->define("Engine_AudioPlayerObject", std::make_shared<AudioPlayerObjectWrapper>());
+  this->globals->define("Engine_CircleObject", std::make_shared<CircleObjectWrapper>());
+  this->globals->define("Engine_PolygonObject", std::make_shared<PolygonObjectWrapper>());
+
   this->globals->define("Engine_render_objects_push", std::make_shared<FescriptEngineRenderObjectsPush>());
+
   this->globals->define("Engine_load_fes", std::make_shared<FescriptEngineLoadFes>());
   this->globals->define("Engine_get_object", std::make_shared<FescriptEngineGetObject>());
   this->globals->define("Engine_link_camera", std::make_shared<FescriptEngineLinkCamera>());
@@ -464,7 +494,13 @@ void Interpreter::execute_block(const std::vector<std::shared_ptr<Stmt>> &statem
     case FescriptLabelObjectIndex:
     case FescriptAreaObjectIndex:
     case FescriptCollisionObjectIndex:
-    case FescriptCameraObjectIndex: {
+    case FescriptCameraObjectIndex:
+    case FescriptAnimationPlayerObjectIndex:
+    case FescriptAnimationFrameObjectIndex:
+    case FescriptMusicPlayerObjectIndex:
+    case FescriptAudioPlayerObjectIndex:
+    case FescriptCircleObjectIndex:
+    case FescriptPolygonObjectIndex: {
       if(expr->is_name_an_expr)
         return "TODO"; // TODO
       return this->get_object_property(expr->name, object);
@@ -534,6 +570,30 @@ void Interpreter::execute_block(const std::vector<std::shared_ptr<Stmt>> &statem
     }
     case FescriptCameraObjectIndex: {
       std::get<FescriptCameraObjectIndex>(object)->set(expr->name, value);
+      return value;
+    }
+    case FescriptAnimationPlayerObjectIndex: {
+      std::get<FescriptAnimationPlayerObjectIndex>(object)->set(expr->name, value);
+      return value;
+    }
+    case FescriptAnimationFrameObjectIndex: {
+      std::get<FescriptAnimationFrameObjectIndex>(object)->set(expr->name, value);
+      return value;
+    }
+    case FescriptMusicPlayerObjectIndex: {
+      std::get<FescriptMusicPlayerObjectIndex>(object)->set(expr->name, value);
+      return value;
+    }
+    case FescriptAudioPlayerObjectIndex: {
+      std::get<FescriptMusicPlayerObjectIndex>(object)->set(expr->name, value);
+      return value;
+    }
+    case FescriptCircleObjectIndex: {
+      std::get<FescriptCircleObjectIndex>(object)->set(expr->name, value);
+      return value;
+    }
+    case FescriptPolygonObjectIndex: {
+      std::get<FescriptPolygonObjectIndex>(object)->set(expr->name, value);
       return value;
     }
   }
@@ -638,6 +698,10 @@ void Interpreter::check_number_operands(const Token &op, const Object &left,
     else IS_INHERITED_BY(AreaObject) return Interpreter::get_object_property(keyword, obj_AreaObject);
     else IS_INHERITED_BY(CollisionObject) return Interpreter::get_object_property(keyword, obj_CollisionObject);
     else IS_INHERITED_BY(CameraObject) return Interpreter::get_object_property(keyword, obj_CameraObject);
+    else IS_INHERITED_BY(AnimationPlayerObject) return Interpreter::get_object_property(keyword, obj_AnimationPlayerObject);
+    else IS_INHERITED_BY(AnimationFrameObject) return Interpreter::get_object_property(keyword, obj_AnimationFrameObject);
+    else IS_INHERITED_BY(MusicPlayerObject) return Interpreter::get_object_property(keyword, obj_MusicPlayerObject);
+    else IS_INHERITED_BY(AudioPlayerObject) return Interpreter::get_object_property(keyword, obj_AudioPlayerObject);
   }
 
   switch (value.index()) {
@@ -682,8 +746,70 @@ void Interpreter::check_number_operands(const Token &op, const Object &left,
     }
     case FescriptCameraObjectIndex: {
       RETURN_BASE_OBJECT_PROPERTIES(FescriptCameraObjectIndex)
-      else if (keyword.lexeme == "is_visible_on_camera") return std::make_shared<FescriptCameraObjectMemberIsVisibleOnCamera>(std::get<FescriptCameraObjectIndex>(value));
+      else if(keyword.lexeme == "is_visible_on_camera") return std::make_shared<FescriptCameraObjectMemberIsVisibleOnCamera>(std::get<FescriptCameraObjectIndex>(value));
+      else if(keyword.lexeme == "move") return std::make_shared<FescriptCameraObjectMemberMove>(std::get<FescriptCameraObjectIndex>(value));
       else throw RuntimeError(keyword, "CameraObject property cannot be found.");
+    }
+    case FescriptAnimationPlayerObjectIndex: {
+      RETURN_BASE_OBJECT_PROPERTIES(FescriptAnimationPlayerObjectIndex)
+      else if(keyword.lexeme == "push_frame") return std::make_shared<FescriptAnimationPlayerObjectMemberPushFrame>(std::get<FescriptAnimationPlayerObjectIndex>(value));
+      else if(keyword.lexeme == "run_animation") return std::make_shared<FescriptAnimationPlayerObjectMemberRunAnimation>(std::get<FescriptAnimationPlayerObjectIndex>(value));
+      else if(keyword.lexeme == "pause_animation") return std::make_shared<FescriptAnimationPlayerObjectMemberPauseAnimation>(std::get<FescriptAnimationPlayerObjectIndex>(value));
+      else if(keyword.lexeme == "stop_animation") return std::make_shared<FescriptAnimationPlayerObjectMemberStopAnimation>(std::get<FescriptAnimationPlayerObjectIndex>(value));
+      else if(keyword.lexeme == "set_replay_status") return std::make_shared<FescriptAnimationPlayerObjectMemberSetReplayStatus>(std::get<FescriptAnimationPlayerObjectIndex>(value));
+      else if(keyword.lexeme == "is_started") return std::make_shared<FescriptAnimationPlayerObjectMemberIsStarted>(std::get<FescriptAnimationPlayerObjectIndex>(value));
+      else if(keyword.lexeme == "synchronize_frames") return std::make_shared<FescriptAnimationPlayerObjectMemberSynchronizeFrames>(std::get<FescriptAnimationPlayerObjectIndex>(value));
+      else throw RuntimeError(keyword, "AnimationPlayerObject property cannot be found.");
+    }
+    case FescriptAnimationFrameObjectIndex: {
+      RETURN_BASE_OBJECT_PROPERTIES(FescriptAnimationFrameObjectIndex)
+      else throw RuntimeError(keyword, "AnimationFrameObject property cannot be found.");
+    }
+    case FescriptMusicPlayerObjectIndex: {
+      RETURN_BASE_OBJECT_PROPERTIES(FescriptMusicPlayerObjectIndex)
+      else if(keyword.lexeme == "load_music_source") return std::make_shared<FescriptMusicPlayerObjectMemberLoadMusicSource>(std::get<FescriptMusicPlayerObjectIndex>(value));
+      else if(keyword.lexeme == "get_music_volume") return std::make_shared<FescriptMusicPlayerObjectMemberGetMusicVolume>(std::get<FescriptMusicPlayerObjectIndex>(value));
+      else if(keyword.lexeme == "sync_music_volume") return std::make_shared<FescriptMusicPlayerObjectMemberSyncMusicVolume>(std::get<FescriptMusicPlayerObjectIndex>(value));
+      else if(keyword.lexeme == "pause_music") return std::make_shared<FescriptMusicPlayerObjectMemberPauseMusic>(std::get<FescriptMusicPlayerObjectIndex>(value));
+      else if(keyword.lexeme == "resume_music") return std::make_shared<FescriptMusicPlayerObjectMemberResumeMusic>(std::get<FescriptMusicPlayerObjectIndex>(value));
+      else if(keyword.lexeme == "play_music") return std::make_shared<FescriptMusicPlayerObjectMemberPlayMusic>(std::get<FescriptMusicPlayerObjectIndex>(value));
+      else if(keyword.lexeme == "play_fade_in_music") return std::make_shared<FescriptMusicPlayerObjectMemberPlayFadeInMusic>(std::get<FescriptMusicPlayerObjectIndex>(value));
+      else if(keyword.lexeme == "stop_music") return std::make_shared<FescriptMusicPlayerObjectMemberStopMusic>(std::get<FescriptMusicPlayerObjectIndex>(value));
+      else if(keyword.lexeme == "stop_fade_out_music") return std::make_shared<FescriptMusicPlayerObjectMemberStopFadeOutMusic>(std::get<FescriptMusicPlayerObjectIndex>(value));
+      else throw RuntimeError(keyword, "MusicPlayerObject property cannot be found.");
+    }
+    case FescriptAudioPlayerObjectIndex: {
+      RETURN_BASE_OBJECT_PROPERTIES(FescriptAudioPlayerObjectIndex)
+      else if(keyword.lexeme == "load_audio_source") return std::make_shared<FescriptAudioPlayerObjectMemberLoadAudioSource>(std::get<FescriptAudioPlayerObjectIndex>(value));
+      else if(keyword.lexeme == "get_audio_volume") return std::make_shared<FescriptAudioPlayerObjectMemberGetAudioVolume>(std::get<FescriptAudioPlayerObjectIndex>(value));
+      else if(keyword.lexeme == "sync_audio_volume") return std::make_shared<FescriptAudioPlayerObjectMemberSyncAudioVolume>(std::get<FescriptAudioPlayerObjectIndex>(value));
+      else if(keyword.lexeme == "pause_audio") return std::make_shared<FescriptAudioPlayerObjectMemberPauseAudio>(std::get<FescriptAudioPlayerObjectIndex>(value));
+      else if(keyword.lexeme == "pause_all_audio") return std::make_shared<FescriptAudioPlayerObjectMemberPauseAllAudio>(std::get<FescriptAudioPlayerObjectIndex>(value));
+      else if(keyword.lexeme == "resume_audio") return std::make_shared<FescriptAudioPlayerObjectMemberResumeAudio>(std::get<FescriptAudioPlayerObjectIndex>(value));
+      else if(keyword.lexeme == "resume_all_audio") return std::make_shared<FescriptAudioPlayerObjectMemberResumeAllAudio>(std::get<FescriptAudioPlayerObjectIndex>(value));
+      else if(keyword.lexeme == "play_audio") return std::make_shared<FescriptAudioPlayerObjectMemberPlayAudio>(std::get<FescriptAudioPlayerObjectIndex>(value));
+      else if(keyword.lexeme == "play_fade_in_audio") return std::make_shared<FescriptAudioPlayerObjectMemberPlayFadeInAudio>(std::get<FescriptAudioPlayerObjectIndex>(value));
+      else if(keyword.lexeme == "stop_audio") return std::make_shared<FescriptAudioPlayerObjectMemberStopAudio>(std::get<FescriptAudioPlayerObjectIndex>(value));
+      else if(keyword.lexeme == "stop_all_audio") return std::make_shared<FescriptAudioPlayerObjectMemberStopAllAudio>(std::get<FescriptAudioPlayerObjectIndex>(value));
+      else if(keyword.lexeme == "stop_fade_out_audio") return std::make_shared<FescriptAudioPlayerObjectMemberStopFadeOutAudio>(std::get<FescriptAudioPlayerObjectIndex>(value));
+      else throw RuntimeError(keyword, "AudioPlayerObject property cannot be found.");
+    }
+    case FescriptCircleObjectIndex: {
+      RETURN_BASE_OBJECT_PROPERTIES(FescriptCircleObjectIndex)
+      else if(keyword.lexeme == "get_radius") return std::make_shared<FescriptCircleObjectMemberGetRadius>(std::get<FescriptCircleObjectIndex>(value));
+      else if(keyword.lexeme == "get_segments") return std::make_shared<FescriptCircleObjectMemberGetSegments>(std::get<FescriptCircleObjectIndex>(value));
+      else if(keyword.lexeme == "get_is_filled") return std::make_shared<FescriptCircleObjectMemberGetIsFilled>(std::get<FescriptCircleObjectIndex>(value));
+      else if(keyword.lexeme == "set_radius") return std::make_shared<FescriptCircleObjectMemberSetSegments>(std::get<FescriptCircleObjectIndex>(value));
+      else if(keyword.lexeme == "set_segments") return std::make_shared<FescriptCircleObjectMemberSetSegments>(std::get<FescriptCircleObjectIndex>(value));
+      else if(keyword.lexeme == "set_is_filled") return std::make_shared<FescriptCircleObjectMemberSetIsFilled>(std::get<FescriptCircleObjectIndex>(value));
+      else throw RuntimeError(keyword, "CircleObject property cannot be found.");
+    }
+    case FescriptPolygonObjectIndex: {
+      RETURN_BASE_OBJECT_PROPERTIES(FescriptPolygonObjectIndex)
+      else if(keyword.lexeme == "push_polygon") return std::make_shared<FescriptPolygonObjectMemberPushPolygon>(std::get<FescriptPolygonObjectIndex>(value));
+      else if(keyword.lexeme == "delete_all_polygons") return std::make_shared<FescriptPolygonObjectMemberDeleteAllPolygons>(std::get<FescriptPolygonObjectIndex>(value));
+      else if(keyword.lexeme == "get_is_filled") return std::make_shared<FescriptPolygonObjectMemberDeleteAllPolygons>(std::get<FescriptPolygonObjectIndex>(value));
+      else throw RuntimeError(keyword, "PolygonObject property cannot be found.");
     }
     default: {
       std::cout << "Engine error: Invalid pointer passed to get_object_property!\n";
@@ -699,6 +825,10 @@ void Interpreter::check_number_operands(const Token &op, const Object &left,
   else IS_INHERITED_BY(AreaObject) return obj_AreaObject;
   else IS_INHERITED_BY(CollisionObject) return obj_CollisionObject;
   else IS_INHERITED_BY(CameraObject) return obj_CameraObject;
+  else IS_INHERITED_BY(AnimationPlayerObject) return obj_AnimationPlayerObject;
+  else IS_INHERITED_BY(AnimationFrameObject) return obj_AnimationFrameObject;
+  else IS_INHERITED_BY(MusicPlayerObject) return obj_MusicPlayerObject;
+  else IS_INHERITED_BY(AudioPlayerObject) return obj_AudioPlayerObject;
   else return base_obj;
 }
 
@@ -751,6 +881,24 @@ std::string Interpreter::stringify(const Object &object) {
   }
   case FescriptCameraObjectIndex: {
     return std::get<FescriptCameraObjectIndex>(object)->to_string();
+  }
+  case FescriptAnimationPlayerObjectIndex: {
+    return std::get<FescriptAnimationPlayerObjectIndex>(object)->to_string();
+  }
+  case FescriptAnimationFrameObjectIndex: {
+    return std::get<FescriptAnimationFrameObjectIndex>(object)->to_string();
+  }
+  case FescriptMusicPlayerObjectIndex: {
+    return std::get<FescriptMusicPlayerObjectIndex>(object)->to_string();
+  }
+  case FescriptAudioPlayerObjectIndex: {
+    return std::get<FescriptAudioPlayerObjectIndex>(object)->to_string();
+  }
+  case FescriptCircleObjectIndex: {
+    return std::get<FescriptCircleObjectIndex>(object)->to_string();
+  }
+  case FescriptPolygonObjectIndex: {
+    return std::get<FescriptPolygonObjectIndex >(object)->to_string();
   }
   }
   return "nil";

@@ -1,6 +1,7 @@
 #include <iostream>
 #include <fstream>
 #include <filesystem>
+#include "../../include/freshengine.hpp"
 #include "../../include/objects/base_object.hpp"
 #include "../../include/fescript/fescript_scanner.hpp"
 #include "../../include/fescript/fescript_parser.hpp"
@@ -16,8 +17,7 @@ BaseObject::BaseObject() {
   this->_pos_info.y = 0;
   this->_pos_info.w = 0;
   this->_pos_info.h = 0;
-  this->_copy_last_pos_info.x = 0;
-  this->_copy_last_pos_info.y = 0;
+  this->_copy_last_pos_info = this->_pos_info;
   this->_object_id = id::object_id;
   this->_object_def = "baseobject";
   this->script_content = "";
@@ -32,8 +32,7 @@ BaseObject::BaseObject(bool disabled, bool visible, idk::i32 pos_x, idk::i32 pos
   this->_pos_info.y = pos_y;
   this->_pos_info.w = width;
   this->_pos_info.h = height;
-  this->_copy_last_pos_info.x = width;
-  this->_copy_last_pos_info.y = height;
+  this->_copy_last_pos_info = this->_pos_info;
   this->_object_id = id::object_id;
   this->_object_def = "baseobject";
   this->script_content = "";
@@ -61,55 +60,30 @@ void BaseObject::set_visible(bool visible) noexcept {
   this->_visible = visible;
 }
 
-void BaseObject::sync() noexcept {
-  this->get_position_info();
-  this->_code.interpret_update();
-
-  for(auto& object : this->_sub_objects) {
-    if(object->_object_def != "cameraobject") // we actually sync cameraobject in engine::update()
-      object->sync();
+void BaseObject::sync_pos_with_camera(bool is_sync_with_camera) noexcept {
+  if(is_sync_with_camera) { // Object is child member of Camera, so we can't apply Camera
+    this->_pos_info.x += this->delta_x();
+    this->_pos_info.y += this->delta_y();
+    this->_pos_info.w += this->delta_w();
+    this->_pos_info.h += this->delta_h();
+  } else {
+    if(fresh::Engine::get_instance()->get_camera()) {
+      fresh::Engine::get_instance()->get_camera()->apply(shared_from_this());
+      return;
+    }
   }
+  this->_render_pos_info = this->_pos_info;
+}
+
+void BaseObject::sync(bool is_sync_with_camera) noexcept {
+  this->_code.interpret_update();
+  this->sync_pos_with_camera(is_sync_with_camera);
+  APPLY_DELTAS()
 }
 
 __idk_nodiscard
 SDL_FRect&
-  BaseObject::get_position_info() noexcept {
-  if(this->_block_transform) {
-    this->_block_transform = false;
-    if(this->delta_x() >= 0) {
-      this->_pos_info.x += (this->delta_x() != 0) ? -1 : 0;
-    } else {
-      this->_pos_info.x += 1;
-    }
-
-    if(this->delta_y() >= 0) {
-      this->_pos_info.y += (this->delta_y() != 0) ? -1 : 0;
-    } else {
-      this->_pos_info.y += 1;
-    }
-
-    for(auto& object : this->_sub_objects) {
-      if(object) {
-        object->get_position_info().x += this->delta_x();
-        object->get_position_info().y += this->delta_y();
-        // object->get_position_info().w += this->delta_w();
-        // object->get_position_info().h += this->delta_h();
-      }
-    }
-
-    return this->_blocked_pos_info;
-  }
-
-  for(auto& object : this->_sub_objects) {
-    if(object) {
-      object->get_position_info().x += this->delta_x();
-      object->get_position_info().y += this->delta_y();
-      // FIXME: height change of parent object generates delta_h > 0,
-      //   * which shouldn't happen outside of editor.
-      // object->get_position_info().w += this->delta_w();
-      // object->get_position_info().h += this->delta_h();
-    }
-  }
+BaseObject::get_position_info() noexcept {
   this->_copy_last_pos_info = this->_pos_info;
   return this->_pos_info;
 }
@@ -144,7 +118,7 @@ BaseObject::delta_h() noexcept {
 }
 
 void BaseObject::push_object(std::shared_ptr<BaseObject> sub_object) noexcept {
-  if(!sub_object.get()) {
+  if(!sub_object.get()) [[unlikely]] {
     std::cout << "Engine warning: push_object argument contains an invalid pointer!\n";
     return;
   }

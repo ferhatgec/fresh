@@ -14,7 +14,6 @@ SpriteObject::SpriteObject() {
   this->_object_def = "spriteobject";
   this->_object_id = id::object_id;
   ++id::object_id;
-  std::cout << this->_pos_info.w << ":" << this->_pos_info.h << '\n';
 }
 
 SpriteObject::SpriteObject(SpriteObject* sprite_object) {
@@ -77,65 +76,14 @@ SpriteObject::~SpriteObject() {
 
 // disable gizmos etc when exporting the project. it's easy to make with some booleans or different function
 // that being called in exporting process?
-void SpriteObject::sync() noexcept {
-#ifdef __FRESH_ENABLE_EDITOR
-  _gizmo->get_position_info() = this->get_position_info();// update deltas
-#endif
+void SpriteObject::sync(bool is_sync_with_camera) noexcept {
   this->_code.interpret_update();
-
   SDL_SetTextureBlendMode(this->_sprite_resource.get_texture(), this->_convert_blend_mode_enum());
-
-  if(this->_disabled || !this->_visible)
-    return;
-
-  SDL_RenderCopyF(Engine::get_instance()->get_window()->get_renderer(),
-                 this->_sprite_resource.get_texture(), NULL, &this->_pos_info);
-
-  for(auto& object : this->_sub_objects) {
-    if(object->_object_def != "cameraobject")// we actually sync cameraobject in engine::update()
-      object->sync();
-  }
-
-#ifdef __FRESH_ENABLE_EDITOR
-  if(_gizmo->is_mouse_hover() || Editor::_editor_focus_group_id == this->_object_id) {
-    if(Engine::get_instance()->get_keyboard_input().is_key_pressed(SDL_SCANCODE_RIGHT)) {
-      this->get_position_info().x += 3;
-    } else if(Engine::get_instance()->get_keyboard_input().is_key_pressed(SDL_SCANCODE_LEFT)) {
-      this->get_position_info().x -= 3;
-    } else if(Engine::get_instance()->get_keyboard_input().is_key_pressed(SDL_SCANCODE_UP)) {
-      this->get_position_info().y -= 3;
-    } else if(Engine::get_instance()->get_keyboard_input().is_key_pressed(SDL_SCANCODE_DOWN)) {
-      this->get_position_info().y += 3;
-    } else if(Engine::get_instance()->get_mouse_input().is_button_pressed(SDL_BUTTON_LEFT)
-              || Editor::_editor_focus_group_id == this->_object_id) {
-      Editor::_editor_focus_group_id = this->_object_id;
-      SDL_FRect gizmo_x, gizmo_y;
-      auto coords = this->get_position_info();
-      gizmo_x.w = 64;
-      gizmo_x.h = 16;
-      gizmo_y.w = 16;
-      gizmo_y.h = 64;
-
-      gizmo_x.x = coords.x + coords.w / 2;
-      gizmo_x.y = coords.y + coords.h / 2;
-
-      gizmo_y.x = coords.x + coords.w / 2;
-      gizmo_y.y = (coords.y + coords.h / 2) - 56;
-
-      SDL_FRect _draw = this->get_position_info();
-
-      _draw.w += 5;
-      _draw.h += 5;
-
-      SDL_RenderDrawRect(Engine::get_instance()->get_window()->get_renderer(),
-                         &_draw);
-      SDL_RenderCopyF(Engine::get_instance()->get_window()->get_renderer(),
-                     Editor::_gizmo_x_axis, NULL, &gizmo_x);
-      SDL_RenderCopyF(Engine::get_instance()->get_window()->get_renderer(),
-                     Editor::_gizmo_y_axis, NULL, &gizmo_y);
-    }
-  }
-#endif
+  this->sync_pos_with_camera(is_sync_with_camera);
+  if(!this->_disabled && this->_visible)
+    SDL_RenderCopyF(Engine::get_instance()->get_window()->get_renderer(),
+                 this->_sprite_resource.get_texture(), NULL, &this->_render_pos_info);
+  APPLY_DELTAS()
 }
 
 __idk_nodiscard

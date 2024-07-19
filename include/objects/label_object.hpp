@@ -37,7 +37,7 @@ public:
                   LabelRenderType label_render_type) noexcept;
 
   void
-  sync() noexcept override;
+  sync(bool is_sync_with_camera = false) noexcept override;
 
   __idk_nodiscard
   idk::StringViewChar&
@@ -50,30 +50,6 @@ public:
   __idk_nodiscard
   SpriteResource&
   get_label_font_texture() noexcept;
-
-  template<typename KeyType>
-  KeyType&
-  get_property() noexcept {
-    return this->_fg;
-  }
-
-  template<>
-  SpriteResource&
-  get_property<SpriteResource>() noexcept {
-    return this->_label_font_texture;
-  }
-
-  template<>
-  FontResource&
-  get_property<FontResource>() noexcept {
-    return this->_label_font_resource;
-  }
-
-  template<>
-  idk::StringViewChar&
-  get_property<idk::StringViewChar>() noexcept {
-    return this->_label_text;
-  }
 
   void
   initialize_label_font_surface() noexcept;

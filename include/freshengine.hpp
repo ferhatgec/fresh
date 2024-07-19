@@ -29,11 +29,7 @@
 #include "resources/clipboard_resource.hpp"
 #include "resources/audio_resource.hpp"
 #include "resources/music_resource.hpp"
-#include "resources/animation_key_resource.hpp"
-#include "resources/animation_resource.hpp"
 #include "resources/id_resource.hpp"
-#include "resources/animation_property_resource.hpp"
-#include "resources/animated_sprite_resource.hpp"
 #include "resources/fes_loader_resource.hpp"
 
 #include "fes/fes_ast.hpp"
@@ -41,6 +37,8 @@
 #include "fes/fes_object.hpp"
 #include "fes/fes_parser.hpp"
 #include "fes/fes_tokenizer.hpp"
+
+#include "render_objects.hpp"
 
 #include <memory>
 #include <vector>
@@ -56,6 +54,11 @@
 namespace fresh {
 class Engine {
 public:
+  enum class Scaling {
+    KeepAspectRatio,
+    None
+  };
+
   friend class Editor;
 
   Engine();
@@ -92,7 +95,7 @@ public:
   get_fps() noexcept;
 
   __idk_nodiscard
-  bool
+  bool&
   is_engine_running() noexcept;
 
   __idk_nodiscard
@@ -121,6 +124,14 @@ public:
   void
   link_camera(std::shared_ptr<CameraObject> camera_object) noexcept;
 
+  std::shared_ptr<CameraObject>
+  get_camera() noexcept {
+    return this->_camera_object;
+  }
+
+  void
+  set_scaling_mode(Scaling mode, idk::i32 width = -1, idk::i32 height = -1) noexcept;
+
   static std::unique_ptr<Engine> _instance;
 private:
   std::shared_ptr<Window>       _window;
@@ -138,6 +149,7 @@ private:
   CursorResource    _cursor_resource;
   ClipboardResource _clipboard_resource;
   TimerResource     _timer_resource;
+  Scaling           _scale_mode;
 };
 } // namespace fresh
 #endif // FRESHENGINE_HPP

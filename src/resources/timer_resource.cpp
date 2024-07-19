@@ -10,8 +10,8 @@ TimerResource::~TimerResource() {
 }
 
 __idk_nodiscard
-  idk::u64// in milliseconds
-  TimerResource::get_ticks() noexcept {
+idk::u64 // in milliseconds
+TimerResource::get_ticks() noexcept {
   if(!this->is_started())
     return 0_u64;
 
@@ -25,7 +25,7 @@ __idk_nodiscard
 void TimerResource::start() noexcept {
   this->_started = true;
   this->_paused = false;
-  this->_start_tick = SDL_GetTicks64();// in milliseconds
+  this->_start_tick = SDL_GetTicks64(); // in milliseconds
 }
 
 void TimerResource::pause() noexcept {

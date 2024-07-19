@@ -1,5 +1,5 @@
-#include "../../include/resources/fes_loader_resource.hpp"
-#include "../../include/freshengine.hpp"
+#include <freshengine.hpp>
+#include <render_objects.hpp>
 #include <string>
 
 // TODO: wrap scene name and resolution properties into BaseObject, so scene objects will not be pushed into Fes list;
@@ -71,6 +71,7 @@ FesLoaderResource::_generate_object(std::shared_ptr<fes::FesObjectAST> object_no
     object->get_position_info().y = object_node->_position_y;
     object->get_position_info().w = object_node->_width;
     object->get_position_info().h = object_node->_height;
+    object->_copy_last_pos_info = object->get_position_info();
     object->_object_def = "colorobject";
     object->_name = object_node->_name;
 
@@ -98,6 +99,7 @@ FesLoaderResource::_generate_object(std::shared_ptr<fes::FesObjectAST> object_no
     object->get_position_info().y = object_node->_position_y;
     object->get_position_info().w = object_node->_width;
     object->get_position_info().h = object_node->_height;
+    object->_copy_last_pos_info = object->get_position_info();
     object->_object_def = "fileobject";
     object->_name = object_node->_name;
 
@@ -124,6 +126,7 @@ FesLoaderResource::_generate_object(std::shared_ptr<fes::FesObjectAST> object_no
     object->get_position_info().y = object_node->_position_y;
     object->get_position_info().w = object_node->_width;
     object->get_position_info().h = object_node->_height;
+    object->_copy_last_pos_info = object->get_position_info();
     object->_object_def = "projectobject";
     object->_name = object_node->_name;
 
@@ -167,6 +170,7 @@ FesLoaderResource::_generate_object(std::shared_ptr<fes::FesObjectAST> object_no
     object->get_position_info().y = object_node->_position_y;
     object->get_position_info().w = object_node->_width;
     object->get_position_info().h = object_node->_height;
+    object->_copy_last_pos_info = object->get_position_info();
     object->_object_def = "guibuttonobject";
     object->_name = object_node->_name;
 
@@ -261,6 +265,7 @@ FesLoaderResource::_generate_object(std::shared_ptr<fes::FesObjectAST> object_no
     object->get_position_info().y = object_node->_position_y;
     object->get_position_info().w = object_node->_width;
     object->get_position_info().h = object_node->_height;
+    object->_copy_last_pos_info = object->get_position_info();
     object->_name = object_node->_name;
     object->_object_def = "labelobject";
     object->_object_id = this->_object_ids;
@@ -306,6 +311,7 @@ FesLoaderResource::_generate_object(std::shared_ptr<fes::FesObjectAST> object_no
     object->get_position_info().y = object_node->_position_y;
     object->get_position_info().w = object_node->_width;
     object->get_position_info().h = object_node->_height;
+    object->_copy_last_pos_info = object->get_position_info();
     object->_name = object_node->_name;
     object->_object_def = "spriteobject";
     object->_object_id = this->_object_ids;
@@ -380,6 +386,7 @@ FesLoaderResource::_generate_baseobject_ptr(std::shared_ptr<fes::FesObjectAST> o
   object->get_position_info().y = object_node->_position_y;
   object->get_position_info().w = object_node->_width;
   object->get_position_info().h = object_node->_height;
+  object->_copy_last_pos_info = object->get_position_info();
   object->_name = object_node->_name;
   object->_object_id = this->_object_ids;
   ++this->_object_ids;

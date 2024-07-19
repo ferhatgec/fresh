@@ -10,14 +10,24 @@ set files as "/Tp./src/application/window.cpp
               /Tp./src/resources/clipboard_resource.cpp
               /Tp./src/resources/audio_resource.cpp
               /Tp./src/resources/music_resource.cpp
-              /Tp./src/resources/animation_resource.cpp
               /Tp./src/resources/fes_loader_resource.cpp
+              /Tp./src/resources/circle_resource.cpp
+              /Tp./src/resources/color_resource.cpp
+              /Tp./src/resources/point_resource.cpp
+              /Tp./src/resources/edge_resource.cpp
+              /Tp./src/resources/polygon_resource.cpp
               /Tp./src/objects/base_object.cpp
               /Tp./src/objects/sprite_object.cpp
               /Tp./src/objects/label_object.cpp
               /Tp./src/objects/area_object.cpp
               /Tp./src/objects/collision_object.cpp
               /Tp./src/objects/camera_object.cpp
+              /Tp./src/objects/music_player_object.cpp
+              /Tp./src/objects/audio_player_object.cpp
+              /Tp./src/objects/animation_frame_object.cpp
+              /Tp./src/objects/animation_player_object.cpp
+              /Tp./src/objects/circle_object.cpp
+              /Tp./src/objects/polygon_object.cpp
               /Tp./src/objects/gui/gui_base_object.cpp
               /Tp./src/objects/gui/gui_button_object.cpp
               /Tp./src/objects/editor/editor_project_color_object.cpp
@@ -53,6 +63,12 @@ set files as "/Tp./src/application/window.cpp
               /Tp./src/fescript/wrappers/fescript_area_object.cpp
               /Tp./src/fescript/wrappers/fescript_collision_object.cpp
               /Tp./src/fescript/wrappers/fescript_camera_object.cpp
+              /Tp./src/fescript/wrappers/fescript_animation_player_object.cpp
+              /Tp./src/fescript/wrappers/fescript_animation_frame_object.cpp
+              /Tp./src/fescript/wrappers/fescript_music_player_object.cpp
+              /Tp./src/fescript/wrappers/fescript_audio_player_object.cpp
+              /Tp./src/fescript/wrappers/fescript_circle_object.cpp
+              /Tp./src/fescript/wrappers/fescript_polygon_object.cpp
               /Tp./src/input/keyboard_input.cpp
               /Tp./src/input/mouse_input.cpp
               /Tp./src/render_objects.cpp
@@ -77,14 +93,24 @@ set object_files as "window.obj
                      clipboard_resource.obj
                      audio_resource.obj
                      music_resource.obj
-                     animation_resource.obj
                      fes_loader_resource.obj
+                     circle_resource.obj
+                     color_resource.obj
+                     point_resource.obj
+                     edge_resource.obj
+                     polygon_resource.obj
                      base_object.obj
                      sprite_object.obj
                      label_object.obj
                      area_object.obj
                      collision_object.obj
                      camera_object.obj
+                     music_player_object.obj
+                     audio_player_object.obj
+                     animation_frame_object.obj
+                     animation_player_object.obj
+                     circle_object.obj
+                     polygon_object.obj
                      gui_base_object.obj
                      gui_button_object.obj
                      editor_project_color_object.obj
@@ -120,6 +146,12 @@ set object_files as "window.obj
                      fescript_area_object.obj
                      fescript_collision_object.obj
                      fescript_camera_object.obj
+                     fescript_animation_player_object.obj
+                     fescript_animation_frame_object.obj
+                     fescript_music_player_object.obj
+                     fescript_audio_player_object.obj
+                     fescript_circle_object.obj
+                     fescript_polygon_object.obj
                      keyboard_input.obj
                      mouse_input.obj
                      render_objects.obj
@@ -149,13 +181,14 @@ set static_libs as "{static_dependencies}
                     shell32.lib
                     freshengine.lib"
 
-set include_dirs as "/I./libs/
-                    /I./libs/SDL/include/
+set include_dirs as "/I./libs/SDL/include/
                     /I./libs/SDL_image/include/
                     /I./libs/SDL_mixer/include/
                     /I./libs/SDL_ttf/include/
                     /I./libs/imgui/
-                    /I./libs/imgui/backends/"
+                    /I./libs/imgui/backends/
+                    /I./libs/idk/idk/
+                    /I./include/"
 
 set compiler_params as "/EHsc /std:c++20 /MP /DWIN64"
 for signal "start" [

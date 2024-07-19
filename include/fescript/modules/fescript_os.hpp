@@ -16,6 +16,8 @@ namespace fescript {
 OS_MODULE(Platform, 0)
 OS_MODULE(Exec, 1)
 OS_MODULE(Arch, 0)
+OS_MODULE(GetClipboardText, 0)
+OS_MODULE(SetClipboardText, 1)
 } // namespace fescript
 
 #undef OS_MODULE

@@ -14,6 +14,21 @@
 #include "../fescript/fescript_interpreter.hpp"
 #include "../fescript/fescript_token.hpp"
 
+#define APPLY_DELTAS() for(auto& object: this->_sub_objects) { \
+                        if(object->_object_def == "") { \
+                          object->_pos_info.x -= this->delta_x(); \
+                          object->_pos_info.y -= this->delta_y(); \
+                        } else { \
+                          object->_pos_info.x += this->delta_x(); \
+                          object->_pos_info.y += this->delta_y(); \
+                        } \
+                        object->_pos_info.w += this->delta_w(); \
+                        object->_pos_info.h += this->delta_h(); \
+                        object->sync(is_sync_with_camera); \
+                        object->get_position_info(); \
+                       } \
+                       this->get_position_info();
+
 namespace fresh {
 // BaseObject is must be inherited if any object gonna be rendered with any position
 // visibility etc. data.
@@ -27,6 +42,12 @@ public:
   friend class FesLoaderResource;
   friend class GuiBaseObject;
   friend class GuiButtonObject;
+  friend class AudioPlayerObject;
+  friend class MusicPlayerObject;
+  friend class AnimationPlayerObject;
+  friend class AnimationFrameObject;
+  friend class CircleObject;
+  friend class PolygonObject;
   friend class Engine;
   friend class Editor;
   friend class fescript::Interpreter;
@@ -51,7 +72,10 @@ public:
   set_visible(bool visible) noexcept;
 
   virtual void
-  sync() noexcept; // sync your *object*, pass through the renderer every frame
+  sync_pos_with_camera(bool is_sync_with_camera = false) noexcept;
+
+  virtual void
+  sync(bool is_sync_with_camera = false) noexcept; // sync your *object*, pass through the renderer every frame
 
   __idk_nodiscard
   virtual SDL_FRect&
@@ -79,24 +103,6 @@ public:
 
   void
   push_object(std::shared_ptr<BaseObject> sub_object) noexcept;
-
-  template<typename KeyType>
-  KeyType&
-  get_property() noexcept {
-    return nullptr;
-  }
-
-  template<>
-  SDL_FRect&
-  get_property<SDL_FRect>() noexcept {
-    return this->_pos_info;
-  }
-
-  template<>
-  bool&
-  get_property<bool>() noexcept {
-    return this->_visible;
-  }
 
   [[nodiscard]] std::string to_string() { return "baseobject"; }
   [[nodiscard]] virtual void set(const fescript::Token& name, fescript::Object value);
@@ -131,6 +137,8 @@ protected:
   bool _block_transform { false };
 
   SDL_FRect _pos_info;
+  SDL_FRect _render_pos_info;
+
   SDL_FRect _blocked_pos_info; // we return this to block the changing of _pos_info.
   SDL_FRect _copy_last_pos_info; // it's here to calculate velocity
   idk::i64 _object_id;

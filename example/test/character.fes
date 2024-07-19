@@ -17,7 +17,42 @@
    position_x = 0,
    position_y = 0,
    sprite_resource = "example/test/character.png",
-   sub_groups = {};
+   sub_groups = {
+   [SpriteObject,
+    name = "HealthBar",
+     width = 120,
+            height = 120,
+            disabled = false,
+            visible = true,
+            position_x = 0,
+            position_y = 0,
+            sprite_resource = "example/test/health_bar.png",
+            sub_groups = [
+             [CameraObject,
+                   name = "Cam",
+                   width = 400,
+                   height = 300,
+                   disabled = false,
+                   visible = true,
+                   position_x = 0,
+                   position_y = 0,
+                   sub_groups = [
+                   ];
+                 ],
+                 [SpriteObject,
+                     name = "xHealthBar",
+                      width = 40,
+                             height = 40,
+                             disabled = false,
+                             visible = true,
+                             position_x = 200,
+                             position_y = 200,
+                             sprite_resource = "example/test/health_bar.png";
+                             ];
+            ];
+          ];
+
+   };
   ];
  };
 ];

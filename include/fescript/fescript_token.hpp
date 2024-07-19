@@ -29,6 +29,13 @@
 #define FescriptAreaObjectIndex 13
 #define FescriptCollisionObjectIndex 14
 #define FescriptCameraObjectIndex 15
+#define FescriptAnimationPlayerObjectIndex 16
+#define FescriptAnimationFrameObjectIndex 17
+#define FescriptMusicPlayerObjectIndex 18
+#define FescriptAudioPlayerObjectIndex 19
+#define FescriptCircleObjectIndex 20
+#define FescriptPolygonObjectIndex 21
+
 namespace fresh {
 class BaseObject;
 class SpriteObject;
@@ -36,6 +43,12 @@ class LabelObject;
 class AreaObject;
 class CollisionObject;
 class CameraObject;
+class AnimationPlayerObject;
+class AnimationFrameObject;
+class MusicPlayerObject;
+class AudioPlayerObject;
+class CircleObject;
+class PolygonObject;
 } // namespace fresh
 
 namespace fescript {
@@ -62,7 +75,13 @@ using Object =
                std::shared_ptr<fresh::LabelObject>,
                std::shared_ptr<fresh::AreaObject>,
                std::shared_ptr<fresh::CollisionObject>,
-               std::shared_ptr<fresh::CameraObject>>;
+               std::shared_ptr<fresh::CameraObject>,
+               std::shared_ptr<fresh::AnimationPlayerObject>,
+               std::shared_ptr<fresh::AnimationFrameObject>,
+               std::shared_ptr<fresh::MusicPlayerObject>,
+               std::shared_ptr<fresh::AudioPlayerObject>,
+               std::shared_ptr<fresh::CircleObject>,
+               std::shared_ptr<fresh::PolygonObject>>;
 
 class Token {
 public:

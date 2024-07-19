@@ -1,4 +1,4 @@
-// AreaObject is BaseObject that comes with collision support (no polygons for now).
+// AreaObject is BaseObject that comes with collision detection support (no polygons for now).
 // You can use AreaObject with SpriteObject.
 
 #ifndef FRESHENGINE_AREA_OBJECT_HPP
@@ -17,7 +17,7 @@ public:
   ~AreaObject();
 
   void
-  sync() noexcept override;
+  sync(bool is_sync_with_camera = false) noexcept override;
 
   __idk_nodiscard
   bool

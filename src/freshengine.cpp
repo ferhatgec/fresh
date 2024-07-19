@@ -1,50 +1,39 @@
-
-#include "../include/freshengine.hpp"
-
 #include "../../libs/SDL_image/include/SDL_image.h"
 #include <string>
+#include <freshengine.hpp>
 
 namespace fresh {
 std::unique_ptr<Engine> Engine::_instance;
 SDL_Event Engine::_event_instance;
 
-Engine::Engine() {}
+Engine::Engine()
+  : _scale_mode{Scaling::None} {
+}
 
 Engine::Engine(std::shared_ptr<fresh::Window> window) {
-  this->_window = idk::move(window);
+  this->_window = std::move(window);
 }
 
 Engine::~Engine() {
-
-  /*
-  for(auto& object: Engine::get_instance()->_objects_to_render) {
-    if(!object) {
-      std::cout << "Engine info: BaseObject is invalid! It may be deleted before.\n";
-      continue;
-    }
-
-    delete object;
-  }*/
 }
 
 __idk_nodiscard
-  std::unique_ptr<Engine>&
-  Engine::get_instance() noexcept {
+std::unique_ptr<Engine>&
+Engine::get_instance() noexcept {
   if(!Engine::_instance.get())
     Engine::_instance = std::make_unique<Engine>();
-
   return Engine::_instance;
 }
 
 __idk_nodiscard
-  SDL_Event&
-  Engine::get_event_instance() noexcept {
+SDL_Event&
+Engine::get_event_instance() noexcept {
   return Engine::_event_instance;
 }
 
 __idk_nodiscard
-  std::shared_ptr<Window>&
-  Engine::get_window() noexcept {
+std::shared_ptr<Window>&
+Engine::get_window() noexcept {
   return this->_window;
 }
 
@@ -74,9 +63,20 @@ void Engine::run() {
   Uint64 delta_prev = 0;
   SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "2");
   while(Engine::get_instance()->_engine_running) {
+    if(Engine::_event_instance.type == SDL_QUIT) {
+      Engine::get_instance()->_engine_running = false;
+      break;
+    } else if((Engine::_event_instance.type == SDL_WINDOWEVENT) &&
+              (Engine::_event_instance.window.event == SDL_WINDOWEVENT_SIZE_CHANGED)) {
+      if(Engine::get_instance()->_scale_mode == Engine::Scaling::None) {
+        Engine::get_instance()->set_scaling_mode(Engine::Scaling::None); // it will update window size.
+      }
+    }
+
     _start_loop = SDL_GetTicks64();
     delta_prev = delta_now;
     delta_now = SDL_GetPerformanceCounter();
+
     RenderObjects::delta_ms = static_cast<idk::f80>((delta_now - delta_prev) * 1000) / static_cast<idk::f80>(SDL_GetPerformanceFrequency());
 
     SDL_GetWindowSize(Engine::get_instance()->get_window()->_window,
@@ -93,11 +93,6 @@ void Engine::run() {
     SDL_PollEvent(&Engine::_event_instance);
 
     Engine::get_instance()->get_cursor_resource().sync_position();
-
-    if(Engine::_event_instance.type == SDL_QUIT) {
-      Engine::get_instance()->_engine_running = false;
-      break;
-    }
 
     this->update();
 
@@ -135,8 +130,7 @@ void Engine::run() {
     // SDL_Delay( _desired_delta - delta);
     //}
   }
-
-  this->last();// it's not that much necessary.
+  this->last(); // it's not that much necessary.
 }
 
 __idk_nodiscard
@@ -145,20 +139,20 @@ __idk_nodiscard
   return this->_fps;
 }
 
-__idk_nodiscard bool
+__idk_nodiscard bool&
 Engine::is_engine_running() noexcept {
   return this->_engine_running;
 }
 
 __idk_nodiscard
-  KeyboardInput&
-  Engine::get_keyboard_input() noexcept {
+KeyboardInput&
+Engine::get_keyboard_input() noexcept {
   return this->_keyboard_input;
 }
 
 __idk_nodiscard
-  MouseInput&
-  Engine::get_mouse_input() noexcept {
+MouseInput&
+Engine::get_mouse_input() noexcept {
   return this->_mouse_input;
 }
 
@@ -190,5 +184,30 @@ void Engine::push_object(std::shared_ptr<BaseObject> object) noexcept {
 
 void Engine::link_camera(std::shared_ptr<CameraObject> camera_object) noexcept {
   Engine::get_instance()->_camera_object = idk::move(camera_object);
+}
+
+void Engine::set_scaling_mode(Engine::Scaling mode, idk::i32 width, idk::i32 height) noexcept {
+  const auto size = Engine::get_instance()->get_window()->get_window_size();
+  if(width > std::get<0>(size) || height > std::get<1>(size)) {
+    height = std::get<0>(size) * width / height;
+    width = std::get<0>(size);
+  }
+  switch(mode) {
+    case Scaling::KeepAspectRatio: {
+      idk::i32 scaling_width, scaling_height;
+      scaling_width = (width <= 0) ? std::get<0>(size)
+                                   : width;
+      scaling_height = (height <= 0) ? std::get<1>(size)
+                                     : height;
+      SDL_RenderSetLogicalSize(Engine::get_instance()->get_window()->get_renderer(),
+                               scaling_width, scaling_height);
+      break;
+    }
+    case Scaling::None: {
+      Engine::get_instance()->set_scaling_mode(Engine::Scaling::KeepAspectRatio);
+      break;
+    }
+  }
+  this->_scale_mode = mode;
 }
 }// namespace fresh

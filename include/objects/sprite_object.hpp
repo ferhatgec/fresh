@@ -18,7 +18,7 @@ public:
   ~SpriteObject();
 
   void
-  sync() noexcept override;
+  sync(bool is_sync_with_camera = false) noexcept override;
 
   __idk_nodiscard
   SpriteResource&

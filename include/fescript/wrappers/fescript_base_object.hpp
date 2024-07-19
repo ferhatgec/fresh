@@ -10,6 +10,9 @@
 #include "../../objects/label_object.hpp"
 #include "../../objects/area_object.hpp"
 #include "../../objects/collision_object.hpp"
+#include <objects/circle_object.hpp>
+#include <objects/polygon_object.hpp>
+
 
 #define RETURN_BASE_OBJECT_PROPERTIES(index) \
 if(keyword.lexeme == "pos_x") return static_cast<idk::f80>(std::get<index>(value)->get_position_info().x); \
@@ -47,7 +50,9 @@ else if(name.lexeme == "sub_groups") {                                          
      case FescriptLabelObjectIndex: { this->push_to_sub_objects(std::get<FescriptLabelObjectIndex>(object)); break; }                               \
      case FescriptAreaObjectIndex: { this->push_to_sub_objects(std::get<FescriptAreaObjectIndex>(object)); break; }                               \
      case FescriptCollisionObjectIndex: { this->push_to_sub_objects(std::get<FescriptCollisionObjectIndex>(object)); break; }                     \
-     case FescriptCameraObjectIndex: { this->push_to_sub_objects(std::get<FescriptCameraObjectIndex>(object)); break; }                                \
+     case FescriptCameraObjectIndex: { this->push_to_sub_objects(std::get<FescriptCameraObjectIndex>(object)); break; }\
+     case FescriptCircleObjectIndex: { this->push_to_sub_objects(std::get<FescriptCircleObjectIndex>(object)); break; }\
+     case FescriptPolygonObjectIndex: { this->push_to_sub_objects(std::get<FescriptPolygonObjectIndex>(object)); break; }                                \
      default: {                      \
       std::cout << "Engine [language] error: Cannot use types those not inherited from BaseObject.";              \
       std::exit(1); \
@@ -63,7 +68,9 @@ case FescriptSpriteObjectIndex: { return this->_self->##object_fn(std::get<Fescr
 case FescriptLabelObjectIndex: { return this->_self->##object_fn(std::get<FescriptLabelObjectIndex>(arguments.front())); } \
 case FescriptAreaObjectIndex: { return this->_self->##object_fn(std::get<FescriptAreaObjectIndex>(arguments.front())); } \
 case FescriptCollisionObjectIndex: { return this->_self->##object_fn(std::get<FescriptCollisionObjectIndex>(arguments.front())); } \
-case FescriptCameraObjectIndex: { return this->_self->##object_fn(std::get<FescriptCameraObjectIndex>(arguments.front())); }                                                          \
+case FescriptCameraObjectIndex: { return this->_self->##object_fn(std::get<FescriptCameraObjectIndex>(arguments.front())); } \
+case FescriptCircleObjectIndex: { return this->_self->##object_fn(std::get<FescriptCircleObjectIndex>(arguments.front())); } \
+case FescriptPolygonObjectIndex: { return this->_self->##object_fn(std::get<FescriptPolygonObjectIndex>(arguments.front())); } \
 default: { \
 std::cout << "Engine [language] error: " wrapped_fn_str " requires objects those inherited from BaseObject.\n"; \
 std::exit(1); \

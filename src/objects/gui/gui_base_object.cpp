@@ -25,6 +25,6 @@ __idk_nodiscard
   return this->_mouse_hover_cb;
 }
 
-void GuiBaseObject::sync() noexcept {
+void GuiBaseObject::sync(bool is_sync_with_camera) noexcept {
 }
 }// namespace fresh

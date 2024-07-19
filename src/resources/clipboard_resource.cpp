@@ -9,8 +9,8 @@ ClipboardResource::~ClipboardResource() {
 }
 
 __idk_nodiscard
-  idk::StringViewChar&
-  ClipboardResource::get_clipboard_data() noexcept {
+idk::StringViewChar&
+ClipboardResource::get_clipboard_data() noexcept {
   this->sync_clipboard_data();
   return this->_clipboard_data;
 }

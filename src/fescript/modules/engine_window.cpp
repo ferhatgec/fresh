@@ -1,6 +1,7 @@
 #include "../../../include/fescript/modules/engine_window.hpp"
 #include "../../../include/fescript/fescript_array.hpp"
 #include "../../../include/freshengine.hpp"
+#include "../../../libs/SDL/include/SDL_render.h"
 #include <filesystem>
 
 namespace fescript {
@@ -35,6 +36,11 @@ __idk_nodiscard Object FescriptEngineWindowSetWindowIcon::call(Interpreter& inte
 // output: bool
 __idk_nodiscard Object FescriptEngineWindowSetWindowTitle::call(Interpreter& interpreter, std::vector <Object> arguments) {
   return fresh::Engine::get_instance()->get_window()->set_title(Interpreter::stringify(arguments.front()).data());
+}
+
+// output: string
+__idk_nodiscard Object FescriptEngineWindowGetWindowTitle::call(Interpreter& interpreter, std::vector <Object> arguments) {
+  return std::string(fresh::Engine::get_instance()->get_window()->get_title().data());
 }
 
 // output: bool
@@ -83,6 +89,16 @@ __idk_nodiscard Object FescriptEngineWindowSetWindowMode::call(Interpreter& inte
   }());
 }
 
+// output: EngineWindow_Fullscreen, EngineWindow_FullscreenWindowed or EngineWindow_Windowed
+__idk_nodiscard Object FescriptEngineWindowGetWindowMode::call(Interpreter& interpreter, std::vector <Object> arguments) {
+  auto flag = SDL_GetWindowFlags(fresh::Engine::get_instance()->get_window()->get_raw_window());
+  if((flag & SDL_WINDOW_FULLSCREEN_DESKTOP) == SDL_WINDOW_FULLSCREEN_DESKTOP)
+    return static_cast<idk::f80>(SDL_WINDOW_FULLSCREEN_DESKTOP);
+  if(flag & SDL_WINDOW_FULLSCREEN_DESKTOP)
+    return static_cast<idk::f80>(SDL_WINDOW_FULLSCREEN);
+  return 0_f80;
+}
+
 // output: nil
 __idk_nodiscard Object FescriptEngineWindowSetDefaultClearColor::call(Interpreter& interpreter, std::vector <Object> arguments) {
   ERR_CHECK_DECIMAL("EngineWindow_set_default_clear_color()", 4)
@@ -93,5 +109,56 @@ __idk_nodiscard Object FescriptEngineWindowSetDefaultClearColor::call(Interprete
     .a = static_cast<idk::u8>(std::get<LongDoubleIndex>(arguments[3]))
   };
   return nullptr;
+}
+
+// output: bool
+__idk_nodiscard Object FescriptEngineWindowSetVSync::call(Interpreter& interpreter, std::vector <Object> arguments) {
+  ERR_CHECK_BOOL("EngineWindow_set_vsync()", 1)
+  return static_cast<bool>(
+    SDL_RenderSetVSync(fresh::Engine::get_instance()->get_window()->get_renderer(), std::get<BoolIndex>(arguments.front()))
+  );
+}
+
+// output: nil
+__idk_nodiscard Object FescriptEngineWindowCloseWindow::call(fescript::Interpreter& interpreter, std::vector <Object> arguments) {
+  fresh::Engine::get_instance()->is_engine_running() = false;
+  return nullptr;
+}
+
+// output: bool
+__idk_nodiscard Object FescriptEngineWindowMaximizeWindow::call(fescript::Interpreter& interpreter, std::vector <Object> arguments) {
+  return fresh::Engine::get_instance()->get_window()->maximize();
+}
+
+// output: bool
+__idk_nodiscard Object FescriptEngineWindowMinimizeWindow::call(fescript::Interpreter& interpreter, std::vector <Object> arguments) {
+  return fresh::Engine::get_instance()->get_window()->minimize();
+}
+
+// output: nil
+__idk_nodiscard Object FescriptEngineWindowRestoreWindow::call(fescript::Interpreter& interpreter, std::vector <Object> arguments) {
+  fresh::Engine::get_instance()->get_window()->restore();
+  return nullptr;
+}
+
+// output: bool
+__idk_nodiscard Object FescriptEngineWindowIsWindowMaximized::call(fescript::Interpreter& interpreter, std::vector <Object> arguments) {
+  return fresh::Engine::get_instance()->get_window()->is_maximized();
+}
+
+// output: bool
+__idk_nodiscard Object FescriptEngineWindowIsWindowMinimized::call(fescript::Interpreter& interpreter, std::vector <Object> arguments) {
+  return fresh::Engine::get_instance()->get_window()->is_minimized();
+}
+
+// output: bool
+__idk_nodiscard Object FescriptEngineWindowSetWindowOpacity::call(fescript::Interpreter& interpreter, std::vector <Object> arguments) {
+  ERR_CHECK_DECIMAL("EngineWindow_set_window_opacity", 1)
+  return fresh::Engine::get_instance()->get_window()->set_opacity(std::get<LongDoubleIndex>(arguments.front()));
+}
+
+// output: decimal
+__idk_nodiscard Object FescriptEngineWindowGetWindowOpacity::call(fescript::Interpreter& interpreter, std::vector <Object> arguments) {
+  return fresh::Engine::get_instance()->get_window()->get_opacity();
 }
 } // namespace fescript

@@ -1,6 +1,7 @@
 #include "../../include/freshengine.hpp"
 #include "../../libs/SDL_image/include/SDL_image.h"
 
+// TODO: sprite batching?
 namespace fresh {
 SpriteResource::SpriteResource() {
   if(IMG_Init(IMG_INIT_JPG | IMG_INIT_PNG | IMG_INIT_TIF | IMG_INIT_WEBP | IMG_INIT_JXL | IMG_INIT_AVIF) == 0) {

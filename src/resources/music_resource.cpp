@@ -26,7 +26,7 @@ MusicResource::~MusicResource() {
   if(this->_music_source) {
     Mix_FreeMusic(this->_music_source);
   } else {
-    std::cout << "Engine error: MusicResource is not initialized but Engine trying to deallocate it.\n";
+    std::cout << "Engine info: MusicResource is not initialized but Engine trying to deallocate it.\n";
   }
 }
 

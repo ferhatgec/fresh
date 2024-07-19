@@ -58,31 +58,20 @@ void LabelObject::initialize_text(idk::StringViewChar&& label_text,
   this->initialize_label_font_surface();
 }
 
-void LabelObject::sync() noexcept {
-  this->get_position_info(); // update deltas
+void LabelObject::sync(bool is_sync_with_camera) noexcept {
   this->_code.interpret_update();
+  this->sync_pos_with_camera(is_sync_with_camera);
 
-  if(this->_disabled
-     || !this->_visible
-     || this->_label_text.is_empty()
-     || this->_label_font_resource.get_font_path().is_empty()
-     || this->_label_font_resource.get_font_size() <= 0)
-    return;
-
-  SDL_RenderCopyF(Engine::get_instance()->get_window()->get_renderer(),
+  if(!this->_disabled &&
+    this->_visible &&
+    !this->_label_text.is_empty() &&
+    !this->_label_font_resource.get_font_path().is_empty() &&
+    this->_label_font_resource.get_font_size() > 0)
+    SDL_RenderCopyF(Engine::get_instance()->get_window()->get_renderer(),
                  this->_label_font_texture.get_texture(),
                  NULL,
                  &this->_pos_info);
-
-  for(auto& object : this->_sub_objects) {
-    object->get_position_info().x += this->delta_x();
-    object->get_position_info().y += this->delta_y();
-    object->get_position_info().w += this->delta_w();
-    object->get_position_info().h += this->delta_h();
-
-    if(object->_object_def != "cameraobject")// we actually sync cameraobject in engine::update()
-      object->sync();
-  }
+  APPLY_DELTAS()
 }
 
 __idk_nodiscard

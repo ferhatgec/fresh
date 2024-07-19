@@ -26,26 +26,16 @@ AreaObject::AreaObject(std::shared_ptr<BaseObject> base_object) {
 AreaObject::~AreaObject() {
 }
 
-void AreaObject::sync() noexcept {
-  this->get_position_info(); // update deltas
+void AreaObject::sync(bool is_sync_with_camera) noexcept {
   this->_code.interpret_update();
-
+  this->sync_pos_with_camera(is_sync_with_camera);
   if(!this->_visible || this->_disabled)
     return;
 
   for(auto& object : this->_sub_objects) {
-    object->sync();
+    object->sync(is_sync_with_camera);
   }
-
-  for(auto& object : this->_sub_objects) {
-    object->get_position_info().x += this->delta_x();
-    object->get_position_info().y += this->delta_y();
-    object->get_position_info().w += this->delta_w();
-    object->get_position_info().h += this->delta_h();
-
-    if(object->_object_def != "cameraobject")// we actually sync cameraobject in engine::update()
-      object->sync();
-  }
+  APPLY_DELTAS()
 }
 
 __idk_nodiscard bool

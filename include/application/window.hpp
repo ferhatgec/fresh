@@ -43,6 +43,10 @@ public:
   get_renderer() noexcept;
 
   __idk_nodiscard
+  SDL_Window*&
+  get_raw_window() noexcept;
+
+  __idk_nodiscard
   idk::u32&
   get_renderer_flags() noexcept;
 
@@ -62,6 +66,10 @@ public:
   bool
   set_title(idk::StringViewChar&& title) noexcept;
 
+  __idk_nodiscard
+  idk::StringViewChar
+  get_title() noexcept;
+
   void
   set_window_size(idk::i32 width, idk::i32 height) noexcept;
 
@@ -80,6 +88,16 @@ public:
   __idk_nodiscard
   bool
   set_window_mode(WindowMode window_mode) noexcept;
+
+  __idk_nodiscard bool maximize() noexcept;
+  __idk_nodiscard bool minimize() noexcept;
+  void restore() noexcept;
+
+  __idk_nodiscard bool is_maximized() noexcept;
+  __idk_nodiscard bool is_minimized() noexcept;
+
+  __idk_nodiscard bool set_opacity(idk::f32 opacity) noexcept;
+  __idk_nodiscard idk::f32 get_opacity() noexcept;
 private:
   idk::i32 _width { 800_i32 };
   idk::i32 _height { 600_i32 };

@@ -1,5 +1,5 @@
 #include "../../../include/fescript/modules/fescript_os.hpp"
-
+#include "../../../include/freshengine.hpp"
 #include <iostream>
 
 #ifdef _WIN32
@@ -65,5 +65,18 @@ __idk_nodiscard Object FescriptOSArch::call(Interpreter &interpreter, std::vecto
 #else
   return "";
 #endif
+}
+
+// output: string
+__idk_nodiscard Object FescriptOSGetClipboardText::call(fescript::Interpreter& interpreter, std::vector <Object> arguments) {
+  return std::string(fresh::Engine::get_instance()->get_clipboard_resource().get_clipboard_data().data());
+}
+
+// output: nil
+__idk_nodiscard Object FescriptOSSetClipboardText::call(fescript::Interpreter& interpreter, std::vector <Object> arguments) {
+  ERR_CHECK_STRING("OS_set_clipboard_text", 1)
+  fresh::Engine::get_instance()->get_clipboard_resource().get_clipboard_data() = std::get<StringIndex>(arguments.front()).data();
+  fresh::Engine::get_instance()->get_clipboard_resource().sync_clipboard_data();
+  return nullptr;
 }
 }

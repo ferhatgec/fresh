@@ -13,9 +13,9 @@ CollisionObject::CollisionObject() {
 CollisionObject::~CollisionObject() {
 }
 
-void CollisionObject::sync() noexcept {
-  this->get_position_info(); // update deltas
+void CollisionObject::sync(bool is_sync_with_camera) noexcept {
   this->_code.interpret_update();
+  this->sync_pos_with_camera(is_sync_with_camera);
 
   if(this->_disabled)
     return;
@@ -24,16 +24,7 @@ void CollisionObject::sync() noexcept {
     if(object && (object->_object_def != "cameraobject"))
       object->_block_transform = this->is_colliding_with(object);
   }
-
-  for(auto& object : this->_sub_objects) {
-    object->get_position_info().x += this->delta_x();
-    object->get_position_info().y += this->delta_y();
-    object->get_position_info().w += this->delta_w();
-    object->get_position_info().h += this->delta_h();
-
-    if(object->_object_def != "cameraobject")// we actually sync cameraobject in engine::update()
-      object->sync();
-  }
+  APPLY_DELTAS()
 }
 
 [[nodiscard]] void CollisionObject::set(const fescript::Token& name, fescript::Object value) {
