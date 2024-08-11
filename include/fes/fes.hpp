@@ -1,10 +1,7 @@
-//
-// Created by gech on 2/4/2024.
-//
+#pragma once
 
-#ifndef FRESHENGINE_FES_HPP
-#define FRESHENGINE_FES_HPP
-
-
-
-#endif // FRESHENGINE_FES_HPP
+#include "fes_ast.hpp"
+#include "fes_keywords.hpp"
+#include "fes_object.hpp"
+#include "fes_parser.hpp"
+#include "fes_tokenizer.hpp"

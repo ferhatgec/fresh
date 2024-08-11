@@ -1,10 +1,10 @@
 #pragma once
 
 #include "module_helpers.hpp"
-#include "../fescript_class.hpp"
-#include "../fescript_callable.hpp"
-#include "../../../libs/idk/idk/types/predefined.hpp"
 #include "../../../libs/SDL/include/SDL_scancode.h"
+#include <fescript/fescript_class.hpp>
+#include <fescript/fescript_callable.hpp>
+#include <types/predefined.hpp>
 #include <unordered_map>
 
 #define ENGINEIO_GLOBAL_CONSTANT(name, value) this->globals->define(name, static_cast<idk::f80>(value));

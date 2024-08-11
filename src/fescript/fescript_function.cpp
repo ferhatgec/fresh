@@ -4,12 +4,13 @@
 // Distributed under the terms of the MIT License.
 //
 
-#include "../../include/fescript/fescript_function.hpp"
-#include "../../include/fescript/fescript_environment.hpp"
-#include "../../include/fescript/fescript_instance.hpp"
-#include "../../include/fescript/fescript_interpreter.hpp"
-#include "../../include/fescript/fescript_stmt.hpp"
-#include "../../include/fescript/fescript_array.hpp"
+#include <fescript/fescript_function.hpp>
+#include <fescript/fescript_function.hpp>
+#include <fescript/fescript_environment.hpp>
+#include <fescript/fescript_instance.hpp>
+#include <fescript/fescript_interpreter.hpp>
+#include <fescript/fescript_stmt.hpp>
+#include <fescript/fescript_array.hpp>
 
 namespace fescript {
 FescriptFunction::FescriptFunction(std::shared_ptr<Function> declaration,

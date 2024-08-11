@@ -1,9 +1,8 @@
-#ifndef FRESHENGINE_LABEL_OBJECT_HPP
-#define FRESHENGINE_LABEL_OBJECT_HPP
+#pragma once
 
 #include "base_object.hpp"
-#include "../resources/font_resource.hpp"
-#include "../resources/sprite_resource.hpp"
+#include <resources/font_resource.hpp>
+#include <resources/sprite_resource.hpp>
 
 namespace fresh {
 enum class LabelRenderType {
@@ -58,7 +57,7 @@ public:
     return "labelobject";
   }
 
-  [[nodiscard]] void set(const fescript::Token& name, fescript::Object value) override;
+  void set(const fescript::Token& name, fescript::Object value) override;
 
   [[nodiscard]] SDL_Color& get_background_color() noexcept {
     return this->_bg;
@@ -79,5 +78,3 @@ protected:
   FontResource _label_font_resource;
 };
 } // namespace fresh
-
-#endif // FRESHENGINE_LABEL_OBJECT_HPP

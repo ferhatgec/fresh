@@ -1,9 +1,4 @@
-//
-// Created by gech on 2/3/2024.
-//
-
-#ifndef FRESHENGINE_CAMERA_OBJECT_HPP
-#define FRESHENGINE_CAMERA_OBJECT_HPP
+#pragma once
 
 #include "base_object.hpp"
 
@@ -27,7 +22,7 @@ public:
     return "cameraobject";
   }
 
-  [[nodiscard]] void set(const fescript::Token& name, fescript::Object value) override;
+  void set(const fescript::Token& name, fescript::Object value) override;
 
   SDL_FRect get_viewport() noexcept {
     return {
@@ -45,5 +40,3 @@ protected:
   idk::f32 _zoom_level, _scale_ratio_w, _scale_ratio_h;
 };
 } // namespace fresh
-
-#endif // FRESHENGINE_CAMERA_OBJECT_HPP

@@ -1,5 +1,5 @@
-#include "../../../include/fescript/modules/fescript_os.hpp"
-#include "../../../include/freshengine.hpp"
+#include <fescript/modules/fescript_os.hpp>
+#include <freshengine.hpp>
 #include <iostream>
 
 #ifdef _WIN32

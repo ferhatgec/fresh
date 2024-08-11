@@ -1,7 +1,7 @@
 #pragma once
 
 #include "fescript_base_object.hpp"
-#include "../modules/module_helpers.hpp"
+#include <fescript/modules/module_helpers.hpp>
 
 namespace fescript {
 DEFINE_MEMBER_MODULE_CLASS(PushPolygon, PolygonObjectMember, 2, fresh::PolygonObject)

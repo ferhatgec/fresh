@@ -9,9 +9,9 @@ class CircleObject : public BaseObject {
 public:
   friend class FesLoaderResource;
 
-  CircleObject();
+  CircleObject() = default;
   CircleObject(CircleResource resource, ColorResource color);
-  ~CircleObject();
+  ~CircleObject() = default;
 
   void
   sync(bool is_sync_with_camera = false) noexcept override;
@@ -20,7 +20,7 @@ public:
     return "circleobject";
   }
 
-  [[nodiscard]] void set(const fescript::Token& name, fescript::Object value) override;
+  void set(const fescript::Token& name, fescript::Object value) override;
 
   __idk_nodiscard
   CircleResource& get_circle_resource() noexcept;
@@ -29,10 +29,10 @@ public:
   ColorResource& get_color_resource() noexcept;
 private:
   void _draw_circle() noexcept;
-  void _draw_filled_circle() noexcept;
   void _draw_unfilled_circle() noexcept;
   void _draw_horizontal_line(idk::f32 x1, idk::f32 x2, idk::f32 y) noexcept;
   void _draw_single_point(idk::f32 x, idk::f32 y) noexcept;
+  void _draw_circle_points(const idk::f32& x, const idk::f32& y) noexcept;
 protected:
   CircleResource _resource;
   ColorResource _color;

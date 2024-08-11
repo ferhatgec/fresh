@@ -1,9 +1,9 @@
 #pragma once
 
 #include "module_helpers.hpp"
-#include "../fescript_class.hpp"
-#include "../fescript_callable.hpp"
-#include "../../../libs/idk/idk/types/predefined.hpp"
+#include <fescript/fescript_class.hpp>
+#include <fescript/fescript_callable.hpp>
+#include <types/predefined.hpp>
 
 #define IO_MODULE(name, arg_count) DEFINE_MODULE_CLASS(name, IO, arg_count)
 

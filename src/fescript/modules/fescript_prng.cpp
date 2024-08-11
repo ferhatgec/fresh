@@ -1,7 +1,7 @@
-#include "../../../include/fescript/modules/fescript_prng.hpp"
-#include "../../../include/fescript/fescript_array.hpp"
-#include "../../../include/freshengine.hpp"
-#include "../../../libs/idk/idk/random/random.hpp"
+#include <fescript/modules/fescript_prng.hpp>
+#include <fescript/fescript_array.hpp>
+#include <random/random.hpp>
+#include <freshengine.hpp>
 #include <limits>
 
 namespace fescript {

@@ -1,13 +1,8 @@
-//
-// Created by gech on 2/6/2024.
-//
+#pragma once
 
-#ifndef FRESHENGINE_MOUSE_INPUT_HPP
-#define FRESHENGINE_MOUSE_INPUT_HPP
-
-#include "../../libs/idk/idk/types/predefined.hpp"
-#include "../../libs/idk/idk/utilities/pair.hpp"
-#include "../../libs/idk/idk/containers/vector.hpp"
+#include <types/predefined.hpp>
+#include <utilities/pair.hpp>
+#include <containers/vector.hpp>
 #include "../../libs/SDL/include/SDL.h"
 
 namespace fresh {
@@ -42,5 +37,3 @@ protected:
   };
 };
 } // namespace fresh
-
-#endif // FRESHENGINE_MOUSE_INPUT_HPP

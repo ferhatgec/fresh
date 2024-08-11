@@ -1,7 +1,6 @@
-#ifndef FRESHENGINE_COLLISION_OBJECT_HPP
-#define FRESHENGINE_COLLISION_OBJECT_HPP
+#pragma once
 
-#include "area_object.hpp"
+#include "objects/physics/area_object.hpp"
 
 namespace fresh {
 class CollisionObject : public AreaObject {
@@ -18,8 +17,6 @@ public:
     return "collisionobject";
   }
 
-  [[nodiscard]] void set(const fescript::Token& name, fescript::Object value) override;
+  void set(const fescript::Token& name, fescript::Object value) override;
 };
 } // namespace fresh
-
-#endif // FRESHENGINE_COLLISION_OBJECT_HPP

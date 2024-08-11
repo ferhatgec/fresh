@@ -2,10 +2,9 @@
 // Created by gech on 2/5/2024.
 //
 
-#ifndef FRESHENGINE_FES_PARSER_HPP
-#define FRESHENGINE_FES_PARSER_HPP
+#pragma once
 
-#include "../../libs/idk/idk/containers/vector.hpp"
+#include <containers/vector.hpp>
 #include "fes_ast.hpp"
 #include "fes_tokenizer.hpp"
 #include <memory>
@@ -43,5 +42,3 @@ protected:
 };
 }
 }
-
-#endif // FRESHENGINE_FES_PARSER_HPP

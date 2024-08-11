@@ -2,8 +2,8 @@
 #define FRESHENGINE_RENDER_OBJECTS_CPP// this thing twice will regenerate objects_to_render at different place in memory.              \
                                       // only thing we want is force objects_to_render at a static place, that thing important because \
                                       // we run objects_to_render every frame to sync.
-#include "../include/render_objects.hpp"
-#include "../include/freshengine.hpp"
+#include <render_objects.hpp>
+#include <freshengine.hpp>
 #include "../libs/SDL_image/include/SDL_image.h"
 
 namespace fresh {

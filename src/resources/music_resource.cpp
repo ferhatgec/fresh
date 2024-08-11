@@ -1,4 +1,4 @@
-#include "../../include/resources/music_resource.hpp"
+#include <resources/music_resource.hpp>
 
 namespace fresh {
 MusicResource::MusicResource() {

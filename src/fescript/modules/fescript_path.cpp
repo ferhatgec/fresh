@@ -1,8 +1,8 @@
+#include <fescript/fescript_array.hpp>
+#include <fescript/modules/fescript_path.hpp>
 #include <iostream>
 #include <fstream>
 #include <filesystem>
-#include "../../../include/fescript/fescript_array.hpp"
-#include "../../../include/fescript/modules/fescript_path.hpp"
 
 #define WRAP_AS_ARRAY(fn) if(arguments.size() > 1) { \
 std::shared_ptr<FescriptArray> array = std::make_shared<FescriptArray>(); \

@@ -19,25 +19,33 @@
 #include <fescript/modules/engine.hpp>
 #include <fescript/modules/engine_window.hpp>
 
-#include <fescript/wrappers/fescript_base_object.hpp>
-#include <fescript/wrappers/fescript_sprite_object.hpp>
-#include <fescript/wrappers/fescript_label_object.hpp>
-#include <fescript/wrappers/fescript_area_object.hpp>
-#include <fescript/wrappers/fescript_collision_object.hpp>
-#include <fescript/wrappers/fescript_camera_object.hpp>
-#include <fescript/wrappers/fescript_animation_player_object.hpp>
-#include <fescript/wrappers/fescript_animation_frame_object.hpp>
-#include <fescript/wrappers/fescript_music_player_object.hpp>
+#include <fescript/wrappers/animation/fescript_animation_frame_object.hpp>
+#include <fescript/wrappers/animation/fescript_animation_player_object.hpp>
+#include <fescript/wrappers/physics/fescript_area_object.hpp>
+#include <fescript/wrappers/physics/fescript_rectangle_area_object.hpp>
+#include <fescript/wrappers/physics/fescript_circle_area_object.hpp>
+#include <fescript/wrappers/physics/fescript_polygon_area_object.hpp>
 #include <fescript/wrappers/fescript_audio_player_object.hpp>
+#include <fescript/wrappers/fescript_base_object.hpp>
+#include <fescript/wrappers/fescript_camera_object.hpp>
 #include <fescript/wrappers/fescript_circle_object.hpp>
+#include <fescript/wrappers/fescript_collision_object.hpp>
+#include <fescript/wrappers/fescript_label_object.hpp>
+#include <fescript/wrappers/fescript_music_player_object.hpp>
 #include <fescript/wrappers/fescript_polygon_object.hpp>
+#include <fescript/wrappers/fescript_rectangle_object.hpp>
+#include <fescript/wrappers/fescript_sprite_object.hpp>
 
-#include <objects/camera_object.hpp>
-#include <objects/animation_player_object.hpp>
-#include <objects/music_player_object.hpp>
+#include <objects/animation/animation_player_object.hpp>
 #include <objects/audio_player_object.hpp>
+#include <objects/camera_object.hpp>
 #include <objects/circle_object.hpp>
+#include <objects/music_player_object.hpp>
 #include <objects/polygon_object.hpp>
+#include <objects/rectangle_object.hpp>
+#include <objects/physics/circle_area_object.hpp>
+#include <objects/physics/polygon_area_object.hpp>
+#include <objects/physics/rectangle_area_object.hpp>
 
 #include <chrono>
 
@@ -45,7 +53,7 @@ namespace fescript {
 Interpreter::Interpreter() {
   this->globals = std::make_shared<Environment>();
   this->environment = this->globals;
-
+  
   this->global_seed = std::chrono::duration_cast<std::chrono::milliseconds>(
     std::chrono::system_clock::now().time_since_epoch()
     ).count();
@@ -124,7 +132,10 @@ Interpreter::Interpreter() {
   this->globals->define("Engine_AudioPlayerObject", std::make_shared<AudioPlayerObjectWrapper>());
   this->globals->define("Engine_CircleObject", std::make_shared<CircleObjectWrapper>());
   this->globals->define("Engine_PolygonObject", std::make_shared<PolygonObjectWrapper>());
-
+  this->globals->define("Engine_RectangleObject", std::make_shared<RectangleObjectWrapper>());
+  this->globals->define("Engine_RectangleAreaObject", std::make_shared<RectangleAreaObjectWrapper>());
+  this->globals->define("Engine_CircleAreaObject", std::make_shared<CircleAreaObjectWrapper>());
+  this->globals->define("Engine_PolygonAreaObject", std::make_shared<PolygonAreaObjectWrapper>());
   this->globals->define("Engine_render_objects_push", std::make_shared<FescriptEngineRenderObjectsPush>());
 
   this->globals->define("Engine_load_fes", std::make_shared<FescriptEngineLoadFes>());
@@ -279,7 +290,7 @@ void Interpreter::execute_block(const std::vector<std::shared_ptr<Stmt>> &statem
   if((stmt->name.lexeme == "update" && this->current_state == State::Update) ||
     (stmt->name.lexeme == "init" && this->current_state == State::Init) ||
     (stmt->name.lexeme == "last" && this->current_state == State::Last)) {
-    this->visit(std::make_shared<Call>(std::make_shared<Variable>(Token(TokenType::IDENTIFIER,
+    (void)this->visit(std::make_shared<Call>(std::make_shared<Variable>(Token(TokenType::IDENTIFIER,
                                                                         stmt->name.lexeme,
                                                                         stmt->name.lexeme,
                                                                         -1)),
@@ -500,7 +511,11 @@ void Interpreter::execute_block(const std::vector<std::shared_ptr<Stmt>> &statem
     case FescriptMusicPlayerObjectIndex:
     case FescriptAudioPlayerObjectIndex:
     case FescriptCircleObjectIndex:
-    case FescriptPolygonObjectIndex: {
+    case FescriptPolygonObjectIndex:
+    case FescriptRectangleObjectIndex:
+    case FescriptRectangleAreaObjectIndex:
+    case FescriptCircleAreaObjectIndex:
+    case FescriptPolygonAreaObjectIndex: {
       if(expr->is_name_an_expr)
         return "TODO"; // TODO
       return this->get_object_property(expr->name, object);
@@ -548,54 +563,22 @@ void Interpreter::execute_block(const std::vector<std::shared_ptr<Stmt>> &statem
   Object object = this->evaluate(expr->object);
   Object value = this->evaluate(expr->value);
   switch(object.index()) {
-    case FescriptBaseObjectIndex: {
-      std::get<FescriptBaseObjectIndex>(object)->set(expr->name, value);
-      return value;
-    }
-    case FescriptSpriteObjectIndex: {
-      std::get<FescriptSpriteObjectIndex>(object)->set(expr->name, value);
-      return value;
-    }
-    case FescriptLabelObjectIndex: {
-      std::get<FescriptLabelObjectIndex>(object)->set(expr->name, value);
-      return value;
-    }
-    case FescriptAreaObjectIndex: {
-      std::get<FescriptAreaObjectIndex>(object)->set(expr->name, value);
-      return value;
-    }
-    case FescriptCollisionObjectIndex: {
-      std::get<FescriptCollisionObjectIndex>(object)->set(expr->name, value);
-      return value;
-    }
-    case FescriptCameraObjectIndex: {
-      std::get<FescriptCameraObjectIndex>(object)->set(expr->name, value);
-      return value;
-    }
-    case FescriptAnimationPlayerObjectIndex: {
-      std::get<FescriptAnimationPlayerObjectIndex>(object)->set(expr->name, value);
-      return value;
-    }
-    case FescriptAnimationFrameObjectIndex: {
-      std::get<FescriptAnimationFrameObjectIndex>(object)->set(expr->name, value);
-      return value;
-    }
-    case FescriptMusicPlayerObjectIndex: {
-      std::get<FescriptMusicPlayerObjectIndex>(object)->set(expr->name, value);
-      return value;
-    }
-    case FescriptAudioPlayerObjectIndex: {
-      std::get<FescriptMusicPlayerObjectIndex>(object)->set(expr->name, value);
-      return value;
-    }
-    case FescriptCircleObjectIndex: {
-      std::get<FescriptCircleObjectIndex>(object)->set(expr->name, value);
-      return value;
-    }
-    case FescriptPolygonObjectIndex: {
-      std::get<FescriptPolygonObjectIndex>(object)->set(expr->name, value);
-      return value;
-    }
+    SET_VISIT_IMPL_OBJECT(FescriptBaseObjectIndex)
+    SET_VISIT_IMPL_OBJECT(FescriptSpriteObjectIndex)
+    SET_VISIT_IMPL_OBJECT(FescriptLabelObjectIndex)
+    SET_VISIT_IMPL_OBJECT(FescriptAreaObjectIndex)
+    SET_VISIT_IMPL_OBJECT(FescriptCollisionObjectIndex)
+    SET_VISIT_IMPL_OBJECT(FescriptCameraObjectIndex)
+    SET_VISIT_IMPL_OBJECT(FescriptAnimationPlayerObjectIndex)
+    SET_VISIT_IMPL_OBJECT(FescriptAnimationFrameObjectIndex)
+    SET_VISIT_IMPL_OBJECT(FescriptMusicPlayerObjectIndex)
+    SET_VISIT_IMPL_OBJECT(FescriptAudioPlayerObjectIndex)
+    SET_VISIT_IMPL_OBJECT(FescriptCircleObjectIndex)
+    SET_VISIT_IMPL_OBJECT(FescriptPolygonObjectIndex)
+    SET_VISIT_IMPL_OBJECT(FescriptRectangleObjectIndex)
+    SET_VISIT_IMPL_OBJECT(FescriptRectangleAreaObjectIndex)
+    SET_VISIT_IMPL_OBJECT(FescriptCircleAreaObjectIndex)
+    SET_VISIT_IMPL_OBJECT(FescriptPolygonAreaObjectIndex)
   }
   if (object.index() != FescriptInstanceIndex)
     throw RuntimeError(expr->name, "only instances have fields.");
@@ -811,6 +794,29 @@ void Interpreter::check_number_operands(const Token &op, const Object &left,
       else if(keyword.lexeme == "get_is_filled") return std::make_shared<FescriptPolygonObjectMemberDeleteAllPolygons>(std::get<FescriptPolygonObjectIndex>(value));
       else throw RuntimeError(keyword, "PolygonObject property cannot be found.");
     }
+    case FescriptRectangleObjectIndex: {
+      RETURN_BASE_OBJECT_PROPERTIES(FescriptRectangleObjectIndex)
+      else throw RuntimeError(keyword, "RectangleObject property cannot be found.");
+    }
+    case FescriptRectangleAreaObjectIndex: {
+      RETURN_BASE_OBJECT_PROPERTIES(FescriptRectangleAreaObjectIndex)
+      else if(keyword.lexeme == "is_colliding_with") return std::make_shared<FescriptRectangleAreaObjectMemberIsCollidingWith>(std::get<FescriptRectangleAreaObjectIndex>(value));
+      else throw RuntimeError(keyword, "RectangleAreaObject property cannot be found.");
+    }
+    case FescriptCircleAreaObjectIndex: {
+      RETURN_BASE_OBJECT_PROPERTIES(FescriptCircleAreaObjectIndex)
+      else if(keyword.lexeme == "get_radius") return std::make_shared<FescriptCircleAreaObjectMemberGetRadius>(std::get<FescriptCircleAreaObjectIndex>(value));
+      else if(keyword.lexeme == "set_radius") return std::make_shared<FescriptCircleAreaObjectMemberSetRadius>(std::get<FescriptCircleAreaObjectIndex>(value));
+      else if(keyword.lexeme == "is_colliding_with") return std::make_shared<FescriptCircleAreaObjectMemberIsCollidingWith>(std::get<FescriptCircleAreaObjectIndex>(value));
+      else throw RuntimeError(keyword, "CircleAreaObject property cannot be found.");
+    }
+    case FescriptPolygonAreaObjectIndex: {
+      RETURN_BASE_OBJECT_PROPERTIES(FescriptPolygonAreaObjectIndex)
+      else if(keyword.lexeme == "is_colliding_with") return std::make_shared<FescriptPolygonAreaObjectMemberIsCollidingWith>(std::get<FescriptPolygonAreaObjectIndex>(value));
+      else if(keyword.lexeme == "push_polygon") return std::make_shared<FescriptPolygonAreaObjectMemberPushPolygon>(std::get<FescriptPolygonAreaObjectIndex>(value));
+      else if(keyword.lexeme == "delete_all_polygons") return std::make_shared<FescriptPolygonAreaObjectMemberDeleteAllPolygons>(std::get<FescriptPolygonAreaObjectIndex>(value));
+      else throw RuntimeError(keyword, "PolygonAreaObject property cannot be found.");
+    }
     default: {
       std::cout << "Engine error: Invalid pointer passed to get_object_property!\n";
       std::exit(1);
@@ -846,60 +852,28 @@ std::string Interpreter::stringify(const Object &object) {
       text = text.substr(0, text.length() - 2);
     return text;
   }
-  case FescriptFunctionIndex: {
-    return std::get<FescriptFunctionIndex>(object)->to_string();
-  }
-  case FescriptClassIndex: {
-    return std::get<FescriptClassIndex>(object)->to_string();
-  }
-  case FescriptInstanceIndex: {
-    return std::get<FescriptInstanceIndex>(object)->to_string();
-  }
-  case FescriptArrayIndex: {
-    return std::get<FescriptArrayIndex>(object)->to_string();
-  }
-  case FescriptDictIndex: {
-    return std::get<FescriptDictIndex>(object)->to_string();
-  }
-  case FescriptCallableIndex: {
-    return std::get<FescriptCallableIndex>(object)->to_string();
-  }
-  case FescriptBaseObjectIndex: {
-    return std::get<FescriptBaseObjectIndex>(object)->to_string();
-  }
-  case FescriptSpriteObjectIndex: {
-    return std::get<FescriptSpriteObjectIndex>(object)->to_string();
-  }
-  case FescriptLabelObjectIndex: {
-    return std::get<FescriptLabelObjectIndex>(object)->to_string();
-  }
-  case FescriptAreaObjectIndex: {
-    return std::get<FescriptAreaObjectIndex>(object)->to_string();
-  }
-  case FescriptCollisionObjectIndex: {
-    return std::get<FescriptCollisionObjectIndex>(object)->to_string();
-  }
-  case FescriptCameraObjectIndex: {
-    return std::get<FescriptCameraObjectIndex>(object)->to_string();
-  }
-  case FescriptAnimationPlayerObjectIndex: {
-    return std::get<FescriptAnimationPlayerObjectIndex>(object)->to_string();
-  }
-  case FescriptAnimationFrameObjectIndex: {
-    return std::get<FescriptAnimationFrameObjectIndex>(object)->to_string();
-  }
-  case FescriptMusicPlayerObjectIndex: {
-    return std::get<FescriptMusicPlayerObjectIndex>(object)->to_string();
-  }
-  case FescriptAudioPlayerObjectIndex: {
-    return std::get<FescriptAudioPlayerObjectIndex>(object)->to_string();
-  }
-  case FescriptCircleObjectIndex: {
-    return std::get<FescriptCircleObjectIndex>(object)->to_string();
-  }
-  case FescriptPolygonObjectIndex: {
-    return std::get<FescriptPolygonObjectIndex >(object)->to_string();
-  }
+  GET_STRINGIFY_IMPL_OBJECT(FescriptFunctionIndex)
+  GET_STRINGIFY_IMPL_OBJECT(FescriptClassIndex)
+  GET_STRINGIFY_IMPL_OBJECT(FescriptInstanceIndex)
+  GET_STRINGIFY_IMPL_OBJECT(FescriptArrayIndex)
+  GET_STRINGIFY_IMPL_OBJECT(FescriptDictIndex)
+  GET_STRINGIFY_IMPL_OBJECT(FescriptCallableIndex)
+  GET_STRINGIFY_IMPL_OBJECT(FescriptBaseObjectIndex)
+  GET_STRINGIFY_IMPL_OBJECT(FescriptSpriteObjectIndex)
+  GET_STRINGIFY_IMPL_OBJECT(FescriptLabelObjectIndex)
+  GET_STRINGIFY_IMPL_OBJECT(FescriptAreaObjectIndex)
+  GET_STRINGIFY_IMPL_OBJECT(FescriptCollisionObjectIndex)
+  GET_STRINGIFY_IMPL_OBJECT(FescriptCameraObjectIndex)
+  GET_STRINGIFY_IMPL_OBJECT(FescriptAnimationPlayerObjectIndex)
+  GET_STRINGIFY_IMPL_OBJECT(FescriptAnimationFrameObjectIndex)
+  GET_STRINGIFY_IMPL_OBJECT(FescriptMusicPlayerObjectIndex)
+  GET_STRINGIFY_IMPL_OBJECT(FescriptAudioPlayerObjectIndex)
+  GET_STRINGIFY_IMPL_OBJECT(FescriptCircleObjectIndex)
+  GET_STRINGIFY_IMPL_OBJECT(FescriptPolygonObjectIndex)
+  GET_STRINGIFY_IMPL_OBJECT(FescriptRectangleObjectIndex)
+  GET_STRINGIFY_IMPL_OBJECT(FescriptRectangleAreaObjectIndex)
+  GET_STRINGIFY_IMPL_OBJECT(FescriptCircleAreaObjectIndex)
+  GET_STRINGIFY_IMPL_OBJECT(FescriptPolygonAreaObjectIndex)
   }
   return "nil";
 }

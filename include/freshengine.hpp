@@ -1,5 +1,4 @@
-#ifndef FRESHENGINE_HPP
-#define FRESHENGINE_HPP
+#pragma once
 
 #include "application/window.hpp"
 
@@ -9,7 +8,7 @@
 #include "objects/base_object.hpp"
 #include "objects/sprite_object.hpp"
 #include "objects/label_object.hpp"
-#include "objects/area_object.hpp"
+#include "objects/physics/area_object.hpp"
 #include "objects/collision_object.hpp"
 #include "objects/camera_object.hpp"
 
@@ -29,7 +28,6 @@
 #include "resources/clipboard_resource.hpp"
 #include "resources/audio_resource.hpp"
 #include "resources/music_resource.hpp"
-#include "resources/id_resource.hpp"
 #include "resources/fes_loader_resource.hpp"
 
 #include "fes/fes_ast.hpp"
@@ -132,6 +130,12 @@ public:
   void
   set_scaling_mode(Scaling mode, idk::i32 width = -1, idk::i32 height = -1) noexcept;
 
+  __idk_nodiscard
+  idk::u32 get_global_id() noexcept;
+
+  void increase_global_id() noexcept;
+  void reset_global_id() noexcept;
+
   static std::unique_ptr<Engine> _instance;
 private:
   std::shared_ptr<Window>       _window;
@@ -150,6 +154,7 @@ private:
   ClipboardResource _clipboard_resource;
   TimerResource     _timer_resource;
   Scaling           _scale_mode;
+
+  static inline idk::u32 _id { 0 };
 };
 } // namespace fresh
-#endif // FRESHENGINE_HPP

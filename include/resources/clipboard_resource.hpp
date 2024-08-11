@@ -1,7 +1,6 @@
-#ifndef FRESHENGINE_CLIPBOARD_RESOURCE_HPP
-#define FRESHENGINE_CLIPBOARD_RESOURCE_HPP
+#pragma once
 
-#include "../../libs/idk/idk/types/stringview.hpp"
+#include <types/stringview.hpp>
 
 namespace fresh {
 // maybe adding history is can be great idea but also it can be done by developer easily.
@@ -24,4 +23,3 @@ private:
   idk::StringViewChar _clipboard_data;
 };
 } // namespace fresh
-#endif // FRESHENGINE_CLIPBOARD_RESOURCE_HPP

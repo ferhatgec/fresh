@@ -1,6 +1,6 @@
-#include "../../include/freshengine.hpp"
-#include "../../include/fescript/wrappers/fescript_base_object.hpp"
-#include "../../include/fescript/fescript_array.hpp"
+#include <fescript/wrappers/fescript_base_object.hpp>
+#include <fescript/fescript_array.hpp>
+#include <freshengine.hpp>
 
 namespace fresh {
 CameraObject::CameraObject() : _zoom_level{1.0f}, _scale_ratio_w{1.0f}, _scale_ratio_h{1.0f} {
@@ -48,7 +48,7 @@ void CameraObject::move(idk::f32 dx, idk::f32 dy) noexcept {
   this->_pos_info.y += dy;
 }
 
-[[nodiscard]] void CameraObject::set(const fescript::Token& name, fescript::Object value) {
+void CameraObject::set(const fescript::Token& name, fescript::Object value) {
   SET_BASE_OBJECT_PROPERTIES()
   else {
     std::cout << "Engine [language] error: CameraObject has no field named as '" << name.lexeme << "'.\n";

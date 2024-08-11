@@ -1,10 +1,9 @@
-#ifndef FRESHENGINE_SPRITE_RESOURCE_HPP
-#define FRESHENGINE_SPRITE_RESOURCE_HPP
+#pragma once
 
 // resources are objects those are not have any position,
 // visibility etc. parameters.
 
-#include "../../libs/idk/idk/types/stringview.hpp"
+#include <types/stringview.hpp>
 #include "../../libs/SDL/include/SDL.h"
 
 namespace fresh {
@@ -33,11 +32,9 @@ public:
   SpriteBlendMode&
   get_blend_mode() noexcept;
 
-  __idk_nodiscard
   void
   load_resource(const idk::StringViewChar& sprite_file) noexcept;
 
-  __idk_nodiscard
   void
   load_resource(idk::StringViewChar&& sprite_file) noexcept;
 
@@ -55,4 +52,3 @@ private:
   SpriteBlendMode _sprite_blend_mode { SpriteBlendMode::Alpha };
 };
 } // namespace fresh
-#endif // FRESHENGINE_SPRITE_RESOURCE_HPP

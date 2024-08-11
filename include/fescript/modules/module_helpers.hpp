@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../fescript_token.hpp"
+#include <fescript/fescript_token.hpp>
 
 #define DEFINE_MODULE_CLASS(name, module_name, arg_count) \
               class Fescript##module_name##name : public FescriptCallable { \
@@ -13,12 +13,12 @@
 #define DEFINE_MEMBER_MODULE_CLASS(name, module_name, arg_count, self_type) \
               class Fescript##module_name##name : public FescriptCallable { \
                   public:                                                   \
-                    Fescript##module_name##name(std::shared_ptr<##self_type> self) : _self{self} {} \
+                    Fescript##module_name##name(std::shared_ptr<self_type> self) : _self{self} {} \
                     [[nodiscard]] int arity() override { return arg_count; } \
                     [[nodiscard]] std::string to_string() override { return #name; } \
                     [[nodiscard]] Object call(Interpreter &interpreter, std::vector<Object> arguments) override; \
                   private:                                                  \
-                    std::shared_ptr<##self_type> _self; \
+                    std::shared_ptr<self_type> _self; \
                   };
 
 #define ERR_CHECK_TYPE(fn_name, arg_count, type_str, type_index) \

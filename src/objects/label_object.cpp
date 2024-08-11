@@ -1,6 +1,6 @@
-#include "../../include/freshengine.hpp"
-#include "../../include/fescript/wrappers/fescript_base_object.hpp"
-#include "../../include/fescript/fescript_array.hpp"
+#include <fescript/wrappers/fescript_base_object.hpp>
+#include <fescript/fescript_array.hpp>
+#include <freshengine.hpp>
 
 namespace fresh {
 LabelObject::LabelObject() {
@@ -158,7 +158,7 @@ void LabelObject::initialize_label_font_surface() noexcept {
   }
 }
 
-[[nodiscard]] void LabelObject::set(const fescript::Token& name, fescript::Object value) {
+void LabelObject::set(const fescript::Token& name, fescript::Object value) {
   SET_BASE_OBJECT_PROPERTIES()
   else if(name.lexeme == "background_red") this->_bg.r = static_cast<idk::i32>(std::get<LongDoubleIndex>(value));
   else if(name.lexeme == "background_green") this->_bg.g = static_cast<idk::i32>(std::get<LongDoubleIndex>(value));

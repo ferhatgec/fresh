@@ -1,7 +1,7 @@
-#include "../../../include/fescript/wrappers/fescript_music_player_object.hpp"
-#include "../../../include/objects/camera_object.hpp"
-#include "../../../include/objects/animation_player_object.hpp"
-#include "../../../include/objects/music_player_object.hpp"
+#include <fescript/wrappers/fescript_music_player_object.hpp>
+#include <objects/animation/animation_player_object.hpp>
+#include <objects/camera_object.hpp>
+#include <objects/music_player_object.hpp>
 
 namespace fescript {
 __idk_nodiscard Object FescriptMusicPlayerObjectMemberLoadMusicSource::call(Interpreter& interpreter, std::vector <Object> arguments) {

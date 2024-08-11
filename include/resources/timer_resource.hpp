@@ -1,7 +1,6 @@
-#ifndef FRESHENGINE_TIMER_RESOURCE_HPP
-#define FRESHENGINE_TIMER_RESOURCE_HPP
+#pragma once
 
-#include "../../libs/idk/idk/types/predefined.hpp"
+#include <types/predefined.hpp>
 
 namespace fresh {
 class TimerResource {
@@ -38,5 +37,4 @@ private:
   bool _started { false };
   bool _paused { false };
 };
-} // namespace
-#endif // FRESHENGINE_TIMER_RESOURCE_HPP
+} // namespace fresh

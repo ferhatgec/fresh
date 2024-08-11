@@ -1,4 +1,4 @@
-#include "../../include/resources/audio_resource.hpp"
+#include <resources/audio_resource.hpp>
 
 namespace fresh {
 idk::u16 AudioResource::_channel{0_u16};

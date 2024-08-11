@@ -1,7 +1,6 @@
-#ifndef FRESHENGINE_AUDIO_RESOURCE_HPP
-#define FRESHENGINE_AUDIO_RESOURCE_HPP
+#pragma once
 
-#include "../../libs/idk/idk/types/stringview.hpp"
+#include <types/stringview.hpp>
 #include "../../libs/SDL_mixer/include/SDL_mixer.h"
 
 namespace fresh {
@@ -84,4 +83,3 @@ private:
   static idk::u16 _channel;
 };
 } // namespace fresh
-#endif // FRESHENGINE_AUDIO_RESOURCE_HPP

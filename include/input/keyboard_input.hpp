@@ -1,8 +1,7 @@
-#ifndef FRESHENGINE_KEYBOARD_INPUT_HPP
-#define FRESHENGINE_KEYBOARD_INPUT_HPP
+#pragma once
 
-#include "../../libs/idk/idk/types/predefined.hpp"
 #include "../../libs/SDL/include/SDL.h"
+#include <types/predefined.hpp>
 #include <unordered_map>
 
 namespace fresh {
@@ -24,4 +23,3 @@ public:
   is_key_released(idk::u8 key) noexcept;
 };
 } // namespace fresh
-#endif // FRESHENGINE_KEYBOARD_INPUT_HPP

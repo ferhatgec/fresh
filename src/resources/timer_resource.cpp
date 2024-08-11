@@ -1,4 +1,4 @@
-#include "../../include/resources/timer_resource.hpp"
+#include <resources/timer_resource.hpp>
 #include "../../libs/SDL/include/SDL.h"
 #include <iostream>
 

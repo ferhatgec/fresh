@@ -1,4 +1,4 @@
-#include "../../include/fes/fes_ast.hpp"
+#include <fes/fes_ast.hpp>
 
 namespace fresh {
 namespace fes {

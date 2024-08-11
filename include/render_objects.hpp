@@ -1,9 +1,4 @@
-//
-// Created by gech on 2/2/2024.
-//
-
-#ifndef FRESHENGINE_RENDER_OBJECTS_HPP
-#define FRESHENGINE_RENDER_OBJECTS_HPP
+#pragma once
 
 #include "objects/base_object.hpp"
 #include <vector>
@@ -21,5 +16,3 @@ public:
   static idk::f80 delta_ms;
 };
 } // namespace fresh
-
-#endif // FRESHENGINE_RENDER_OBJECTS_HPP

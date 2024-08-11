@@ -1,7 +1,7 @@
-#include "../../include/fescript/fescript_array.hpp"
-#include "../../include/fescript/fescript_expr.hpp"
-#include "../../include/fescript/fescript_interpreter.hpp"
-#include "../../include/fescript/fescript_runtime_error.hpp"
+#include <fescript/fescript_array.hpp>
+#include <fescript/fescript_expr.hpp>
+#include <fescript/fescript_interpreter.hpp>
+#include <fescript/fescript_runtime_error.hpp>
 
 namespace fescript {
 FescriptArray::FescriptArray() {

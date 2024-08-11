@@ -1,7 +1,7 @@
-#include "../../include/objects/animation_player_object.hpp"
-#include "../../include/fescript/wrappers/fescript_base_object.hpp"
-#include "../../include/fescript/fescript_array.hpp"
-#include "../../include/objects/camera_object.hpp"
+#include <objects/animation/animation_player_object.hpp>
+#include <objects/camera_object.hpp>
+#include <fescript/wrappers/fescript_base_object.hpp>
+#include <fescript/fescript_array.hpp>
 
 // TODO: add reverse animation support (run_backwards).
 namespace fresh {
@@ -35,7 +35,7 @@ void AnimationPlayerObject::sync(bool is_sync_with_camera) noexcept {
   APPLY_DELTAS()
 }
 
-[[nodiscard]] void AnimationPlayerObject::set(const fescript::Token& name, fescript::Object value) {
+void AnimationPlayerObject::set(const fescript::Token& name, fescript::Object value) {
   SET_BASE_OBJECT_PROPERTIES()
   else {
     std::cout << "Engine [language] error: AnimationPlayerObject has no field named as '" << name.lexeme << "'.\n";

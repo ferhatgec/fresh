@@ -4,7 +4,7 @@
 // Distributed under the terms of the MIT License.
 //
 
-#include "../../include/fescript/fescript_scanner.hpp"
+#include <fescript/fescript_scanner.hpp>
 
 namespace fescript {
 Scanner::Scanner(std::string_view source) : source{source} {}

@@ -155,7 +155,7 @@ void Editor::overwrite_current_fes_with_preloaded_one(idk::usize resource_id) no
   }
 
   RenderObjects::objects_to_render.clear();
-  id::object_id = 0;
+  Engine::get_instance()->reset_global_id();
   this->_current_resource_id = resource_id;
   this->_preloaded_fes_files.at_without_check_reference(resource_id)._second->generate_objects();
 }

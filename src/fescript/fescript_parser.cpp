@@ -4,8 +4,8 @@
 // Distributed under the terms of the MIT License.
 //
 
-#include "../../include/fescript/fescript_array.hpp"
-#include "../../include/fescript/fescript_parser.hpp"
+#include <fescript/fescript_array.hpp>
+#include <fescript/fescript_parser.hpp>
 
 namespace fescript {
 Parser::Parser(const std::vector<Token> &tokens)

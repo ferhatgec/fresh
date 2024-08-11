@@ -35,6 +35,10 @@
 #define FescriptAudioPlayerObjectIndex 19
 #define FescriptCircleObjectIndex 20
 #define FescriptPolygonObjectIndex 21
+#define FescriptRectangleObjectIndex 22
+#define FescriptRectangleAreaObjectIndex 23
+#define FescriptCircleAreaObjectIndex 24
+#define FescriptPolygonAreaObjectIndex 25
 
 namespace fresh {
 class BaseObject;
@@ -49,6 +53,10 @@ class MusicPlayerObject;
 class AudioPlayerObject;
 class CircleObject;
 class PolygonObject;
+class RectangleObject;
+class RectangleAreaObject;
+class CircleAreaObject;
+class PolygonAreaObject;
 } // namespace fresh
 
 namespace fescript {
@@ -81,7 +89,11 @@ using Object =
                std::shared_ptr<fresh::MusicPlayerObject>,
                std::shared_ptr<fresh::AudioPlayerObject>,
                std::shared_ptr<fresh::CircleObject>,
-               std::shared_ptr<fresh::PolygonObject>>;
+               std::shared_ptr<fresh::PolygonObject>,
+               std::shared_ptr<fresh::RectangleObject>,
+               std::shared_ptr<fresh::RectangleAreaObject>,
+               std::shared_ptr<fresh::CircleAreaObject>,
+               std::shared_ptr<fresh::PolygonAreaObject>>;
 
 class Token {
 public:
@@ -98,6 +110,4 @@ public:
   int line;
   bool is_variadic;
 };
-
-static inline Token empty_token = Token(TokenType::SEMICOLON, "", std::string(""), -1);
-}// namespace fescript
+} // namespace fescript

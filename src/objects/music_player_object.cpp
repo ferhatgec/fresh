@@ -1,8 +1,9 @@
-#include "../../include/objects/music_player_object.hpp"
-#include "../../include/render_objects.hpp"
-#include "../../include/fescript/wrappers/fescript_base_object.hpp"
-#include "../../include/fescript/fescript_array.hpp"
-#include "../../include/objects/camera_object.hpp"
+#include <fescript/wrappers/fescript_base_object.hpp>
+#include <fescript/fescript_array.hpp>
+#include <objects/music_player_object.hpp>
+#include <objects/camera_object.hpp>
+
+#include <render_objects.hpp>
 #include <iostream>
 
 namespace fresh {
@@ -36,7 +37,7 @@ MusicPlayerObject::sync(bool is_sync_with_camera) noexcept {
   APPLY_DELTAS()
 }
 
-[[nodiscard]] void MusicPlayerObject::set(const fescript::Token& name, fescript::Object value) {
+void MusicPlayerObject::set(const fescript::Token& name, fescript::Object value) {
   SET_BASE_OBJECT_PROPERTIES()
   else {
     std::cout << "Engine [language] error: MusicPlayerObject has no field named as '" << name.lexeme << "'.\n";

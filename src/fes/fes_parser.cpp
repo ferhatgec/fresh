@@ -1,4 +1,4 @@
-#include "../../include/fes/fes_parser.hpp"
+#include <fes/fes_parser.hpp>
 
 #define accesstok(index) this->get_tokenizer()._tokens.at_without_check_reference(index)
 

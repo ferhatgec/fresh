@@ -1,5 +1,5 @@
+#include <fescript/modules/fescript_math.hpp>
 #include <iostream>
-#include "../../../include/fescript/modules/fescript_math.hpp"
 
 namespace fescript {
 __idk_nodiscard Object FescriptMathAbs::call(Interpreter &interpreter, std::vector<Object> arguments) {

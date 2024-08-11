@@ -1,9 +1,9 @@
 #pragma once
 
 #include "fescript_base_object.hpp"
-#include "../modules/module_helpers.hpp"
-#include "../../objects/audio_player_object.hpp"
-#include "../../objects/base_object.hpp"
+#include <fescript/modules/module_helpers.hpp>
+#include <objects/audio_player_object.hpp>
+#include <objects/base_object.hpp>
 
 #define AUDIO_OBJECT_FUNCTION(name, arg_count) DEFINE_MODULE_CLASS(name, AudioPlayerObjectMember, arg_count)
 

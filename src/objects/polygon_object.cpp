@@ -1,6 +1,6 @@
-#include <objects/polygon_object.hpp>
 #include <fescript/wrappers/fescript_base_object.hpp>
 #include <fescript/fescript_array.hpp>
+#include <objects/polygon_object.hpp>
 #include <freshengine.hpp>
 #include <algorithm>
 
@@ -17,6 +17,7 @@ PolygonObject::~PolygonObject() {
 
 void PolygonObject::sync(bool is_sync_with_camera) noexcept {
   this->_code.interpret_update();
+  this->sync_pos_with_camera(is_sync_with_camera);
   if(this->_disabled)
     return;
   this->_draw_polygon();
@@ -101,7 +102,7 @@ void PolygonObject::_build_edge_resource_table() noexcept {
   }
 }
 
-[[nodiscard]] void PolygonObject::set(const fescript::Token& name, fescript::Object value) {
+void PolygonObject::set(const fescript::Token& name, fescript::Object value) {
   SET_BASE_OBJECT_PROPERTIES()
   else {
     std::cout << "Engine [language] error: PolygonObject has no field named as '" << name.lexeme << "'.\n";

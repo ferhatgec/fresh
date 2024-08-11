@@ -4,7 +4,7 @@
 // Distributed under the terms of the MIT License.
 //
 
-#include "../../include/fescript/fescript_resolver.hpp"
+#include <fescript/fescript_resolver.hpp>
 
 namespace fescript {
 Resolver::Resolver(Interpreter &interpreter) : interpreter{interpreter} {}

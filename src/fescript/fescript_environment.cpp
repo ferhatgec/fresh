@@ -4,7 +4,7 @@
 // Distributed under the terms of the MIT License.
 //
 
-#include "../../include/fescript/fescript_environment.hpp"
+#include <fescript/fescript_environment.hpp>
 
 namespace fescript {
 Environment::Environment()

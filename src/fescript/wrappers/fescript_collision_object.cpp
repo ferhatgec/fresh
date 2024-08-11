@@ -1,5 +1,5 @@
-#include "../../../include/fescript/wrappers/fescript_collision_object.hpp"
-#include "../../../include/objects/collision_object.hpp"
+#include <fescript/wrappers/fescript_collision_object.hpp>
+#include <objects/collision_object.hpp>
 
 namespace fescript {
 CollisionObjectWrapper::CollisionObjectWrapper() {

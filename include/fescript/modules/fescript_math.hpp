@@ -1,9 +1,9 @@
 #pragma once
 
 #include "module_helpers.hpp"
-#include "../fescript_class.hpp"
-#include "../fescript_callable.hpp"
-#include "../../../libs/idk/idk/types/predefined.hpp"
+#include <fescript/fescript_class.hpp>
+#include <fescript/fescript_callable.hpp>
+#include <types/predefined.hpp>
 
 #define MATH_GLOBAL_CONSTANT(name, value) this->globals->define(name, static_cast<idk::f80>(value));
 #define MATH_GLOBAL_FUNCTION(name, def_type) this->globals->define(name, std::make_shared<##def_type>());

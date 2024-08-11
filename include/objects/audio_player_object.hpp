@@ -1,10 +1,10 @@
 #pragma once
 
-#include "../../libs/idk/idk/types/predefined.hpp"
-#include "../../libs/idk/idk/types/stringview.hpp"
-#include "../../include/fescript/fescript_token.hpp"
 #include "base_object.hpp"
-#include "../resources/audio_resource.hpp"
+#include <types/predefined.hpp>
+#include <types/stringview.hpp>
+#include <fescript/fescript_token.hpp>
+#include <resources/audio_resource.hpp>
 
 #define CHECK_IS_AUDIO_RESOURCE_EMPTY(function_name) \
   if(!this->_audio_resource) {          \
@@ -33,7 +33,7 @@ public:
   void
   sync(bool is_sync_with_camera = false) noexcept override;
 
-  [[nodiscard]] void set(const fescript::Token& name, fescript::Object value) override;
+  void set(const fescript::Token& name, fescript::Object value) override;
 
   void
   load_audio_source(const idk::StringViewChar& audio_file_path,

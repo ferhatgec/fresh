@@ -1,4 +1,4 @@
-#include "../../include/freshengine.hpp"
+#include <freshengine.hpp>
 
 namespace fresh {
 MouseInput::MouseInput() {}

@@ -4,10 +4,10 @@
 // Distributed under the terms of the MIT License.
 //
 
-#include "../../include/fescript/fescript_instance.hpp"
-#include "../../include/fescript/fescript_class.hpp"
-#include "../../include/fescript/fescript_error.hpp"
-#include "../../include/fescript/fescript_function.hpp"
+#include <fescript/fescript_instance.hpp>
+#include <fescript/fescript_class.hpp>
+#include <fescript/fescript_error.hpp>
+#include <fescript/fescript_function.hpp>
 
 namespace fescript {
 FescriptInstance::FescriptInstance()

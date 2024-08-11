@@ -21,7 +21,7 @@ public:
     return "polygonobject";
   }
 
-  [[nodiscard]] void set(const fescript::Token& name, fescript::Object value) override;
+  void set(const fescript::Token& name, fescript::Object value) override;
 
   __idk_nodiscard
   PolygonResource& get_polygon_resource() noexcept;

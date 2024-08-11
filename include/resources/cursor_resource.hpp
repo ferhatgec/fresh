@@ -1,5 +1,4 @@
-#ifndef FRESHENGINE_CURSOR_RESOURCE_HPP
-#define FRESHENGINE_CURSOR_RESOURCE_HPP
+#pragma once
 
 #include "sprite_resource.hpp"
 
@@ -48,4 +47,3 @@ private:
   SDL_Rect _pos_info;
 };
 } // namespace fresh
-#endif // FRESHENGINE_CLIPBOARD_RESOURCE_HPP

@@ -6,7 +6,7 @@ namespace fresh {
 CircleResource::CircleResource(idk::f32 radius, idk::i32 segments, bool is_filled) noexcept {
   if(radius < 0.f)
     std::cout << "Engine warning: CircleResource radius must be equal or greater than 0.";
-  if(segments <= 0.f)
+  if(segments < 0.f)
     std::cout << "Engine warning: CircleResource segments must be greater than 0.";
   this->_radius = fabsf(radius);
   this->_segments = abs(segments);

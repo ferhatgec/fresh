@@ -1,9 +1,9 @@
 #pragma once
 
-#include "../../libs/idk/idk/types/predefined.hpp"
-#include "../../libs/idk/idk/types/stringview.hpp"
-#include "../../include/fescript/fescript_token.hpp"
-#include "base_object.hpp"
+#include <types/predefined.hpp>
+#include <types/stringview.hpp>
+#include <fescript/fescript_token.hpp>
+#include <objects/base_object.hpp>
 
 namespace fresh {
 // AnimationFrameObject inherits BaseObject BUT, we don't care about its position_info.
@@ -25,7 +25,7 @@ public:
     return "animationframeobject";
   }
 
-  [[nodiscard]] void set(const fescript::Token& name, fescript::Object value) override;
+  void set(const fescript::Token& name, fescript::Object value) override;
 protected:
   idk::f64 _start_ms, _end_ms;
   std::shared_ptr<BaseObject> _obj;

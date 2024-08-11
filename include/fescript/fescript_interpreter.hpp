@@ -18,7 +18,18 @@
 #include "fescript_runtime_error.hpp"
 #include "fescript_stmt.hpp"
 
-#include "../../libs/idk/idk/types/stringview.hpp"
+#include <types/stringview.hpp>
+
+#define SET_VISIT_IMPL_OBJECT(object_index) \
+case object_index: { \
+  std::get<object_index>(object)->set(expr->name, value); \
+  return value; \
+}
+
+#define GET_STRINGIFY_IMPL_OBJECT(object_index) \
+case object_index: { \
+  return std::get<object_index>(object)->to_string();\
+}
 
 // reserved variable names:
 // * pos_x = x coord. position of object

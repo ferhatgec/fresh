@@ -1,7 +1,9 @@
-#include "../../../include/fescript/wrappers/fescript_animation_player_object.hpp"
-#include "../../../include/fescript/fescript_interpreter.hpp"
-#include "../../../include/objects/animation_player_object.hpp"
-#include "../../../include/objects/camera_object.hpp"
+#include <fescript/wrappers/animation/fescript_animation_player_object.hpp>
+#include <fescript/fescript_interpreter.hpp>
+
+#include <objects/animation/animation_player_object.hpp>
+#include <objects/camera_object.hpp>
+
 namespace fescript {
 __idk_nodiscard Object FescriptAnimationPlayerObjectMemberPushFrame::call(fescript::Interpreter& interpreter,
                                                                           std::vector<Object> arguments) {

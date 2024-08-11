@@ -4,7 +4,7 @@
 // Distributed under the terms of the MIT License.
 //
 
-#include "../../include/fescript/fescript_expr.hpp"
+#include <fescript/fescript_expr.hpp>
 
 namespace fescript {
 Expr::~Expr() {

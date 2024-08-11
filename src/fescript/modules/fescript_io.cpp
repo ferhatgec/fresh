@@ -1,9 +1,11 @@
+#include <fescript/fescript_interpreter.hpp>
+#include <fescript/fescript_array.hpp>
+
+#include <fescript/modules/fescript_io.hpp>
+
 #include <iostream>
 #include <fstream>
 #include <filesystem>
-#include "../../../include/fescript/fescript_interpreter.hpp"
-#include "../../../include/fescript/fescript_array.hpp"
-#include "../../../include/fescript/modules/fescript_io.hpp"
 
 namespace fescript {
 __idk_nodiscard Object FescriptIOPrint::call(Interpreter& interpreter, std::vector <Object> arguments) {

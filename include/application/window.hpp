@@ -1,10 +1,10 @@
-#ifndef FRESHENGINE_WINDOW_HPP
-#define FRESHENGINE_WINDOW_HPP
+#pragma once
 
 #include <tuple>
-#include "../../libs/idk/idk/types/predefined.hpp"
-#include "../../libs/idk/idk/types/stringview.hpp"
-#include "../../libs/idk/idk/types/tuple.hpp"
+#include <types/predefined.hpp>
+#include <types/stringview.hpp>
+#include <types/tuple.hpp>
+
 #include "../../libs/SDL/include/SDL.h"
 
 namespace fresh {
@@ -115,4 +115,3 @@ private:
   };
 };
 } // namespace fresh
-#endif // FRESHENGINE_WINDOW_HPP

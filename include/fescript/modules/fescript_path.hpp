@@ -1,10 +1,10 @@
 #pragma once
 
-#include <functional>
 #include "module_helpers.hpp"
-#include "../fescript_class.hpp"
-#include "../fescript_callable.hpp"
-#include "../../../libs/idk/idk/types/predefined.hpp"
+#include <fescript/fescript_class.hpp>
+#include <fescript/fescript_callable.hpp>
+#include <types/predefined.hpp>
+#include <functional>
 
 #define PATH_MODULE(name, arg_count) DEFINE_MODULE_CLASS(name, Path, arg_count)
 

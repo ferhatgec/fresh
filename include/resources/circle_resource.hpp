@@ -5,7 +5,9 @@
 namespace fresh {
 class CircleResource {
 public:
-  CircleResource(idk::f32 radius = 16.0f, idk::i32 segments = 30, bool is_filled = false) noexcept;
+  friend class CircleObject;
+
+  CircleResource(idk::f32 radius = 16.0f, idk::i32 segments = 0, bool is_filled = true) noexcept;
   ~CircleResource() noexcept;
 
   __idk_nodiscard

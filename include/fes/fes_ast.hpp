@@ -2,14 +2,14 @@
 // Created by gech on 2/5/2024.
 //
 
-#ifndef FRESHENGINE_FES_AST_HPP
-#define FRESHENGINE_FES_AST_HPP
+#pragma once
 
-#include "../../libs/idk/idk/types/predefined.hpp"
-#include "../../libs/idk/idk/types/stringview.hpp"
-#include "../../libs/idk/idk/containers/vector.hpp"
+#include <types/predefined.hpp>
+#include <types/stringview.hpp>
+#include <containers/vector.hpp>
 #include "fes_keywords.hpp"
 #include <memory>
+
 //{
 // [Project,
 //  project_name = "Test Game",
@@ -151,5 +151,3 @@ public:
 };
 }
 }
-
-#endif // FRESHENGINE_FES_AST_HPP

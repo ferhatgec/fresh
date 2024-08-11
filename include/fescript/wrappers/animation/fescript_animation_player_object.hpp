@@ -1,7 +1,7 @@
 #pragma once
 
-#include "fescript_base_object.hpp"
-#include "../modules/module_helpers.hpp"
+#include <fescript/wrappers/fescript_base_object.hpp>
+#include <fescript/modules/module_helpers.hpp>
 
 #define ANIMATION_PLAYER_OBJECT_FUNCTION(name, arg_count) DEFINE_MODULE_CLASS(name, AnimationPlayerObjectMember, arg_count)
 

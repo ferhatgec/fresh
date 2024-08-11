@@ -6,7 +6,7 @@
 #define FRESHENGINE_INCLUDE_EDITOR_OPERATION_HPP
 
 #include "../fes/fes_keywords.hpp"
-#include "../../libs/idk/idk/types/stringview.hpp"
+#include <types/stringview.hpp>
 #include "../../libs/idk/idk/containers/stack.hpp"
 #include <string>
 

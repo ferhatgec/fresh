@@ -1,4 +1,4 @@
-#include "../../include/resources/font_resource.hpp"
+#include <resources/font_resource.hpp>
 
 namespace fresh {
 FontResource::FontResource() {

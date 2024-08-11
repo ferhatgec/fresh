@@ -1,7 +1,7 @@
-#include "../../include/objects/animation_frame_object.hpp"
-#include "../../include/objects/camera_object.hpp"
-#include "../../include/fescript/wrappers/fescript_base_object.hpp"
-#include "../../include/fescript/fescript_array.hpp"
+#include <objects/animation/animation_frame_object.hpp>
+#include <objects/camera_object.hpp>
+#include <fescript/wrappers/fescript_base_object.hpp>
+#include <fescript/fescript_array.hpp>
 
 namespace fresh {
 AnimationFrameObject::AnimationFrameObject(idk::f64 start_ms,
@@ -25,7 +25,7 @@ void AnimationFrameObject::sync(bool is_sync_with_camera) noexcept {
   APPLY_DELTAS()
 }
 
-[[nodiscard]] void AnimationFrameObject::set(const fescript::Token& name, fescript::Object value) {
+void AnimationFrameObject::set(const fescript::Token& name, fescript::Object value) {
   SET_BASE_OBJECT_PROPERTIES()
   else {
     std::cout << "Engine [language] error: AnimationFrameObject has no field named as '" << name.lexeme << "'.\n";

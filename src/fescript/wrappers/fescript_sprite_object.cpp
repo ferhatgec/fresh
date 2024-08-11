@@ -1,6 +1,9 @@
 #include "../../../include/fescript/wrappers/fescript_sprite_object.hpp"
 #include "../../../include/objects/sprite_object.hpp"
 
+#include <fescript/wrappers/fescript_sprite_object.hpp>
+#include <objects/sprite_object.hpp>
+
 namespace fescript {
 __idk_nodiscard Object FescriptSpriteObjectMemberInitSprite::call(Interpreter& interpreter, std::vector <Object> arguments) {
   if(!this->_self) {

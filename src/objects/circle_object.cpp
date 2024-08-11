@@ -4,25 +4,24 @@
 #include <freshengine.hpp>
 
 namespace fresh {
-CircleObject::CircleObject() {
-}
-
 CircleObject::CircleObject(CircleResource resource, ColorResource color)
   : _resource{std::move(resource)}, _color{std::move(color)} {
-}
-
-CircleObject::~CircleObject() noexcept {
+  if(this->get_circle_resource().get_is_filled() && this->get_circle_resource().get_segments() > 0) {
+    std::cout << "Engine info: Segments are only for unfilled circles. So, segments are reset to 0\n";
+    this->get_circle_resource().get_segments() = 0;
+  }
 }
 
 void CircleObject::sync(bool is_sync_with_camera) noexcept {
   this->_code.interpret_update();
-  if(this->_disabled)
+  this->sync_pos_with_camera(is_sync_with_camera);
+  if(this->_disabled || !this->_visible)
     return;
   this->_draw_circle();
   APPLY_DELTAS()
 }
 
-[[nodiscard]] void CircleObject::set(const fescript::Token& name, fescript::Object value) {
+void CircleObject::set(const fescript::Token& name, fescript::Object value) {
   SET_BASE_OBJECT_PROPERTIES()
   else {
     std::cout << "Engine [language] error: CircleObject has no field named as '" << name.lexeme << "'.\n";
@@ -43,6 +42,7 @@ ColorResource& CircleObject::get_color_resource() noexcept {
 void CircleObject::_draw_circle() noexcept {
   if(this->_resource.get_radius() <= 0)
     return;
+
   if(SDL_SetRenderDrawColor(Engine::get_instance()->get_window()->get_renderer(),
                             this->_color.get_red(),
                             this->_color.get_green(),
@@ -52,65 +52,42 @@ void CircleObject::_draw_circle() noexcept {
     this->_disabled = true;
     return;
   }
-  SDL_SetRenderDrawColor(Engine::get_instance()->get_window()->get_renderer(),
-                         this->_color.get_red(),
-                         this->_color.get_green(),
-                         this->_color.get_blue(),
-                         this->_color.get_alpha());
-  if(this->_resource.get_is_filled()) [[likely]]
-    this->_draw_filled_circle();
-  else [[unlikely]]
+
+  if(f32_nearly_equals(this->get_circle_resource().get_segments(), 0.f)
+    || this->_resource.get_is_filled()) [[likely]] {
+    idk::f32 x { 0.f };
+    idk::f32 y = this->get_circle_resource().get_radius();
+    idk::f32 p = 1 - y;
+
+    while(x < y || f32_nearly_equals(x, y)) {
+      this->_draw_circle_points(x, y);
+
+      if(p < 0.f) {
+        p += 2.f * x + 3.f;
+      } else {
+        p += 2.f * (x - y) + 5.f;
+        --y;
+      }
+      ++x;
+    }
+  } else [[unlikely]] {
     this->_draw_unfilled_circle();
-}
-
-void CircleObject::_draw_filled_circle() noexcept {
-  float x = 0.0f;
-  float y = this->_resource.get_radius();
-  float d = 3.0f - 2.0f * this->_resource.get_radius();
-  float centerX = this->_pos_info.x;
-  float centerY = this->_pos_info.y;
-
-  while (y >= x) {
-    this->_draw_horizontal_line(centerX - x, centerX + x, centerY + y);
-    this->_draw_horizontal_line(centerX - y, centerX + y, centerY + x);
-    this->_draw_horizontal_line(centerX - x, centerX + x, centerY - y);
-    this->_draw_horizontal_line(centerX - y, centerX + y, centerY - x);
-
-    x++;
-
-    if(d > 0.0f) {
-      y--;
-      d = d + 4.0f * (x - y) + 10.0f;
-    } else
-      d = d + 4.0f * x + 6.0f;
   }
 }
 
+// this uses segments so trig functions which is slow when segments are large.
 void CircleObject::_draw_unfilled_circle() noexcept {
-  idk::f32 x = 0;
-  idk::f32 y = this->_resource.get_radius();
-  idk::f32 d = 3.0f - 2.0f * this->_resource.get_radius();
-  idk::f32 centerX = this->_pos_info.x;
-  idk::f32 centerY = this->_pos_info.y;
+  // Use segment-based approach
+  const auto& seg = this->get_circle_resource().get_segments();
+  const auto& rad = this->get_circle_resource().get_radius();
+  const auto& xc = this->_render_pos_info.x;
+  const auto& yc = this->_render_pos_info.y;
 
-  while (y >= x) {
-    // Draw the eight octants
-    this->_draw_single_point(centerX + x, centerY + y);
-    this->_draw_single_point(centerX - x, centerY + y);
-    this->_draw_single_point(centerX + x, centerY - y);
-    this->_draw_single_point(centerX - x, centerY - y);
-    this->_draw_single_point(centerX + y, centerY + x);
-    this->_draw_single_point(centerX - y, centerY + x);
-    this->_draw_single_point(centerX + y, centerY - x);
-    this->_draw_single_point(centerX - y, centerY - x);
+  idk::f32 angle_step = 2.f * idk::pi / static_cast<idk::f32>(seg);
 
-    x++;
-
-    if (d > 0.0f) {
-      y--;
-      d = d + 4.0f * (x - y) + 10.0f;
-    } else
-      d = d + 4.0f * x + 6.0f;
+  for(std::size_t i = 0; i < seg; i++) {
+    const idk::f32 angle = static_cast<idk::f32>(i) * angle_step;
+    this->_draw_single_point(xc + rad * std::cosf(angle), yc + rad * std::sinf(angle));
   }
 }
 
@@ -121,4 +98,26 @@ void CircleObject::_draw_horizontal_line(idk::f32 x1, idk::f32 x2, idk::f32 y) n
 void CircleObject::_draw_single_point(idk::f32 x, idk::f32 y) noexcept {
   SDL_RenderDrawPointF(Engine::get_instance()->get_window()->get_renderer(), x, y);
 }
+
+void CircleObject::_draw_circle_points(const idk::f32& x, const idk::f32& y) noexcept {
+  const auto& xc = this->_render_pos_info.x;
+  const auto& yc = this->_render_pos_info.y;
+
+  this->_draw_single_point(xc + x, yc + y);
+  this->_draw_single_point(xc - x, yc + y);
+  this->_draw_single_point(xc + x, yc - y);
+  this->_draw_single_point(xc - x, yc - y);
+  this->_draw_single_point(xc + y, yc + x);
+  this->_draw_single_point(xc - y, yc + x);
+  this->_draw_single_point(xc + y, yc - x);
+  this->_draw_single_point(xc - y, yc - x);
+
+  if(this->get_circle_resource().get_is_filled()) {
+    this->_draw_horizontal_line(xc - x, xc + x, yc + y);
+    this->_draw_horizontal_line(xc - x, xc + x, yc - y);
+    this->_draw_horizontal_line(xc - y, xc + y, yc + x);
+    this->_draw_horizontal_line(xc - y, xc + y, yc - x);
+  }
+}
+
 } // namespace fresh

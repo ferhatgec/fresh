@@ -1,4 +1,4 @@
-#include "../../include/fes/fes_tokenizer.hpp"
+#include <fes/fes_tokenizer.hpp>
 #include <fstream>
 #include <string>
 

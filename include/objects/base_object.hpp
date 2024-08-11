@@ -1,27 +1,20 @@
-#ifndef FRESHENGINE_BASE_OBJECT_HPP
-#define FRESHENGINE_BASE_OBJECT_HPP
+#pragma once
 
 #include <vector>
 
-#include "../../libs/idk/idk/types/predefined.hpp"
-#include "../../libs/idk/idk/utilities/type_traits.hpp"
-#include "../../libs/idk/idk/types/stringview.hpp"
+#include <types/predefined.hpp>
+#include <types/stringview.hpp>
+#include <utilities/type_traits.hpp>
+
+#include <fescript/fescript_interpreter.hpp>
+#include <fescript/fescript_token.hpp>
 
 #include "../../libs/SDL/include/SDL.h"
 
-#include "../resources/id_resource.hpp"
-
-#include "../fescript/fescript_interpreter.hpp"
-#include "../fescript/fescript_token.hpp"
 
 #define APPLY_DELTAS() for(auto& object: this->_sub_objects) { \
-                        if(object->_object_def == "") { \
-                          object->_pos_info.x -= this->delta_x(); \
-                          object->_pos_info.y -= this->delta_y(); \
-                        } else { \
-                          object->_pos_info.x += this->delta_x(); \
-                          object->_pos_info.y += this->delta_y(); \
-                        } \
+                        object->_pos_info.x += this->delta_x(); \
+                        object->_pos_info.y += this->delta_y(); \
                         object->_pos_info.w += this->delta_w(); \
                         object->_pos_info.h += this->delta_h(); \
                         object->sync(is_sync_with_camera); \
@@ -32,11 +25,14 @@
 namespace fresh {
 // BaseObject is must be inherited if any object gonna be rendered with any position
 // visibility etc. data.
-class BaseObject : public std::enable_shared_from_this<BaseObject> {
+class BaseObject {
 public:
   friend class SpriteObject; // all predefined objects are friend class of BaseObject by default.
   friend class LabelObject;
   friend class AreaObject;
+  friend class RectangleAreaObject;
+  friend class CircleAreaObject;
+  friend class PolygonAreaObject;
   friend class CollisionObject;
   friend class CameraObject;
   friend class FesLoaderResource;
@@ -48,6 +44,7 @@ public:
   friend class AnimationFrameObject;
   friend class CircleObject;
   friend class PolygonObject;
+  friend class RectangleObject;
   friend class Engine;
   friend class Editor;
   friend class fescript::Interpreter;
@@ -82,6 +79,10 @@ public:
   get_position_info() noexcept;
 
   __idk_nodiscard
+  SDL_FRect&
+  get_raw_position_info() noexcept;
+
+  __idk_nodiscard
   const idk::u64&
   get_object_id() noexcept;
 
@@ -105,7 +106,7 @@ public:
   push_object(std::shared_ptr<BaseObject> sub_object) noexcept;
 
   [[nodiscard]] std::string to_string() { return "baseobject"; }
-  [[nodiscard]] virtual void set(const fescript::Token& name, fescript::Object value);
+  virtual void set(const fescript::Token& name, fescript::Object value);
 
   __idk_nodiscard
   std::vector<std::shared_ptr<BaseObject>>&
@@ -115,7 +116,6 @@ public:
   idk::StringViewChar&
   get_name() noexcept;
 
-  __idk_nodiscard
   void load_fescript_rt(const idk::StringViewChar& script, bool is_file = false) noexcept;
 
   void push_to_sub_objects(std::shared_ptr<BaseObject> obj) noexcept;
@@ -123,6 +123,13 @@ public:
   __idk_nodiscard
   std::shared_ptr<BaseObject>
   get_object_by_path(const std::string& path) noexcept;
+
+private:
+  [[nodiscard]]
+  std::shared_ptr<BaseObject>
+  _give_shared_ptr() noexcept;
+
+  std::shared_ptr<BaseObject> _shared_ptr_this;
 protected:
   idk::StringViewChar _object_def;
   std::vector<std::shared_ptr<BaseObject>> _sub_objects;
@@ -151,5 +158,3 @@ protected:
   idk::StringViewChar imported_from;
 };
 } // namespace fresh
-
-#endif // FRESHENGINE_BASE_OBJECT_HPP

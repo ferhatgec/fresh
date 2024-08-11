@@ -1,9 +1,10 @@
-#include "../../include/freshengine.hpp"
-#include "../../include/fescript/wrappers/fescript_base_object.hpp"
-#include "../../include/fescript/fescript_array.hpp"
+#include <fescript/wrappers/fescript_base_object.hpp>
+#include <fescript/fescript_array.hpp>
+#include <freshengine.hpp>
+#include <objects/physics/circle_area_object.hpp>
 
 #ifdef __FRESH_ENABLE_EDITOR
-#include "../../include/editor/editor.hpp"
+#  include <editor/editor.hpp>
 #endif
 
 namespace fresh {
@@ -12,8 +13,8 @@ SpriteObject::SpriteObject() {
   _gizmo = std::make_shared<GuiBaseObject>();
 #endif
   this->_object_def = "spriteobject";
-  this->_object_id = id::object_id;
-  ++id::object_id;
+  this->_object_id = Engine::get_instance()->get_global_id();
+  Engine::get_instance()->increase_global_id();
 }
 
 SpriteObject::SpriteObject(SpriteObject* sprite_object) {
@@ -45,13 +46,13 @@ SpriteObject::SpriteObject(const SpriteResource& sprite_resource, const BaseObje
 
   this->_sprite_resource = const_cast<SpriteResource&>(sprite_resource);
   this->_object_def = "spriteobject";
-  this->_object_id = id::object_id;
+  this->_object_id = Engine::get_instance()->get_global_id();
 
 #ifdef __FRESH_ENABLE_EDITOR
   _gizmo = std::make_shared<GuiBaseObject>();
 #endif
 
-  ++id::object_id;
+  Engine::get_instance()->increase_global_id();
 }
 
 SpriteObject::SpriteObject(SpriteResource&& sprite_resource, BaseObject&& metadata) {
@@ -62,13 +63,13 @@ SpriteObject::SpriteObject(SpriteResource&& sprite_resource, BaseObject&& metada
 
   this->_sprite_resource = idk::move(sprite_resource);
   this->_object_def = "spriteobject";
-  this->_object_id = id::object_id;
+  this->_object_id = Engine::get_instance()->get_global_id();
 
 #ifdef __FRESH_ENABLE_EDITOR
   _gizmo = std::make_shared<GuiBaseObject>();
 #endif
 
-  ++id::object_id;
+  Engine::get_instance()->increase_global_id();
 }
 
 SpriteObject::~SpriteObject() {
@@ -118,7 +119,7 @@ __idk_nodiscard
   }
 }
 
-[[nodiscard]] void SpriteObject::set(const fescript::Token& name, fescript::Object value) {
+void SpriteObject::set(const fescript::Token& name, fescript::Object value) {
   SET_BASE_OBJECT_PROPERTIES()
   else if(name.lexeme == "sprite_resource") this->get_sprite_resource()._texture_path = std::get<StringIndex>(value).data();
   else {

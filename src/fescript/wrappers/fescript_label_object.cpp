@@ -1,5 +1,5 @@
-#include "../../../include/fescript/wrappers/fescript_label_object.hpp"
-#include "../../../include/objects/label_object.hpp"
+#include <fescript/wrappers/fescript_label_object.hpp>
+#include <objects/label_object.hpp>
 
 namespace fescript {
 __idk_nodiscard Object FescriptLabelObjectMemberInitFont::call(Interpreter& interpreter, std::vector <Object> arguments) {

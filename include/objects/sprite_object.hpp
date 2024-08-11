@@ -1,9 +1,8 @@
-#ifndef FRESHENGINE_SPRITE_OBJECT_HPP
-#define FRESHENGINE_SPRITE_OBJECT_HPP
+#pragma once
 
-#include "../resources/sprite_resource.hpp"
-#include "gui/gui_base_object.hpp"
 #include "base_object.hpp"
+#include <resources/sprite_resource.hpp>
+#include <objects/gui/gui_base_object.hpp>
 
 namespace fresh {
 class SpriteObject : public BaseObject {
@@ -46,7 +45,7 @@ public:
     return "spriteobject";
   }
 
-  [[nodiscard]] void set(const fescript::Token& name, fescript::Object value) override;
+  void set(const fescript::Token& name, fescript::Object value) override;
 private:
   __idk_nodiscard
   SDL_BlendMode
@@ -58,6 +57,4 @@ protected:
   bool _still_focus { false };
   SpriteResource _sprite_resource;
 };
-}
-
-#endif // FRESHENGINE_SPRITE_OBJECT_HPP
+} // namespace fresh

@@ -4,9 +4,9 @@
 // Distributed under the terms of the MIT License.
 //
 
-#include "../../include/fescript/fescript_class.hpp"
-#include "../../include/fescript/fescript_function.hpp"
-#include "../../include/fescript/fescript_instance.hpp"
+#include <fescript/fescript_class.hpp>
+#include <fescript/fescript_function.hpp>
+#include <fescript/fescript_instance.hpp>
 
 namespace fescript {
 FescriptClass::FescriptClass(std::string name, std::shared_ptr<FescriptClass> superclass,

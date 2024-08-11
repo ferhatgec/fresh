@@ -1,8 +1,8 @@
 #pragma once
 
-#include <vector>
 #include "animation_frame_object.hpp"
-#include "../resources/timer_resource.hpp"
+#include <resources/timer_resource.hpp>
+#include <vector>
 
 #define MUST_BE_ERROR(obj_value, type_index, error_msg) if(##obj_value.index() != type_index) { std::cout << "Given AnimationPlayerResource frame must be " #error_msg "\n"; std::exit(1); }
 #define MUST_BE_STRING(obj_value) MUST_BE_ERROR(##obj_value, StringIndex, "string")
@@ -35,7 +35,7 @@ public:
     return "animationplayerobject";
   }
 
-  [[nodiscard]] void set(const fescript::Token& name, fescript::Object value) override;
+  void set(const fescript::Token& name, fescript::Object value) override;
 
   void push_frame(const AnimationFrameObject& frame) noexcept;
   void run_animation() noexcept;

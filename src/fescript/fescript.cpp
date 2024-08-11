@@ -4,13 +4,12 @@
 // Distributed under the terms of the MIT License.
 //
 
+#include <fescript/fescript_error.hpp>
+#include <fescript/fescript_interpreter.hpp>
+#include <fescript/fescript_parser.hpp>
+#include <fescript/fescript_resolver.hpp>
+#include <fescript/fescript_scanner.hpp>
 #include <fstream>
-
-#include "../../include/fescript/fescript_error.hpp"
-#include "../../include/fescript/fescript_interpreter.hpp"
-#include "../../include/fescript/fescript_parser.hpp"
-#include "../../include/fescript/fescript_resolver.hpp"
-#include "../../include/fescript/fescript_scanner.hpp"
 
 using namespace fescript;
 

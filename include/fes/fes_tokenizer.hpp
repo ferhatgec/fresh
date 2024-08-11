@@ -2,13 +2,12 @@
 // Created by gech on 2/4/2024.
 //
 
-#ifndef FRESHENGINE_FES_TOKENIZER_HPP
-#define FRESHENGINE_FES_TOKENIZER_HPP
+#pragma once
 
 // fes is FreshEngineScene, it's human readable text scene format
 // especially developed and optimized for freshEngine.
 
-#include "../../libs/idk/idk/types/stringview.hpp"
+#include <types/stringview.hpp>
 #include "../../libs/idk/idk/containers/vector.hpp"
 #include "../../libs/idk/idk/utilities/pair.hpp"
 #include "fes_keywords.hpp"
@@ -48,5 +47,3 @@ protected:
 };
 } // namespace fes
 } // namespace fresh
-
-#endif // FRESHENGINE_FES_PARSER_HPP

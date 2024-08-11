@@ -1,6 +1,8 @@
 #pragma once
 
 #include "fescript_token.hpp"
+#include <objects/physics/polygon_area_object.hpp>
+#include <objects/physics/rectangle_area_object.hpp>
 #include <vector>
 
 namespace fescript {
@@ -14,6 +16,9 @@ class FescriptArray : public std::enable_shared_from_this<FescriptArray> {
   friend class fresh::SpriteObject;
   friend class fresh::LabelObject;
   friend class fresh::AreaObject;
+  friend class fresh::RectangleAreaObject;
+  friend class fresh::CircleAreaObject;
+  friend class fresh::PolygonAreaObject;
   friend class fresh::CollisionObject;
   friend class fresh::CameraObject;
   friend class fresh::AnimationPlayerObject;
@@ -22,6 +27,7 @@ class FescriptArray : public std::enable_shared_from_this<FescriptArray> {
   friend class fresh::AudioPlayerObject;
   friend class fresh::CircleObject;
   friend class fresh::PolygonObject;
+  friend class fresh::RectangleObject;
 public:
   FescriptArray();
   ~FescriptArray();

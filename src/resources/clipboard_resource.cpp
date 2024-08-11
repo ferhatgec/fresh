@@ -1,4 +1,4 @@
-#include "../../include/resources/clipboard_resource.hpp"
+#include <resources/clipboard_resource.hpp>
 #include "../../libs/SDL/include/SDL.h"
 
 namespace fresh {

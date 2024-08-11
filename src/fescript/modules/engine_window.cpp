@@ -1,7 +1,8 @@
-#include "../../../include/fescript/modules/engine_window.hpp"
-#include "../../../include/fescript/fescript_array.hpp"
-#include "../../../include/freshengine.hpp"
 #include "../../../libs/SDL/include/SDL_render.h"
+#include <fescript/modules/engine_window.hpp>
+#include <fescript/fescript_array.hpp>
+#include <fescript/fescript_token.hpp>
+#include <freshengine.hpp>
 #include <filesystem>
 
 namespace fescript {

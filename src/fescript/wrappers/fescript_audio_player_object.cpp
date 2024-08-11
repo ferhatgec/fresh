@@ -1,7 +1,7 @@
-#include "../../../include/fescript/wrappers/fescript_audio_player_object.hpp"
-#include "../../../include/objects/camera_object.hpp"
-#include "../../../include/objects/animation_player_object.hpp"
-#include "../../../include/objects/audio_player_object.hpp"
+#include <fescript/wrappers/fescript_audio_player_object.hpp>
+#include <objects/audio_player_object.hpp>
+#include <objects/camera_object.hpp>
+#include <objects/animation/animation_player_object.hpp>
 
 namespace fescript {
 [[nodiscard]] Object FescriptAudioPlayerObjectMemberLoadAudioSource::call(fescript::Interpreter& interpreter, std::vector <Object> arguments) {

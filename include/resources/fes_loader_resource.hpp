@@ -1,16 +1,11 @@
-//
-// Created by gech on 2/5/2024.
-//
+#pragma once
 
-#ifndef FRESHENGINE_FES_LOADER_RESOURCE_HPP
-#define FRESHENGINE_FES_LOADER_RESOURCE_HPP
-
-#include "../fes/fes_ast.hpp"
-#include "../fes/fes_keywords.hpp"
-#include "../fes/fes_object.hpp"
-#include "../fes/fes_parser.hpp"
-#include "../fes/fes_tokenizer.hpp"
-#include "../objects/base_object.hpp"
+#include <fes/fes_ast.hpp>
+#include <fes/fes_keywords.hpp>
+#include <fes/fes_object.hpp>
+#include <fes/fes_parser.hpp>
+#include <fes/fes_tokenizer.hpp>
+#include <objects/base_object.hpp>
 #include <functional>
 
 // FesLoaderResource is an easy way to integrate freshEngineScene files into your game.
@@ -103,6 +98,3 @@ private:
   static idk::isize _space_indentation;
 };
 } // namespace fresh
-
-
-#endif // FRESHENGINE_FES_LOADER_RESOURCE_HPP

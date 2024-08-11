@@ -1,6 +1,7 @@
 #include "../../libs/SDL_image/include/SDL_image.h"
-#include <string>
+#include <types/predefined.hpp>
 #include <freshengine.hpp>
+#include <string>
 
 namespace fresh {
 std::unique_ptr<Engine> Engine::_instance;
@@ -99,18 +100,18 @@ void Engine::run() {
     for(auto& object : fresh::RenderObjects::objects_to_render) {
       // FIXME: sync camera pos_x, pos_y, width and height with window width and height.
       // override pos_x and pos_y as 0.
-      if(object.get()) {
-        if(Engine::get_instance()->_camera_object.get()) {
-          if(Engine::get_instance()->_camera_object->is_visible_on_camera(object)) {
-            object->sync();
-          }
-        } else {
+      if(object) {
+        // Commented code will change, might be overhaul for CameraObject.
+        // if(Engine::get_instance()->_camera_object) {
+        //  if(Engine::get_instance()->_camera_object->is_visible_on_camera(object)) {
+        //    object->sync();
+        //  }
+        // } else {
           object->sync();
-        }
-      } else if(!Engine::get_instance()->_camera_object.get()) {
-        object->sync();
+        // }
       } else {
-        std::cout << "Engine error: No camera found and iterated object is invalid.\n";
+        std::cout << "Engine warning: No camera found or iterated object "
+                  << object->get_name() << "(" << object->_object_def << ") is invalid.\n";
       }
     }
 
@@ -210,4 +211,18 @@ void Engine::set_scaling_mode(Engine::Scaling mode, idk::i32 width, idk::i32 hei
   }
   this->_scale_mode = mode;
 }
+
+__idk_nodiscard
+idk::u32 Engine::get_global_id() noexcept {
+  return Engine::get_instance()->_id;
+}
+
+void Engine::increase_global_id() noexcept {
+  ++Engine::get_instance()->_id;
+}
+
+void Engine::reset_global_id() noexcept {
+  Engine::get_instance()->_id = 0;
+}
+
 }// namespace fresh

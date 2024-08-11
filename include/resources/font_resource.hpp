@@ -1,12 +1,11 @@
-#ifndef FRESHENGINE_FONT_RESOURCE_HPP
-#define FRESHENGINE_FONT_RESOURCE_HPP
+#pragma once
 
 // do not forget that this is fontresource not label etc.
 // labels are taking fontresource to render text in which font they want.
 // resource classes handles allocated memory, wraps existing structures with RAII.
 // makes easier to access things without reallocating them so much.
 
-#include "../../libs/idk/idk/types/stringview.hpp"
+#include <types/stringview.hpp>
 #include "../../libs/SDL_ttf/include/SDL_ttf.h"
 
 namespace fresh {
@@ -47,4 +46,3 @@ private:
   idk::StringViewChar _previous_font_path = "";
 };
 } // namespace fresh
-#endif // FRESHENGINE_FONT_RESOURCE_HPP

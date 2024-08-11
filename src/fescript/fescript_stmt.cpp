@@ -4,7 +4,7 @@
 // Distributed under the terms of the MIT License.
 //
 
-#include "../../include/fescript/fescript_stmt.hpp"
+#include <fescript/fescript_stmt.hpp>
 
 namespace fescript {
 Stmt::~Stmt() {

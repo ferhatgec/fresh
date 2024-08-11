@@ -1,9 +1,9 @@
+#include <fescript/fescript_interpreter.hpp>
+#include <fescript/fescript_array.hpp>
+#include <fescript/modules/engine_io.hpp>
+#include <freshengine.hpp>
 #include <fstream>
 #include <filesystem>
-#include "../../../include/fescript/fescript_interpreter.hpp"
-#include "../../../include/fescript/fescript_array.hpp"
-#include "../../../include/fescript/modules/engine_io.hpp"
-#include "../../../include/freshengine.hpp"
 #include <iostream>
 
 namespace fescript {

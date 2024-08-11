@@ -2,8 +2,7 @@
 // Created by gech on 2/5/2024.
 //
 
-#ifndef FRESHENGINE_FES_KEYWORDS_HPP
-#define FRESHENGINE_FES_KEYWORDS_HPP
+#pragma once
 
 namespace fresh {
 namespace fes {
@@ -99,5 +98,3 @@ enum class LabelRenderType {
 };
 }
 }
-
-#endif // FRESHENGINE_FES_KEYWORDS_HPP

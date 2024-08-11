@@ -1,9 +1,9 @@
 #pragma once
 
 #include "module_helpers.hpp"
-#include "../fescript_class.hpp"
-#include "../fescript_callable.hpp"
-#include "../../../libs/idk/idk/types/predefined.hpp"
+#include <fescript/fescript_callable.hpp>
+#include <fescript/fescript_class.hpp>
+#include <types/predefined.hpp>
 
 #define PRNG_MODULE(name, arg_count) DEFINE_MODULE_CLASS(name, PRNG, arg_count)
 #define PRNG_GLOBAL_CONSTANT(name, value) this->globals->define(name, static_cast<idk::f80>(value));

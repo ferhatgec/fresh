@@ -1,16 +1,24 @@
-#include "../../../include/fescript/modules/engine.hpp"
-#include "../../../include/render_objects.hpp"
-#include "../../../include/objects/sprite_object.hpp"
-#include "../../../include/objects/label_object.hpp"
-#include "../../../include/objects/area_object.hpp"
-#include "../../../include/objects/collision_object.hpp"
-#include "../../../include/objects/camera_object.hpp"
-#include "../../../include/objects/animation_player_object.hpp"
-#include "../../../include/objects/animation_frame_object.hpp"
+#include <fescript/modules/engine.hpp>
+
+#include <objects/animation/animation_frame_object.hpp>
+#include <objects/animation/animation_player_object.hpp>
+
+#include <objects/physics/area_object.hpp>
+#include <objects/physics/rectangle_area_object.hpp>
+#include <objects/physics/circle_area_object.hpp>
+#include <objects/physics/polygon_area_object.hpp>
+
+#include <objects/camera_object.hpp>
+#include <objects/collision_object.hpp>
+#include <objects/label_object.hpp>
+#include <objects/sprite_object.hpp>
 #include <objects/circle_object.hpp>
 #include <objects/polygon_object.hpp>
-#include "../../../include/resources/fes_loader_resource.hpp"
-#include "../../../include/freshengine.hpp"
+
+#include <render_objects.hpp>
+#include <freshengine.hpp>
+
+#include <resources/fes_loader_resource.hpp>
 
 namespace fescript {
 [[nodiscard]] Object FescriptEngineGetObject::call(Interpreter &interpreter, std::vector<Object> arguments) {
@@ -26,46 +34,19 @@ __idk_nodiscard Object FescriptEngineRenderObjectsPush::call(Interpreter& interp
     return false;
   for(const auto& argument: arguments) {
     switch(argument.index()) {
-      case FescriptBaseObjectIndex: {
-        fresh::RenderObjects::objects_to_render.push_back(std::get<FescriptBaseObjectIndex>(argument));
-        break;
-      }
-      case FescriptSpriteObjectIndex: {
-        fresh::RenderObjects::objects_to_render.push_back(std::get<FescriptSpriteObjectIndex>(argument));
-        break;
-      }
-      case FescriptLabelObjectIndex: {
-        fresh::RenderObjects::objects_to_render.push_back(std::get<FescriptLabelObjectIndex>(argument));
-        break;
-      }
-      case FescriptAreaObjectIndex: {
-        fresh::RenderObjects::objects_to_render.push_back(std::get<FescriptAreaObjectIndex>(argument));
-        break;
-      }
-      case FescriptCollisionObjectIndex: {
-        fresh::RenderObjects::objects_to_render.push_back(std::get<FescriptCollisionObjectIndex>(argument));
-        break;
-      }
-      case FescriptCameraObjectIndex: {
-        fresh::RenderObjects::objects_to_render.push_back(std::get<FescriptCameraObjectIndex>(argument));
-        break;
-      }
-      case FescriptAnimationPlayerObjectIndex: {
-        fresh::RenderObjects::objects_to_render.push_back(std::get<FescriptAnimationPlayerObjectIndex>(argument));
-        break;
-      }
-      case FescriptAnimationFrameObjectIndex: {
-        fresh::RenderObjects::objects_to_render.push_back(std::get<FescriptAnimationFrameObjectIndex>(argument));
-        break;
-      }
-      case FescriptCircleObjectIndex: {
-        fresh::RenderObjects::objects_to_render.push_back(std::get<FescriptCircleObjectIndex>(argument));
-        break;
-      }
-      case FescriptPolygonObjectIndex: {
-        fresh::RenderObjects::objects_to_render.push_back(std::get<FescriptPolygonObjectIndex>(argument));
-        break;
-      }
+      PUSH_RENDER_OBJECTS_IMPL_OBJECT(FescriptBaseObjectIndex)
+      PUSH_RENDER_OBJECTS_IMPL_OBJECT(FescriptSpriteObjectIndex)
+      PUSH_RENDER_OBJECTS_IMPL_OBJECT(FescriptLabelObjectIndex)
+      PUSH_RENDER_OBJECTS_IMPL_OBJECT(FescriptAreaObjectIndex)
+      PUSH_RENDER_OBJECTS_IMPL_OBJECT(FescriptCollisionObjectIndex)
+      PUSH_RENDER_OBJECTS_IMPL_OBJECT(FescriptCameraObjectIndex)
+      PUSH_RENDER_OBJECTS_IMPL_OBJECT(FescriptAnimationPlayerObjectIndex)
+      PUSH_RENDER_OBJECTS_IMPL_OBJECT(FescriptAnimationFrameObjectIndex)
+      PUSH_RENDER_OBJECTS_IMPL_OBJECT(FescriptCircleObjectIndex)
+      PUSH_RENDER_OBJECTS_IMPL_OBJECT(FescriptPolygonObjectIndex)
+      PUSH_RENDER_OBJECTS_IMPL_OBJECT(FescriptRectangleAreaObjectIndex)
+      PUSH_RENDER_OBJECTS_IMPL_OBJECT(FescriptCircleAreaObjectIndex)
+      PUSH_RENDER_OBJECTS_IMPL_OBJECT(FescriptPolygonAreaObjectIndex)
       default: {
         std::cout << "Engine [language] error: Some arguments of Engine_render_objects_push() is not inherited from BaseObject.\n";
         std::exit(1);

@@ -1,7 +1,6 @@
-#ifndef FRESHENGINE_MUSIC_RESOURCE_HPP
-#define FRESHENGINE_MUSIC_RESOURCE_HPP
+#pragma once
 
-#include "../../libs/idk/idk/types/stringview.hpp"
+#include <types/stringview.hpp>
 #include "../../libs/SDL_mixer/include/SDL_mixer.h"
 
 namespace fresh {
@@ -78,4 +77,3 @@ private:
   idk::i32 _music_volume { MIX_MAX_VOLUME };
 };
 } // namespace fresh
-#endif // FRESHENGINE_MUSIC_RESOURCE_HPP

@@ -1,4 +1,4 @@
-#include "../../include/freshengine.hpp"
+#include <freshengine.hpp>
 #include "../../libs/SDL_image/include/SDL_image.h"
 
 // TODO: sprite batching?
@@ -74,7 +74,7 @@ __idk_nodiscard
   return this->_sprite_blend_mode;
 }
 
-__idk_nodiscard void
+void
 SpriteResource::load_resource(const idk::StringViewChar& sprite_file) noexcept {
   if(IMG_Init(IMG_INIT_JPG | IMG_INIT_PNG | IMG_INIT_TIF | IMG_INIT_WEBP | IMG_INIT_JXL | IMG_INIT_AVIF) == 0) {
     std::cout << "Engine error: Cannot initialize SpriteResource back end.\n";
@@ -85,7 +85,7 @@ SpriteResource::load_resource(const idk::StringViewChar& sprite_file) noexcept {
   this->_sprite_texture = IMG_LoadTexture(Engine::get_instance()->get_window()->get_renderer(), sprite_file.data());
 }
 
-__idk_nodiscard void
+void
 SpriteResource::load_resource(idk::StringViewChar&& sprite_file) noexcept {
   if(IMG_Init(IMG_INIT_JPG | IMG_INIT_PNG | IMG_INIT_TIF | IMG_INIT_WEBP | IMG_INIT_JXL | IMG_INIT_AVIF) == 0) {
     std::cout << "Engine error: Cannot initialize SpriteResource back end.\n";

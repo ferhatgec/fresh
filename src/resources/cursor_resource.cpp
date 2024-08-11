@@ -1,4 +1,4 @@
-#include "../../include/freshengine.hpp"
+#include <freshengine.hpp>
 #include "../../libs/SDL/include/SDL.h"
 
 namespace fresh {

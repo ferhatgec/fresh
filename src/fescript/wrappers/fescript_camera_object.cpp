@@ -1,5 +1,5 @@
-#include "../../../include/fescript/wrappers/fescript_camera_object.hpp"
-#include "../../../include/objects/camera_object.hpp"
+#include <fescript/wrappers/fescript_camera_object.hpp>
+#include <objects/camera_object.hpp>
 
 namespace fescript {
 __idk_nodiscard Object FescriptCameraObjectMemberIsVisibleOnCamera::call(Interpreter& interpreter, std::vector <Object> arguments) {

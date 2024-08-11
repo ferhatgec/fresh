@@ -22,6 +22,8 @@ def AnimPlayer;
 def Cam;
 def Circle;
 def Poly;
+def CircleArea;
+def RectArea;
 
 def init(delta) =
  Character = Engine_get_object("Game_Character");
@@ -30,6 +32,8 @@ def init(delta) =
  AnimPlayer = Engine_AnimationPlayerObject();
  Circle = Engine_CircleObject();
  Poly = Engine_PolygonObject();
+ CircleArea = Engine_CircleAreaObject();
+ RectArea = Engine_RectangleAreaObject();
 
  Circle.set_radius(50);
  Circle.set_segments(30);
@@ -42,6 +46,16 @@ def init(delta) =
  Poly.push_polygon(10, 0);
  Poly.push_polygon(10, 10);
  Poly.push_polygon(0, 10);
+
+
+ CircleArea.set_radius(40);
+ CircleArea.pos_x = 100;
+ CircleArea.pos_y = 100;
+
+ RectArea.pos_x = 200;
+ RectArea.pos_y = 200;
+ RectArea.width = 50;
+ RectArea.height = 50;
 
  AnimPlayer.push_frame(Engine_AnimationFrameObject(
     0,
@@ -66,8 +80,10 @@ def init(delta) =
  ));
  Engine_link_camera(Character.sub_groups.0.sub_groups.0);
  AnimPlayer.set_replay_status(true);
+ Engine_render_objects_push(RectArea);
+ Engine_render_objects_push(CircleArea);
  Engine_render_objects_push(AnimPlayer);
- Engine_render_objects_push(Circle);
+ # Engine_render_objects_push(Circle);
  Engine_render_objects_push(Poly);
 
  musicplayerobj = Engine_MusicPlayerObject("example/digits.wav");
@@ -75,13 +91,22 @@ def init(delta) =
  IO_println(musicplayerobj);
 ;
 
-EngineWindow_set_window_opacity(0.5);
+# EngineWindow_set_window_opacity(0.5);
 EngineWindow_set_vsync(true);
 
 def is_music_plays = false;
 def is_audio_plays = false;
 
+def bool_to_str(a) =
+ if(a) =
+  return "true";
+ ;
+ return "false";
+;
+
 def update(delta) =
+ IO_println("\e[0;33m" + bool_to_str(RectArea.is_colliding_with(CircleArea)) + "\e[0m");
+
  if(EngineIO_is_key_just_pressed(EngineIO_Key_P)) =
   is_music_plays = !is_music_plays;
   if(is_music_plays) =
@@ -107,6 +132,27 @@ def update(delta) =
   ; else =
    EngineWindow_set_window_mode(EngineWindow_Fullscreen);
   ;
+ ;
+
+ # TODO: fescript needs +=, -=, /=, %=, *= and so on.
+ if(EngineIO_is_key_pressed(EngineIO_Key_I)) =
+  IO_println("I press");
+  RectArea.pos_y = RectArea.pos_y - 10;
+ ;
+
+ if(EngineIO_is_key_pressed(EngineIO_Key_K)) =
+  IO_println("K press");
+  RectArea.pos_y = RectArea.pos_y + 10;
+ ;
+
+ if(EngineIO_is_key_pressed(EngineIO_Key_J)) =
+  IO_println("J press");
+  RectArea.pos_x = RectArea.pos_x - 10;
+ ;
+
+ if(EngineIO_is_key_pressed(EngineIO_Key_L)) =
+  IO_println("L press");
+  RectArea.pos_x = RectArea.pos_x + 10;
  ;
 
  if(EngineIO_is_key_pressed(EngineIO_Key_S)) =
