@@ -37,10 +37,11 @@
 #include "fes/fes_tokenizer.hpp"
 
 #include "render_objects.hpp"
+#include "resources/polygon_resource.hpp"
 
+#include <any>
 #include <memory>
 #include <vector>
-#include <any>
 
 #ifdef FreshInstanceInit
 // it can be changed after definition, that's here for guarantee.
@@ -127,8 +128,13 @@ public:
     return this->_camera_object;
   }
 
-  void
-  set_scaling_mode(Scaling mode, idk::i32 width = -1, idk::i32 height = -1) noexcept;
+  void set_scaling_mode(Scaling mode, idk::i32 width = -1, idk::i32 height = -1) noexcept;
+
+  [[nodiscard]]
+  static const idk::f32& sin(const idk::f32& rad_angle) noexcept;
+
+  [[nodiscard]]
+  static const idk::f32& cos(const idk::f32& rad_angle) noexcept;
 
   __idk_nodiscard
   idk::u32 get_global_id() noexcept;
@@ -156,5 +162,12 @@ private:
   Scaling           _scale_mode;
 
   static inline idk::u32 _id { 0 };
+
+  static inline std::unordered_map<idk::f32, idk::f32, std::hash<idk::f32>, decltype([](const idk::f32& lhs, const idk::f32& rhs) -> bool {
+    return f32_nearly_equals(lhs, rhs);
+  })> _sin;
+  static inline std::unordered_map<idk::f32, idk::f32, std::hash<idk::f32>, decltype([](const idk::f32& lhs, const idk::f32& rhs) -> bool {
+    return f32_nearly_equals(lhs, rhs);
+  })> _cos;
 };
 } // namespace fresh

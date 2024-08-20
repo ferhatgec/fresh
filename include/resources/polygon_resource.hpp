@@ -3,18 +3,25 @@
 #include "point_resource.hpp"
 
 #include <SDL_rect.h>
-#include <array>
 #include <types/predefined.hpp>
 #include <vector>
+#include <tuple>
+#include <limits>
 
 namespace fresh {
 __idk_nodiscard
-inline bool f32_nearly_equals(const idk::f32 a, const idk::f32 b, const idk::f32 epsilon = 1e-6) noexcept {
+inline bool f32_nearly_equals(const idk::f32 a, const idk::f32 b, const idk::f32& epsilon = std::numeric_limits<idk::f32>::epsilon()) noexcept {
   return a + epsilon >= b && a - epsilon <= b;
 }
 
+// for now, no support for concaves.
 class PolygonResource {
 public:
+  enum : std::uint8_t {
+    ProjectionMin,
+    ProjectionMax
+  };
+
   friend class AreaObject;
 
   PolygonResource(bool is_filled = false) noexcept;
@@ -43,10 +50,19 @@ public:
   idk::f32 project(const PointResource& axis) const noexcept;
 
   __idk_nodiscard
-  PointResource center() const noexcept;
+  std::tuple<idk::f32, idk::f32> project_min_max(const PointResource& axis) const noexcept;
+
+  __idk_nodiscard
+  PointResource center() const noexcept; // TODO: we need getters and setters, calculating center only when polygons are changed.
+
+  __idk_nodiscard
+  PolygonResource rotate(idk::f32 rad_degrees) const noexcept;
 
   __idk_nodiscard
   bool is_separating_axis_with(const PolygonResource& poly, const PointResource& axis) const noexcept;
+
+  __idk_nodiscard
+  idk::f32 area() const noexcept;
 private:
   __idk_nodiscard
   bool _is_point_in_polygon(const idk::f32& point_x, const idk::f32& point_y) const noexcept;

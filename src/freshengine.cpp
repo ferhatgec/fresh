@@ -212,6 +212,22 @@ void Engine::set_scaling_mode(Engine::Scaling mode, idk::i32 width, idk::i32 hei
   this->_scale_mode = mode;
 }
 
+[[nodiscard]]
+const idk::f32& Engine::sin(const idk::f32& rad_angle) noexcept {
+  if(Engine::get_instance()->_sin.contains(rad_angle))
+    return std::ref(Engine::get_instance()->_sin[rad_angle]);
+  Engine::get_instance()->_sin[rad_angle] = std::sinf(rad_angle);
+  return std::ref(Engine::get_instance()->_sin[rad_angle]);
+}
+
+[[nodiscard]]
+const idk::f32& Engine::cos(const idk::f32& rad_angle) noexcept {
+  if(Engine::get_instance()->_cos.contains(rad_angle))
+    return std::ref(Engine::get_instance()->_cos[rad_angle]);
+  Engine::get_instance()->_cos[rad_angle] = std::cosf(rad_angle);
+  return std::ref(Engine::get_instance()->_cos[rad_angle]);
+}
+
 __idk_nodiscard
 idk::u32 Engine::get_global_id() noexcept {
   return Engine::get_instance()->_id;

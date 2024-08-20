@@ -1,7 +1,9 @@
 #pragma once
 
 #include "base_object.hpp"
+#include "polygon_object.hpp"
 #include <resources/color_resource.hpp>
+#include <resources/polygon_resource.hpp>
 
 namespace fresh {
 class RectangleObject : public BaseObject {
@@ -28,8 +30,13 @@ public:
 
   __idk_nodiscard
   bool& get_is_filled() noexcept;
+
+  void set_rotation_by_radian_degrees(idk::f32 rad_degrees) noexcept override;
 protected:
   bool _is_filled;
+  PolygonResource _vertices;
+  PolygonObject _angle_generated_vertices;
+  PolygonObject _angle_generated_vertices_first;
   ColorResource _color;
 };
 } // namespace fresh

@@ -1,0 +1,15 @@
+def CameraMoveSpeed = 5;
+
+def init(delta) =
+ EngineWindow_set_window_title("Box2D physics test");
+ Engine_link_camera(Engine_get_object("Camera"));
+;
+
+def update(delta) =
+ # move camera with WASD keys
+ if(EngineIO_is_key_pressed(EngineIO_Key_W)) = Engine_get_object("Camera").move(0, -CameraMoveSpeed);;
+ if(EngineIO_is_key_pressed(EngineIO_Key_S)) = Engine_get_object("Camera").move(0, CameraMoveSpeed);;
+ if(EngineIO_is_key_pressed(EngineIO_Key_A)) = Engine_get_object("Camera").move(-CameraMoveSpeed, 0);;
+ if(EngineIO_is_key_pressed(EngineIO_Key_D)) = Engine_get_object("Camera").move(CameraMoveSpeed, 0);;
+
+;

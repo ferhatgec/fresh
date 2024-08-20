@@ -174,6 +174,8 @@ void Interpreter::interpret(
 }
 
 void Interpreter::interpret_update() {
+  if(this->statements.empty())
+    return;
   if(!this->is_initialized) {
     this->interpret_init();
     this->is_initialized = true;

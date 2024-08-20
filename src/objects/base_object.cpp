@@ -12,13 +12,12 @@
 #include <iostream>
 #include <fstream>
 #include <filesystem>
+#include <numbers>
 
 namespace fresh {
 BaseObject::BaseObject() {
-  this->_pos_info.x = 0;
-  this->_pos_info.y = 0;
-  this->_pos_info.w = 0;
-  this->_pos_info.h = 0;
+  this->_pos_info = SDL_FRect { 0.f, 0.f, 0.f, 0.f };
+  this->_rotation_degrees = this->_last_rotation_degrees = 0.f;
   this->_copy_last_pos_info = this->_pos_info;
   this->_object_id = Engine::get_instance()->get_global_id();
   this->_object_def = "baseobject";
@@ -27,13 +26,14 @@ BaseObject::BaseObject() {
   Engine::get_instance()->increase_global_id();
 }
 
-BaseObject::BaseObject(bool disabled, bool visible, idk::i32 pos_x, idk::i32 pos_y, idk::i32 width, idk::i32 height)
-    : _disabled(disabled),
-      _visible(visible) {
-  this->_pos_info.x = pos_x;
-  this->_pos_info.y = pos_y;
-  this->_pos_info.w = width;
-  this->_pos_info.h = height;
+BaseObject::BaseObject(bool disabled, bool visible, idk::f32 pos_x, idk::f32 pos_y, idk::f32 width, idk::f32 height, idk::f32 rotation_degrees)
+    : _disabled{disabled},
+      _visible{visible},
+      _rotation_degrees{rotation_degrees} {
+  this->_last_rotation_degrees = 0.f;
+  this->_pos_info = SDL_FRect {
+    pos_x, pos_y, width, height
+  };
   this->_copy_last_pos_info = this->_pos_info;
   this->_object_id = Engine::get_instance()->get_global_id();
   this->_object_def = "baseobject";
@@ -44,13 +44,13 @@ BaseObject::BaseObject(bool disabled, bool visible, idk::i32 pos_x, idk::i32 pos
 
 BaseObject::~BaseObject() {}
 
-__idk_nodiscard bool&
-BaseObject::get_is_disabled() noexcept {
+__idk_nodiscard
+bool& BaseObject::get_is_disabled() noexcept {
   return this->_disabled;
 }
 
-__idk_nodiscard bool&
-BaseObject::get_is_visible() noexcept {
+__idk_nodiscard
+bool& BaseObject::get_is_visible() noexcept {
   return this->_visible;
 }
 
@@ -87,49 +87,58 @@ void BaseObject::sync(bool is_sync_with_camera) noexcept {
 }
 
 __idk_nodiscard
-SDL_FRect&
-BaseObject::get_position_info() noexcept {
+SDL_FRect& BaseObject::get_position_info() noexcept {
   this->_copy_last_pos_info = this->_pos_info;
   return this->_pos_info;
 }
 
 __idk_nodiscard
-SDL_FRect&
-BaseObject::get_raw_position_info() noexcept {
+SDL_FRect& BaseObject::get_raw_position_info() noexcept {
   return this->_pos_info;
 }
 
-__idk_nodiscard const idk::u64&
-BaseObject::get_object_id() noexcept {
+__idk_nodiscard
+SDL_FRect& BaseObject::get_render_position_info() noexcept {
+  if(!Engine::get_instance()->get_camera()) {
+    this->_render_pos_info = this->_pos_info; // if there is no camera, then CameraObject::apply won't be called,
+                                              // so _render_pos_info is may be uninitialized. for now, we can directly access _render_pos_info and change it.
+                                              // but we will change it with getters and setters, which will provide better API and checks.
+  }
+  return this->_render_pos_info;
+}
+
+__idk_nodiscard
+const idk::u32& BaseObject::get_object_id() noexcept {
   return this->_object_id;
 }
 
 __idk_nodiscard
-idk::f32
-BaseObject::delta_x() noexcept {
+idk::f32 BaseObject::delta_x() noexcept {
   return this->_pos_info.x - this->_copy_last_pos_info.x;
 }
 
 __idk_nodiscard
-idk::f32
-BaseObject::delta_y() noexcept {
+idk::f32 BaseObject::delta_y() noexcept {
   return this->_pos_info.y - this->_copy_last_pos_info.y;
 }
 
 __idk_nodiscard
-idk::f32
-BaseObject::delta_w() noexcept {
+idk::f32 BaseObject::delta_w() noexcept {
   return this->_pos_info.w - this->_copy_last_pos_info.w;
 }
 
 __idk_nodiscard
-idk::f32
-BaseObject::delta_h() noexcept {
+idk::f32 BaseObject::delta_h() noexcept {
   return this->_pos_info.h - this->_copy_last_pos_info.h;
 }
 
+__idk_nodiscard
+idk::f32 BaseObject::delta_rot() noexcept {
+  return this->_rotation_degrees - this->_last_rotation_degrees;
+}
+
 void BaseObject::push_object(std::shared_ptr<BaseObject> sub_object) noexcept {
-  if(!sub_object.get()) [[unlikely]] {
+  if(!sub_object) [[unlikely]] {
     std::cout << "Engine warning: push_object argument contains an invalid pointer!\n";
     return;
   }
@@ -147,14 +156,12 @@ void BaseObject::set(const fescript::Token& name, fescript::Object value) {
 }
 
 __idk_nodiscard
-  std::vector<std::shared_ptr<BaseObject>>&
-  BaseObject::get_sub_objects() noexcept {
+std::vector<std::shared_ptr<BaseObject>>& BaseObject::get_sub_objects() noexcept {
   return this->_sub_objects;
 }
 
 __idk_nodiscard
-idk::StringViewChar&
-BaseObject::get_name() noexcept {
+idk::StringViewChar& BaseObject::get_name() noexcept {
   return this->_name;
 }
 
@@ -204,12 +211,25 @@ void BaseObject::push_to_sub_objects(std::shared_ptr<BaseObject> obj) noexcept {
 }
 
 __idk_nodiscard
-std::shared_ptr<BaseObject>
-BaseObject::get_object_by_path(const std::string& path) noexcept {
+std::shared_ptr<BaseObject> BaseObject::get_object_by_path(const std::string& path) noexcept {
   std::shared_ptr<BaseObject> current = this->_give_shared_ptr();
   for(const auto& entry: std::filesystem::path(path))
     current = this->_get_object_by_single_path(entry.string());
   return current;
+}
+
+[[nodiscard]]
+const idk::f32& BaseObject::get_rotation_by_radian_degrees() const noexcept {
+  return this->_rotation_degrees;
+}
+
+void BaseObject::set_rotation_by_radian_degrees(idk::f32 rad_degrees) noexcept {
+  this->_last_rotation_degrees = this->_rotation_degrees;
+  this->_rotation_degrees = std::fmodf(rad_degrees, mul_2_pi_v<idk::f32>);
+}
+
+[[nodiscard]] idk::f32 BaseObject::counter_clockwise_to_clockwise(idk::f32 rad_degrees) noexcept {
+  return -std::fmodf(rad_degrees, mul_2_pi_v<idk::f32>);
 }
 
 __idk_nodiscard
@@ -228,18 +248,36 @@ BaseObject::_get_object_by_single_path(const std::string& path) noexcept {
   return this->_give_shared_ptr();
 }
 
+__idk_nodiscard PointResource BaseObject::_rectangle_convert_to_top_left(const SDL_FRect& pos) noexcept {
+  return { pos.x - pos.w / 2.f, pos.y - pos.h / 2.f };
+}
+
+__idk_nodiscard PointResource BaseObject::_rectangle_convert_to_top_right(const SDL_FRect& pos) noexcept {
+  return { pos.x + pos.w / 2.f, pos.y - pos.h / 2.f };
+}
+
+__idk_nodiscard PointResource BaseObject::_rectangle_convert_to_bottom_left(const SDL_FRect& pos) noexcept {
+  return { pos.x - pos.w / 2.f, pos.y + pos.h / 2.f };
+}
+
+__idk_nodiscard PointResource BaseObject::_rectangle_convert_to_bottom_right(const SDL_FRect& pos) noexcept {
+  return { pos.x + pos.w / 2.f, pos.y + pos.h / 2.f };
+}
+
 [[nodiscard]]
-std::shared_ptr<BaseObject>
-BaseObject::_give_shared_ptr() noexcept {
+std::shared_ptr<BaseObject> BaseObject::_give_shared_ptr() noexcept {
   if(!this->_shared_ptr_this)
     this->_shared_ptr_this = std::shared_ptr<BaseObject>(this);
   return this->_shared_ptr_this;
 }
 
-/*
-template<typename KeyType>
-KeyType&
-BaseObject::get_property() noexcept {
-  std::cout << "Engine info: Override BaseObject<KeyType>::get_property() to access animation functionality.\n";
-}*/
+[[nodiscard]]
+SDL_FRect BaseObject::_center_to_top_left_pivot(SDL_FRect pos_size) noexcept  {
+  return SDL_FRect {
+    pos_size.x - pos_size.w / 2.f,
+    pos_size.y - pos_size.h / 2.f,
+    pos_size.w,
+    pos_size.h
+  };
+}
 }// namespace fresh

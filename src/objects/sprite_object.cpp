@@ -81,6 +81,7 @@ void SpriteObject::sync(bool is_sync_with_camera) noexcept {
   this->_code.interpret_update();
   SDL_SetTextureBlendMode(this->_sprite_resource.get_texture(), this->_convert_blend_mode_enum());
   this->sync_pos_with_camera(is_sync_with_camera);
+  this->_render_pos_info = BaseObject::_center_to_top_left_pivot(this->_render_pos_info);
   if(!this->_disabled && this->_visible)
     SDL_RenderCopyF(Engine::get_instance()->get_window()->get_renderer(),
                  this->_sprite_resource.get_texture(), NULL, &this->_render_pos_info);

@@ -10,7 +10,7 @@ public:
   friend class FesLoaderResource;
 
   CircleObject() = default;
-  CircleObject(CircleResource resource, ColorResource color);
+  CircleObject(SDL_FRect info, CircleResource resource, ColorResource color);
   ~CircleObject() = default;
 
   void
@@ -32,7 +32,6 @@ private:
   void _draw_unfilled_circle() noexcept;
   void _draw_horizontal_line(idk::f32 x1, idk::f32 x2, idk::f32 y) noexcept;
   void _draw_single_point(idk::f32 x, idk::f32 y) noexcept;
-  void _draw_circle_points(const idk::f32& x, const idk::f32& y) noexcept;
 protected:
   CircleResource _resource;
   ColorResource _color;

@@ -5,6 +5,7 @@
 namespace fresh {
 LabelObject::LabelObject() {
   this->_object_def = "labelobject";
+  this->_label_render_type = LabelRenderType::Blended;
 }
 
 LabelObject::LabelObject(LabelObject* label_object) {
@@ -61,7 +62,7 @@ void LabelObject::initialize_text(idk::StringViewChar&& label_text,
 void LabelObject::sync(bool is_sync_with_camera) noexcept {
   this->_code.interpret_update();
   this->sync_pos_with_camera(is_sync_with_camera);
-
+  this->_render_pos_info = BaseObject::_center_to_top_left_pivot(this->_render_pos_info);
   if(!this->_disabled &&
     this->_visible &&
     !this->_label_text.is_empty() &&
@@ -70,7 +71,7 @@ void LabelObject::sync(bool is_sync_with_camera) noexcept {
     SDL_RenderCopyF(Engine::get_instance()->get_window()->get_renderer(),
                  this->_label_font_texture.get_texture(),
                  NULL,
-                 &this->_pos_info);
+                 &this->_render_pos_info);
   APPLY_DELTAS()
 }
 
@@ -107,9 +108,7 @@ void LabelObject::initialize_label_font_surface() noexcept {
                                        this->_bg);
     break;
   }
-    // Solid,
-    //   Shaded,
-    //   Blended
+
   case LabelRenderType::Solid: {
     label_surface = TTF_RenderText_Solid(this->get_label_font_resource().get_font(),
                                          this->_label_text.data(),
@@ -142,7 +141,7 @@ void LabelObject::initialize_label_font_surface() noexcept {
   }
   }
 
-  if(!label_surface) {
+  if(label_surface == nullptr) {
     std::cout << "Engine error: Cannot initialize surface for LabelObject.\n";
     return;
   }

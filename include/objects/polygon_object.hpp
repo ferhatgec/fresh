@@ -9,6 +9,7 @@ namespace fresh {
 class PolygonObject : public BaseObject {
 public:
   friend class FesLoaderResource;
+  friend class RectangleObject;
 
   PolygonObject();
   PolygonObject(PolygonResource resource, ColorResource color);
@@ -28,14 +29,21 @@ public:
 
   __idk_nodiscard
   ColorResource& get_color_resource() noexcept;
+
+  void set_rotation_by_radian_degrees(idk::f32 rad_degrees) noexcept override;
 private:
   void _draw_polygon() noexcept;
   void _draw_filled_polygon() noexcept;
   void _draw_unfilled_polygon() noexcept;
-  void _build_edge_resource_table() noexcept;
+  void _add_render_objects() noexcept;
+  void _sub_render_objects() noexcept;
 protected:
   PolygonResource _resource;
   ColorResource _color;
-  std::vector<EdgeResource> _edges, _active_edges;
+  SDL_FRect _cache_pos;
 };
+
+inline bool operator==(const SDL_FRect& lhs, const SDL_FRect& rhs) noexcept {
+  return f32_nearly_equals(lhs.x, rhs.x) && f32_nearly_equals(lhs.y, rhs.y) && f32_nearly_equals(lhs.w, rhs.w) && f32_nearly_equals(lhs.h, rhs.h);
+}
 } // namespace fresh

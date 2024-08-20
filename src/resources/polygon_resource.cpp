@@ -1,5 +1,6 @@
 #include <resources/polygon_resource.hpp>
 #include <algorithm>
+#include <iostream>
 
 namespace fresh {
 PolygonResource::PolygonResource(bool is_filled) noexcept
@@ -51,26 +52,61 @@ idk::f32 PolygonResource::project(const PointResource& axis) const noexcept {
     std::exit(1);
   }
 
-  idk::f32 min = axis.dot(this->_polygons.front());
-  idk::f32 max = min;
+  auto projection = this->project_min_max(axis);
+  return std::get<ProjectionMax>(projection) - std::get<ProjectionMin>(projection);
+}
 
-  for(std::size_t i = 1; i < this->_polygons.size(); ++i) {
-    idk::f32 p = axis.dot(this->_polygons[i]);
-    if(p < min)
-      min = p;
-    else if(p > max)
-      max = p;
+__idk_nodiscard
+std::tuple<idk::f32, idk::f32> PolygonResource::project_min_max(const PointResource& axis) const noexcept {
+  idk::f32 min = std::numeric_limits<idk::f32>::max();
+  idk::f32 max = std::numeric_limits<idk::f32>::min();
+
+  for(std::size_t i = 0; i < this->_polygons.size(); ++i) {
+    const auto& vert = this->_polygons[i];
+    idk::f32 proj = vert.dot(axis);
+
+    if(proj < min)
+      min = proj;
+    if(proj > max)
+      max = proj;
   }
-  return max - min;
+  return std::make_tuple(min, max);
 }
 
 __idk_nodiscard
 PointResource PolygonResource::center() const noexcept {
   PointResource center(0.f, 0.f);
+  if(this->_polygons.empty())
+    return center;
   for(const auto& v: this->_polygons) {
     center = center + v;
   }
   return center * (1.f / this->_polygons.size());
+}
+
+__idk_nodiscard
+PolygonResource PolygonResource::rotate(idk::f32 rad_degrees) const noexcept {
+  PolygonResource vertices;
+  vertices.get_polygons() = this->_polygons;
+  auto center_point = vertices.center();
+
+  for(auto& vert: vertices.get_polygons()) {
+    vert = vert.rotate_by_radians_with_pivot(center_point, rad_degrees);
+  }
+  return vertices;
+}
+
+// Shoelace formula
+__idk_nodiscard
+idk::f32 PolygonResource::area() const noexcept {
+  const auto& size = this->_polygons.size();
+  idk::f32 area { 0.f };
+  for(std::size_t i = 0; i < size; ++i) {
+    const auto& vert_i = this->_polygons[i];
+    const auto& vert_i_plus_1 = this->_polygons[(i + 1) % size];
+    area += (vert_i._x * vert_i_plus_1._y) - (vert_i_plus_1._x * vert_i._y);
+  }
+  return fabsf(area) / 2.f;
 }
 
 __idk_nodiscard

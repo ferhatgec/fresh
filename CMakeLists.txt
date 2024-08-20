@@ -10,6 +10,7 @@ set(INCLUDE_PATHS ./libs/SDL/include/
                   ./libs/imgui/
                   ./libs/imgui/backends/
                   ./libs/idk/idk/
+                  ./libs/box2d/include/
                   ./include/)
 
 if(NOT CMAKE_BUILD_TYPE)
@@ -36,4 +37,5 @@ target_link_libraries(fresh_lib
         ./libs/SDL/lib/x64/SDL2
         ./libs/SDL_image/lib/x64/SDL2_image
         ./libs/SDL_ttf/lib/x64/SDL2_ttf
-        ./libs/SDL_mixer/lib/x64/SDL2_mixer)
+        ./libs/SDL_mixer/lib/x64/SDL2_mixer
+        ./libs/box2d/Build/src/Release/box2d) # TODO: we need dependency build automation

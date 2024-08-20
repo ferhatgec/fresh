@@ -294,7 +294,7 @@ FesLoaderResource::_generate_object(std::shared_ptr<fes::FesObjectAST> object_no
     object->initialize_text(casted_obj->_label_text,
                             object->_fg,
                             object->_bg,
-                            fresh::LabelRenderType::Solid);
+                            fresh::LabelRenderType::Shaded);
 
     for(auto& node : object_node->_sub_groups) {
       object->push_object(std::move(this->_generate_object(node)));

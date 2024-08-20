@@ -23,6 +23,11 @@ set files as "/Tp./src/application/window.cpp
               /Tp./src/objects/physics/rectangle_area_object.cpp
               /Tp./src/objects/physics/circle_area_object.cpp
               /Tp./src/objects/physics/polygon_area_object.cpp
+              /Tp./src/objects/physics/body_object.cpp
+              /Tp./src/objects/physics/circle_body_object.cpp
+              /Tp./src/objects/physics/polygon_body_object.cpp
+              /Tp./src/objects/physics/rectangle_body_object.cpp
+              /Tp./src/objects/physics/world_object.cpp
               /Tp./src/objects/collision_object.cpp
               /Tp./src/objects/camera_object.cpp
               /Tp./src/objects/music_player_object.cpp
@@ -114,6 +119,11 @@ set object_files as "window.obj
                      rectangle_area_object.obj
                      circle_area_object.obj
                      polygon_area_object.obj
+                     body_object.obj
+                     circle_body_object.obj
+                     polygon_body_object.obj
+                     rectangle_body_object.obj
+                     world_object.obj
                      collision_object.obj
                      camera_object.obj
                      music_player_object.obj
@@ -188,7 +198,8 @@ set object_files as "window.obj
 set static_dependencies as "./libs/SDL/lib/x64/SDL2.lib
                             ./libs/SDL_image/lib/x64/SDL2_image.lib
                             ./libs/SDL_ttf/lib/x64/SDL2_ttf.lib
-                            ./libs/SDL_mixer/lib/x64/SDL2_mixer.lib"
+                            ./libs/SDL_mixer/lib/x64/SDL2_mixer.lib
+                            ./libs/box2d/Build/src/Release/box2d.lib"
 
 set static_libs as "{static_dependencies}
                     kernel32.lib
@@ -204,6 +215,7 @@ set include_dirs as "/I./libs/SDL/include/
                     /I./libs/imgui/
                     /I./libs/imgui/backends/
                     /I./libs/idk/idk/
+                    /I./libs/box2d/include/
                     /I./include/"
 
 set compiler_params as "/O2 /MD /EHsc /D__FRESH_DEBUG /D__FRESH_ENABLE_EDITOR /std:c++20 /MP /DWIN64"

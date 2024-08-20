@@ -25,8 +25,8 @@ void CursorResource::init_cursor() noexcept {
 }
 
 __idk_nodiscard
-  SpriteResource&
-  CursorResource::get_cursor_sprite() noexcept {
+SpriteResource&
+CursorResource::get_cursor_sprite() noexcept {
   return this->_cursor_sprite;
 }
 
@@ -36,6 +36,7 @@ CursorResource::get_position_info() noexcept {
   return this->_pos_info;
 }
 
+// SDL3 has floating point support for SDL_GetMouseState, but we are using SDL2 for now.
 void CursorResource::sync_position() noexcept {
   SDL_GetMouseState(&this->_pos_info.x, &this->_pos_info.y);
 }

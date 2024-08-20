@@ -27,7 +27,7 @@ __idk_nodiscard Object FescriptLabelObjectMemberInitText::call(Interpreter& inte
   this->_self->initialize_text(this->_self->get_label_text(),
                                this->_self->get_foreground_color(),
                                this->_self->get_background_color(),
-                               fresh::LabelRenderType::Solid);
+                               fresh::LabelRenderType::Blended);
   return nullptr;
 }
 

@@ -2,15 +2,34 @@
 #include <fescript/wrappers/fescript_base_object.hpp>
 #include <fescript/fescript_array.hpp>
 #include <freshengine.hpp>
+#include <numbers>
 
 namespace fresh {
 RectangleObject::RectangleObject(bool is_filled)
-  : _is_filled(is_filled) {
+  : _is_filled{is_filled} {
+  this->_vertices.get_polygons().reserve(4);
+  this->_object_def = "rectangleobject";
 }
 
 RectangleObject::RectangleObject(SDL_FRect info, ColorResource color, bool is_filled)
-  : _color{std::move(color)}, _is_filled(is_filled) {
+  : _color{color}, _is_filled{is_filled} {
+  this->_object_def = "rectangleobject";
   this->_pos_info = info;
+  this->_vertices.get_polygons().resize(4);
+
+  this->_vertices.get_polygons()[0] = BaseObject::_rectangle_convert_to_top_left({ 0.f, 0.f, this->_pos_info.w, this->_pos_info.h });
+  this->_vertices.get_polygons()[1] = BaseObject::_rectangle_convert_to_top_right({ 0.f, 0.f, this->_pos_info.w, this->_pos_info.h });
+  this->_vertices.get_polygons()[2] = BaseObject::_rectangle_convert_to_bottom_right({ 0.f, 0.f, this->_pos_info.w, this->_pos_info.h });
+  this->_vertices.get_polygons()[3] = BaseObject::_rectangle_convert_to_bottom_left({ 0.f, 0.f, this->_pos_info.w, this->_pos_info.h });
+
+  this->_angle_generated_vertices.get_polygon_resource() = this->_vertices;
+  if(!f32_nearly_equals(this->get_rotation_by_radian_degrees(), 0.f)) {
+    this->_angle_generated_vertices.set_rotation_by_radian_degrees(this->_rotation_degrees);
+  }
+  this->_angle_generated_vertices.get_color_resource() = this->get_color_resource();
+  this->_angle_generated_vertices.get_raw_position_info() = this->get_raw_position_info();
+  this->_angle_generated_vertices.get_polygon_resource().get_is_filled() = this->_is_filled;
+  this->_angle_generated_vertices_first = this->_angle_generated_vertices;
 }
 
 void RectangleObject::sync(bool is_sync_with_camera) noexcept {
@@ -23,12 +42,19 @@ void RectangleObject::sync(bool is_sync_with_camera) noexcept {
                          this->get_color_resource().get_green(),
                          this->get_color_resource().get_blue(),
                          this->get_color_resource().get_alpha());
-  if(this->get_is_filled()) {
-    SDL_RenderFillRectF(Engine::get_instance()->get_window()->get_renderer(),
-                        &this->_render_pos_info);
+  if(f32_nearly_equals(this->get_rotation_by_radian_degrees(), 0.f)) {
+    this->_render_pos_info = BaseObject::_center_to_top_left_pivot(this->_render_pos_info);
+    if(this->get_is_filled()) {
+      SDL_RenderFillRectF(Engine::get_instance()->get_window()->get_renderer(),
+                          &this->_render_pos_info);
+    } else {
+      SDL_RenderDrawRectF(Engine::get_instance()->get_window()->get_renderer(),
+                          &this->_render_pos_info);
+    }
   } else {
-    SDL_RenderDrawRectF(Engine::get_instance()->get_window()->get_renderer(),
-                        &this->_render_pos_info);
+    this->_angle_generated_vertices.get_raw_position_info() = this->get_raw_position_info();
+    this->_angle_generated_vertices._render_pos_info = this->_render_pos_info;
+    this->_angle_generated_vertices._draw_polygon();
   }
   APPLY_DELTAS()
 }
@@ -49,5 +75,16 @@ ColorResource& RectangleObject::get_color_resource() noexcept {
 __idk_nodiscard
 bool& RectangleObject::get_is_filled() noexcept {
   return this->_is_filled;
+}
+
+void RectangleObject::set_rotation_by_radian_degrees(idk::f32 rad_degrees) noexcept {
+  const auto rad_mod = std::fmodf(rad_degrees, mul_2_pi_v<idk::f32>);
+  if(f32_nearly_equals(this->_rotation_degrees, rad_mod))
+    return;
+  this->_angle_generated_vertices.get_polygon_resource().get_polygons() = this->_angle_generated_vertices_first.get_polygon_resource().get_polygons();
+  this->_last_rotation_degrees = this->_rotation_degrees;
+  this->_rotation_degrees = rad_mod;
+  this->_angle_generated_vertices.set_rotation_by_radian_degrees(this->_rotation_degrees);
+  this->_angle_generated_vertices.get_polygon_resource().get_is_filled() = this->get_is_filled();
 }
 } // namespace fresh

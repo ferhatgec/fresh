@@ -80,11 +80,11 @@ def init(delta) =
  ));
  Engine_link_camera(Character.sub_groups.0.sub_groups.0);
  AnimPlayer.set_replay_status(true);
- Engine_render_objects_push(RectArea);
- Engine_render_objects_push(CircleArea);
- Engine_render_objects_push(AnimPlayer);
+ # Engine_render_objects_push(RectArea);
+ # Engine_render_objects_push(CircleArea);
+ # Engine_render_objects_push(AnimPlayer);
  # Engine_render_objects_push(Circle);
- Engine_render_objects_push(Poly);
+ # Engine_render_objects_push(Poly);
 
  musicplayerobj = Engine_MusicPlayerObject("example/digits.wav");
  audioplayerobj = Engine_AudioPlayerObject("example/digits.wav");
@@ -104,8 +104,9 @@ def bool_to_str(a) =
  return "false";
 ;
 
+# delta is milliseconds, delta * 0.001 to convert seconds
 def update(delta) =
- IO_println("\e[0;33m" + bool_to_str(RectArea.is_colliding_with(CircleArea)) + "\e[0m");
+ # IO_println("\e[0;33m" + bool_to_str(RectArea.is_colliding_with(CircleArea)) + "\e[0m");
 
  if(EngineIO_is_key_just_pressed(EngineIO_Key_P)) =
   is_music_plays = !is_music_plays;

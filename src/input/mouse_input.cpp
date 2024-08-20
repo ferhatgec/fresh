@@ -55,8 +55,8 @@ void MouseInput::sync_current_coordinates() noexcept {
 }
 
 __idk_nodiscard
-  idk::Pair<idk::i32, idk::i32>&
-  MouseInput::get_current_coordinates() noexcept {
+idk::Pair<idk::i32, idk::i32>&
+MouseInput::get_current_coordinates() noexcept {
   this->sync_current_coordinates();
   return this->_coords;
 }
