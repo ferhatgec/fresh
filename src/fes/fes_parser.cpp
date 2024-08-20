@@ -595,14 +595,6 @@ void FesParser::parse_list(std::shared_ptr<FesObjectAST>& object_node) noexcept 
       break;
     }
 
-    case Keywords::CollisionObject: {
-      if(object_node->_object_type == Keywords::Project) {
-        std::cout << "Fes error: Using CollisionObject in ProjectObject within a list is not possible, no member can handle this.\n";
-      } else
-        object_node->_sub_groups.push_back(std::make_shared<FesCollisionObjectAST>());
-      break;
-    }
-
     case Keywords::LabelObject: {
       if(object_node->_object_type == Keywords::Project) {
         std::cout << "Fes error: Using LabelObject in ProjectObject within a list is not possible, no member can handle this.\n";

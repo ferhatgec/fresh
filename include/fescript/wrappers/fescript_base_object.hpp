@@ -6,7 +6,6 @@
 #include <objects/base_object.hpp>
 #include <objects/sprite_object.hpp>
 #include <objects/label_object.hpp>
-#include <objects/collision_object.hpp>
 #include <objects/circle_object.hpp>
 #include <objects/polygon_object.hpp>
 #include <objects/rectangle_object.hpp>
@@ -53,7 +52,6 @@ else if(name.lexeme == "sub_groups") { \
      case FescriptSpriteObjectIndex: { this->push_to_sub_objects(std::get<FescriptSpriteObjectIndex>(object)); break; } \
      case FescriptLabelObjectIndex: { this->push_to_sub_objects(std::get<FescriptLabelObjectIndex>(object)); break; } \
      case FescriptAreaObjectIndex: { this->push_to_sub_objects(std::get<FescriptAreaObjectIndex>(object)); break; } \
-     case FescriptCollisionObjectIndex: { this->push_to_sub_objects(std::get<FescriptCollisionObjectIndex>(object)); break; } \
      case FescriptCameraObjectIndex: { this->push_to_sub_objects(std::get<FescriptCameraObjectIndex>(object)); break; } \
      case FescriptCircleObjectIndex: { this->push_to_sub_objects(std::get<FescriptCircleObjectIndex>(object)); break; } \
      case FescriptPolygonObjectIndex: { this->push_to_sub_objects(std::get<FescriptPolygonObjectIndex>(object)); break; } \
@@ -74,7 +72,6 @@ case FescriptBaseObjectIndex: { return this->_self->##object_fn(std::get<Fescrip
 case FescriptSpriteObjectIndex: { return this->_self->##object_fn(std::get<FescriptSpriteObjectIndex>(arguments.front())); } \
 case FescriptLabelObjectIndex: { return this->_self->##object_fn(std::get<FescriptLabelObjectIndex>(arguments.front())); } \
 case FescriptAreaObjectIndex: { return this->_self->##object_fn(std::get<FescriptAreaObjectIndex>(arguments.front())); } \
-case FescriptCollisionObjectIndex: { return this->_self->##object_fn(std::get<FescriptCollisionObjectIndex>(arguments.front())); } \
 case FescriptCameraObjectIndex: { return this->_self->##object_fn(std::get<FescriptCameraObjectIndex>(arguments.front())); } \
 case FescriptCircleObjectIndex: { return this->_self->##object_fn(std::get<FescriptCircleObjectIndex>(arguments.front())); } \
 case FescriptPolygonObjectIndex: { return this->_self->##object_fn(std::get<FescriptPolygonObjectIndex>(arguments.front())); } \

@@ -9,7 +9,6 @@
 #include "objects/sprite_object.hpp"
 #include "objects/label_object.hpp"
 #include "objects/physics/area_object.hpp"
-#include "objects/collision_object.hpp"
 #include "objects/camera_object.hpp"
 
 #include "objects/gui/gui_base_object.hpp"

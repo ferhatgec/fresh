@@ -29,7 +29,6 @@
 #include <fescript/wrappers/fescript_base_object.hpp>
 #include <fescript/wrappers/fescript_camera_object.hpp>
 #include <fescript/wrappers/fescript_circle_object.hpp>
-#include <fescript/wrappers/fescript_collision_object.hpp>
 #include <fescript/wrappers/fescript_label_object.hpp>
 #include <fescript/wrappers/fescript_music_player_object.hpp>
 #include <fescript/wrappers/fescript_polygon_object.hpp>
@@ -124,7 +123,6 @@ Interpreter::Interpreter() {
   this->globals->define("Engine_SpriteObject", std::make_shared<SpriteObjectWrapper>());
   this->globals->define("Engine_LabelObject", std::make_shared<LabelObjectWrapper>());
   this->globals->define("Engine_AreaObject", std::make_shared<AreaObjectWrapper>());
-  this->globals->define("Engine_CollisionObject", std::make_shared<CollisionObjectWrapper>());
   this->globals->define("Engine_CameraObject", std::make_shared<CameraObjectWrapper>());
   this->globals->define("Engine_AnimationPlayerObject", std::make_shared<AnimationPlayerObjectWrapper>());
   this->globals->define("Engine_AnimationFrameObject", std::make_shared<AnimationFrameObjectWrapper>());
@@ -506,7 +504,6 @@ void Interpreter::execute_block(const std::vector<std::shared_ptr<Stmt>> &statem
     case FescriptSpriteObjectIndex:
     case FescriptLabelObjectIndex:
     case FescriptAreaObjectIndex:
-    case FescriptCollisionObjectIndex:
     case FescriptCameraObjectIndex:
     case FescriptAnimationPlayerObjectIndex:
     case FescriptAnimationFrameObjectIndex:
@@ -569,7 +566,6 @@ void Interpreter::execute_block(const std::vector<std::shared_ptr<Stmt>> &statem
     SET_VISIT_IMPL_OBJECT(FescriptSpriteObjectIndex)
     SET_VISIT_IMPL_OBJECT(FescriptLabelObjectIndex)
     SET_VISIT_IMPL_OBJECT(FescriptAreaObjectIndex)
-    SET_VISIT_IMPL_OBJECT(FescriptCollisionObjectIndex)
     SET_VISIT_IMPL_OBJECT(FescriptCameraObjectIndex)
     SET_VISIT_IMPL_OBJECT(FescriptAnimationPlayerObjectIndex)
     SET_VISIT_IMPL_OBJECT(FescriptAnimationFrameObjectIndex)
@@ -681,7 +677,6 @@ void Interpreter::check_number_operands(const Token &op, const Object &left,
     IS_INHERITED_BY(SpriteObject) return Interpreter::get_object_property(keyword, obj_SpriteObject);
     else IS_INHERITED_BY(LabelObject) return Interpreter::get_object_property(keyword, obj_LabelObject);
     else IS_INHERITED_BY(AreaObject) return Interpreter::get_object_property(keyword, obj_AreaObject);
-    else IS_INHERITED_BY(CollisionObject) return Interpreter::get_object_property(keyword, obj_CollisionObject);
     else IS_INHERITED_BY(CameraObject) return Interpreter::get_object_property(keyword, obj_CameraObject);
     else IS_INHERITED_BY(AnimationPlayerObject) return Interpreter::get_object_property(keyword, obj_AnimationPlayerObject);
     else IS_INHERITED_BY(AnimationFrameObject) return Interpreter::get_object_property(keyword, obj_AnimationFrameObject);
@@ -724,10 +719,6 @@ void Interpreter::check_number_operands(const Token &op, const Object &left,
       RETURN_BASE_OBJECT_PROPERTIES(FescriptAreaObjectIndex)
       else if (keyword.lexeme == "is_colliding_with") return std::make_shared<FescriptAreaObjectMemberIsCollidingWith>(std::get<FescriptAreaObjectIndex>(value));
       else throw RuntimeError(keyword, "AreaObject property cannot be found.");
-    }
-    case FescriptCollisionObjectIndex: {
-      RETURN_BASE_OBJECT_PROPERTIES(FescriptCollisionObjectIndex)
-      else throw RuntimeError(keyword, "CollisionObject property cannot be found.");
     }
     case FescriptCameraObjectIndex: {
       RETURN_BASE_OBJECT_PROPERTIES(FescriptCameraObjectIndex)
@@ -831,7 +822,6 @@ void Interpreter::check_number_operands(const Token &op, const Object &left,
   IS_INHERITED_BY(SpriteObject) return obj_SpriteObject;
   else IS_INHERITED_BY(LabelObject) return obj_LabelObject;
   else IS_INHERITED_BY(AreaObject) return obj_AreaObject;
-  else IS_INHERITED_BY(CollisionObject) return obj_CollisionObject;
   else IS_INHERITED_BY(CameraObject) return obj_CameraObject;
   else IS_INHERITED_BY(AnimationPlayerObject) return obj_AnimationPlayerObject;
   else IS_INHERITED_BY(AnimationFrameObject) return obj_AnimationFrameObject;
@@ -864,7 +854,6 @@ std::string Interpreter::stringify(const Object &object) {
   GET_STRINGIFY_IMPL_OBJECT(FescriptSpriteObjectIndex)
   GET_STRINGIFY_IMPL_OBJECT(FescriptLabelObjectIndex)
   GET_STRINGIFY_IMPL_OBJECT(FescriptAreaObjectIndex)
-  GET_STRINGIFY_IMPL_OBJECT(FescriptCollisionObjectIndex)
   GET_STRINGIFY_IMPL_OBJECT(FescriptCameraObjectIndex)
   GET_STRINGIFY_IMPL_OBJECT(FescriptAnimationPlayerObjectIndex)
   GET_STRINGIFY_IMPL_OBJECT(FescriptAnimationFrameObjectIndex)

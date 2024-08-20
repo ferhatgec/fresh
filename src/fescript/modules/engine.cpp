@@ -9,7 +9,6 @@
 #include <objects/physics/polygon_area_object.hpp>
 
 #include <objects/camera_object.hpp>
-#include <objects/collision_object.hpp>
 #include <objects/label_object.hpp>
 #include <objects/sprite_object.hpp>
 #include <objects/circle_object.hpp>
@@ -38,7 +37,6 @@ __idk_nodiscard Object FescriptEngineRenderObjectsPush::call(Interpreter& interp
       PUSH_RENDER_OBJECTS_IMPL_OBJECT(FescriptSpriteObjectIndex)
       PUSH_RENDER_OBJECTS_IMPL_OBJECT(FescriptLabelObjectIndex)
       PUSH_RENDER_OBJECTS_IMPL_OBJECT(FescriptAreaObjectIndex)
-      PUSH_RENDER_OBJECTS_IMPL_OBJECT(FescriptCollisionObjectIndex)
       PUSH_RENDER_OBJECTS_IMPL_OBJECT(FescriptCameraObjectIndex)
       PUSH_RENDER_OBJECTS_IMPL_OBJECT(FescriptAnimationPlayerObjectIndex)
       PUSH_RENDER_OBJECTS_IMPL_OBJECT(FescriptAnimationFrameObjectIndex)

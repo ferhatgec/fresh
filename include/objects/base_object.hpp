@@ -42,7 +42,6 @@ public:
   friend class RectangleAreaObject;
   friend class CircleAreaObject;
   friend class PolygonAreaObject;
-  friend class CollisionObject;
   friend class CameraObject;
   friend class FesLoaderResource;
   friend class GuiBaseObject;

@@ -28,7 +28,6 @@ set files as "/Tp./src/application/window.cpp
               /Tp./src/objects/physics/polygon_body_object.cpp
               /Tp./src/objects/physics/rectangle_body_object.cpp
               /Tp./src/objects/physics/world_object.cpp
-              /Tp./src/objects/collision_object.cpp
               /Tp./src/objects/camera_object.cpp
               /Tp./src/objects/music_player_object.cpp
               /Tp./src/objects/audio_player_object.cpp
@@ -73,7 +72,6 @@ set files as "/Tp./src/application/window.cpp
               /Tp./src/fescript/wrappers/physics/fescript_rectangle_area_object.cpp
               /Tp./src/fescript/wrappers/physics/fescript_circle_area_object.cpp
               /Tp./src/fescript/wrappers/physics/fescript_polygon_area_object.cpp
-              /Tp./src/fescript/wrappers/fescript_collision_object.cpp
               /Tp./src/fescript/wrappers/fescript_camera_object.cpp
               /Tp./src/fescript/wrappers/animation/fescript_animation_player_object.cpp
               /Tp./src/fescript/wrappers/animation/fescript_animation_frame_object.cpp
@@ -124,7 +122,6 @@ set object_files as "window.obj
                      polygon_body_object.obj
                      rectangle_body_object.obj
                      world_object.obj
-                     collision_object.obj
                      camera_object.obj
                      music_player_object.obj
                      audio_player_object.obj
@@ -169,7 +166,6 @@ set object_files as "window.obj
                      fescript_rectangle_area_object.obj
                      fescript_circle_area_object.obj
                      fescript_polygon_area_object.obj
-                     fescript_collision_object.obj
                      fescript_camera_object.obj
                      fescript_animation_player_object.obj
                      fescript_animation_frame_object.obj

@@ -481,8 +481,6 @@ void Editor::update() {
         Editor::create_object = fes::Keywords::BaseObject;
       } else if(ImGui::MenuItem("CameraObject")) {
         Editor::create_object = fes::Keywords::CameraObject;
-      } else if(ImGui::MenuItem("CollisionObject")) {
-        Editor::create_object = fes::Keywords::CollisionObject;
       } else if(ImGui::MenuItem("LabelObject")) {
         Editor::create_object = fes::Keywords::LabelObject;
       } else if(ImGui::MenuItem("SpriteObject")) {
@@ -854,15 +852,6 @@ void Editor::update() {
         if(ImGui::SmallButton("Create CameraObject")) {
           std::shared_ptr<fresh::CameraObject> object =
             std::make_shared<fresh::CameraObject>();
-          Editor::_create_render_object(idk::move(object));
-        }
-        break;
-      }
-
-      case fes::Keywords::CollisionObject: {
-        if(ImGui::SmallButton("Create CollisionObject")) {
-          std::shared_ptr<fresh::CollisionObject> object =
-            std::make_shared<fresh::CollisionObject>();
           Editor::_create_render_object(idk::move(object));
         }
         break;

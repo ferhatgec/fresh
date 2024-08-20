@@ -75,7 +75,6 @@ enum Keywords {
   AreaObject, // AreaObject
   BaseObject, // BaseObject
   CameraObject, // CameraObject
-  CollisionObject, // CollisionObject
   LabelObject, // LabelObject
   SpriteObject, // SpriteObject
 

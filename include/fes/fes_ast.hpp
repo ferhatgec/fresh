@@ -67,7 +67,6 @@ protected:
 using FesGuiBaseObjectAST = FesObjectAST;
 using FesAreaObjectAST = FesObjectAST;
 using FesCameraObjectAST = FesObjectAST;
-using FesCollisionObjectAST = FesObjectAST;
 
 class FesColorObjectAST : public FesObjectAST {
 public:

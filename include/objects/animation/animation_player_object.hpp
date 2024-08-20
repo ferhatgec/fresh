@@ -19,7 +19,6 @@
 #define MUST_BE_SPRITEOBJECT(obj_value) MUST_BE_ERROR(##obj_value, FescriptSpriteObjectIndex, "spriteobject")
 #define MUST_BE_LABELOBJECT(obj_value) MUST_BE_ERROR(##obj_value, FescriptLabelObjectIndex, "labelobject")
 #define MUST_BE_AREAOBJECT(obj_value) MUST_BE_ERROR(##obj_value, FescriptAreaObjectIndex, "areaobject")
-#define MUST_BE_COLLISIONOBJECT(obj_value) MUST_BE_ERROR(##obj_value, FescriptCollisionObjectIndex, "collisionobject")
 #define MUST_BE_CAMERAOBJECT(obj_value) MUST_BE_ERROR(##obj_value, FescriptCameraObjectIndex, "cameraobject")
 
 namespace fresh {

@@ -24,7 +24,6 @@ AnimationFrameObjectWrapper::~AnimationFrameObjectWrapper() noexcept {
     case FescriptSpriteObjectIndex: { obj = std::get<FescriptSpriteObjectIndex>(arguments[2]); break; }
     case FescriptLabelObjectIndex: { obj = std::get<FescriptLabelObjectIndex>(arguments[2]); break; }
     case FescriptAreaObjectIndex: { obj = std::get<FescriptAreaObjectIndex>(arguments[2]); break; }
-    case FescriptCollisionObjectIndex: { obj = std::get<FescriptCollisionObjectIndex>(arguments[2]); break; }
     case FescriptCameraObjectIndex: { obj = std::get<FescriptCameraObjectIndex>(arguments[2]); break; }
     case FescriptAnimationPlayerObjectIndex: { obj = std::get<FescriptAnimationPlayerObjectIndex>(arguments[2]); break; }
     case FescriptAnimationFrameObjectIndex: { obj = std::get<FescriptAnimationFrameObjectIndex>(arguments[2]); break; }

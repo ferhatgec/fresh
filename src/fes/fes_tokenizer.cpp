@@ -209,7 +209,6 @@ void FesTokenizer::_check_and_push() noexcept {
     pushe("AreaObject", Keywords::AreaObject);
     pushe("BaseObject", Keywords::BaseObject);
     pushe("CameraObject", Keywords::CameraObject);
-    pushe("CollisionObject", Keywords::CollisionObject);
     pushe("LabelObject", Keywords::LabelObject);
     pushe("SpriteObject", Keywords::SpriteObject);
     pushe("sprite_resource", Keywords::SpriteResource);

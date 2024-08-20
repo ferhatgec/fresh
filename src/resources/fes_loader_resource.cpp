@@ -251,12 +251,6 @@ FesLoaderResource::_generate_object(std::shared_ptr<fes::FesObjectAST> object_no
     return ptr;
   }
 
-  case fes::Keywords::CollisionObject: {
-    auto ptr = this->_generate_baseobject_ptr<fresh::CollisionObject>(std::move(object_node));
-    ptr->_object_def = "collisionobject";
-    return ptr;
-  }
-
   case fes::Keywords::LabelObject: {
     std::shared_ptr<fresh::LabelObject> object = std::make_shared<fresh::LabelObject>();
     auto casted_obj = std::dynamic_pointer_cast<fresh::fes::FesLabelObjectAST>(object_node);
@@ -632,13 +626,11 @@ __idk_nodiscard
   case fes::Keywords::GuiBaseObject:
   case fes::Keywords::AreaObject:
   case fes::Keywords::BaseObject:
-  case fes::Keywords::CameraObject:
-  case fes::Keywords::CollisionObject: {
+  case fes::Keywords::CameraObject: {
     fes_data.push_back([&]() -> idk::StringViewChar { switch(object_node->_object_type) { case fes::Keywords::GuiBaseObject: return "GuiBaseObject";
                                                                                                        case fes::Keywords::AreaObject: return "AreaObject";
                                                                                                        case fes::Keywords::BaseObject: return "BaseObject";
                                                                                                        case fes::Keywords::CameraObject: return "CameraObject";
-                                                                                                       case fes::Keywords::CollisionObject: return "CollisionObject";
                                                                                                        default: return "BaseObject"; /* never reach*/ } }() + ",\n");
     ++FesLoaderResource::_space_indentation;
     INDENT();
@@ -837,8 +829,6 @@ FesLoaderResource::_convert_object_from_render_objects(std::shared_ptr<BaseObjec
     return std::move(this->_convert_object_from_base_object<fes::FesAreaObjectAST>(object_node));
   } else if(object_node->_object_def == "cameraobject") {
     return std::move(this->_convert_object_from_base_object<fes::FesCameraObjectAST>(object_node));
-  } else if(object_node->_object_def == "collisionobject") {
-    return std::move(this->_convert_object_from_base_object<fes::FesCollisionObjectAST>(object_node));
   } else if(object_node->_object_def == "labelobject") {
     return std::move(this->_convert_object_from_base_object<fes::FesLabelObjectAST>(
       object_node,

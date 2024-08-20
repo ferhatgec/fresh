@@ -13,39 +13,39 @@
 
 #include "fescript_token_type.hpp"
 
-#define StringIndex 0
-#define LongDoubleIndex 1
-#define BoolIndex 2
-#define NullptrIndex 3
-#define FescriptFunctionIndex 4
-#define FescriptClassIndex 5
-#define FescriptInstanceIndex 6
-#define FescriptArrayIndex 7
-#define FescriptDictIndex 8
-#define FescriptCallableIndex 9
-#define FescriptBaseObjectIndex 10
-#define FescriptSpriteObjectIndex 11
-#define FescriptLabelObjectIndex 12
-#define FescriptAreaObjectIndex 13
-#define FescriptCollisionObjectIndex 14
-#define FescriptCameraObjectIndex 15
-#define FescriptAnimationPlayerObjectIndex 16
-#define FescriptAnimationFrameObjectIndex 17
-#define FescriptMusicPlayerObjectIndex 18
-#define FescriptAudioPlayerObjectIndex 19
-#define FescriptCircleObjectIndex 20
-#define FescriptPolygonObjectIndex 21
-#define FescriptRectangleObjectIndex 22
-#define FescriptRectangleAreaObjectIndex 23
-#define FescriptCircleAreaObjectIndex 24
-#define FescriptPolygonAreaObjectIndex 25
+enum : std::uint8_t {
+  StringIndex,
+  LongDoubleIndex,
+  BoolIndex,
+  NullptrIndex,
+  FescriptFunctionIndex,
+  FescriptClassIndex,
+  FescriptInstanceIndex,
+  FescriptArrayIndex,
+  FescriptDictIndex,
+  FescriptCallableIndex,
+  FescriptBaseObjectIndex,
+  FescriptSpriteObjectIndex,
+  FescriptLabelObjectIndex,
+  FescriptAreaObjectIndex,
+  FescriptCameraObjectIndex,
+  FescriptAnimationPlayerObjectIndex,
+  FescriptAnimationFrameObjectIndex,
+  FescriptMusicPlayerObjectIndex,
+  FescriptAudioPlayerObjectIndex,
+  FescriptCircleObjectIndex,
+  FescriptPolygonObjectIndex,
+  FescriptRectangleObjectIndex,
+  FescriptRectangleAreaObjectIndex,
+  FescriptCircleAreaObjectIndex,
+  FescriptPolygonAreaObjectIndex
+};
 
 namespace fresh {
 class BaseObject;
 class SpriteObject;
 class LabelObject;
 class AreaObject;
-class CollisionObject;
 class CameraObject;
 class AnimationPlayerObject;
 class AnimationFrameObject;
@@ -82,7 +82,6 @@ using Object =
                std::shared_ptr<fresh::SpriteObject>,
                std::shared_ptr<fresh::LabelObject>,
                std::shared_ptr<fresh::AreaObject>,
-               std::shared_ptr<fresh::CollisionObject>,
                std::shared_ptr<fresh::CameraObject>,
                std::shared_ptr<fresh::AnimationPlayerObject>,
                std::shared_ptr<fresh::AnimationFrameObject>,

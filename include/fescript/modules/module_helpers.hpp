@@ -44,7 +44,6 @@
 #define ERR_CHECK_SPRITEOBJECT(fn_name, arg_count) ERR_CHECK_TYPE(fn_name, arg_count, "spriteobject", FescriptSpriteObjectIndex)
 #define ERR_CHECK_LABELOBJECT(fn_name, arg_count) ERR_CHECK_TYPE(fn_name, arg_count, "labelobject", FescriptLabelObjectIndex)
 #define ERR_CHECK_AREAOBJECT(fn_name, arg_count) ERR_CHECK_TYPE(fn_name, arg_count, "areaobject", FescriptAreaObjectIndex)
-#define ERR_CHECK_COLLISIONOBJECT(fn_name, arg_count) ERR_CHECK_TYPE(fn_name, arg_count, "collisionobject", FescriptCollisionObjectIndex)
 #define ERR_CHECK_CAMERAOBJECT(fn_name, arg_count) ERR_CHECK_TYPE(fn_name, arg_count, "cameraobject", FescriptCameraObjectIndex)
 #define ERR_CHECK_ANIMATIONPLAYEROBJECT(fn_name, arg_count) ERR_CHECK_TYPE(fn_name, arg_count, "animationplayerobject", FescriptAnimationPlayerObjectIndex)
 #define ERR_CHECK_ANIMATIONFRAMEOBJECT(fn_name, arg_count) ERR_CHECK_TYPE(fn_name, arg_count, "animationframeobject", FescriptAnimationFrameObjectIndex)

@@ -33,7 +33,6 @@ z.height = 100;
 Engine_render_objects_push(z);
 
 def q = Engine_SpriteObject();
-def w = Engine_CollisionObject();
 
 q.width = 200;
 q.height = 200;
@@ -42,11 +41,6 @@ q.pos_y = 200;
 q.sprite_resource = "example/otobus.png";
 q.init_sprite();
 
-w.pos_x = 200;
-w.pos_y = 200;
-w.width = 200;
-w.height = 200;
-# q.sub_groups = [w];
 
 Engine_render_objects_push(q);
 
