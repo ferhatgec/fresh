@@ -201,7 +201,7 @@ void BaseObject::load_fescript_rt(const idk::StringViewChar& script, bool is_fil
   std::cout << this->_name << " " << this->script_file_name << '\n';
 }
 
-void BaseObject::push_to_sub_objects(std::shared_ptr<BaseObject> obj) noexcept {
+void BaseObject::push_to_sub_objects(const std::shared_ptr<BaseObject>& obj) noexcept {
   if(!obj) {
     std::cout << "Engine error: Invalid BaseObject/-inherited object passed to push_to_sub_objects()!\n";
     std::exit(1);

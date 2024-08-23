@@ -3,10 +3,7 @@
 
 namespace fresh {
 ColorResource::ColorResource(idk::u8 r, idk::u8 g, idk::u8 b, idk::u8 a) noexcept
-  : _r(r), _g(g), _b(b), _a(a) {
-}
-
-ColorResource::~ColorResource() {
+  : _r{r}, _g{g}, _b{b}, _a{a} {
 }
 
 __idk_nodiscard

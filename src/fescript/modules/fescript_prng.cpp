@@ -6,19 +6,19 @@
 
 namespace fescript {
 // output: decimal
-__idk_nodiscard Object FescriptPRNGGetGlobalSeed::call(Interpreter& interpreter, std::vector <Object> arguments) {
+__idk_nodiscard Object FescriptPRNGGetGlobalSeed::call([[maybe_unused]] Interpreter& interpreter, const std::vector<Object>& arguments) {
   return static_cast<idk::f80>(interpreter.get_global_seed());
 }
 
 // output: decimal
-__idk_nodiscard Object FescriptPRNGSetGlobalSeed::call(fescript::Interpreter& interpreter, std::vector <Object> arguments) {
+__idk_nodiscard Object FescriptPRNGSetGlobalSeed::call([[maybe_unused]] Interpreter& interpreter, const std::vector<Object>& arguments) {
   ERR_CHECK_DECIMAL("PRNG_set_global_seed", 1)
   interpreter.get_global_seed() = static_cast<idk::i64>(std::get<LongDoubleIndex>(arguments.front()));
   return static_cast<idk::f80>(interpreter.get_global_seed());
 }
 
 // output: decimal, limited between [0, 2^32 - 2]
-__idk_nodiscard Object FescriptPRNGGeneratePRN::call(fescript::Interpreter& interpreter, std::vector <Object> arguments) {
+__idk_nodiscard Object FescriptPRNGGeneratePRN::call([[maybe_unused]] Interpreter& interpreter, const std::vector<Object>& arguments) {
   ERR_CHECK_DECIMAL("PRNG_generate_prn", 1)
   switch(static_cast<idk::i64>(std::get<LongDoubleIndex>(arguments.front()))) {
     case LehmerPRNGIndex: {
@@ -64,7 +64,7 @@ __idk_nodiscard Object FescriptPRNGGeneratePRN::call(fescript::Interpreter& inte
 }
 
 // output: decimal, between [0, 2^32 - 2]
-__idk_nodiscard Object FescriptPRNGGeneratePRNBetween::call(fescript::Interpreter& interpreter, std::vector <Object> arguments) {
+__idk_nodiscard Object FescriptPRNGGeneratePRNBetween::call([[maybe_unused]] Interpreter& interpreter, const std::vector<Object>& arguments) {
   ERR_CHECK_DECIMAL("PRNG_generate_prn_between", 3)
   switch(static_cast<idk::i64>(std::get<LongDoubleIndex>(arguments.front()))) {
     case LehmerPRNGIndex: {

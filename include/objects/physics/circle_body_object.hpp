@@ -15,12 +15,13 @@ public:
   }
 
   void set(const fescript::Token& name, fescript::Object value) override;
-
   void set_is_static_body(bool is_static_body) noexcept override;
 
-  idk::f32 _radius;
+  [[nodiscard]] const idk::f32& get_radius() const noexcept;
+  void set_radius(idk::f32 r) noexcept;
 private:
   void _create_body() noexcept;
 protected:
+  idk::f32 _radius;
 };
 } // namespace fresh

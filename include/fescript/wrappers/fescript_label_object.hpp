@@ -10,7 +10,7 @@ public:
 
   [[nodiscard]] int arity() override { return 0; }
   [[nodiscard]] std::string to_string() override { return "InitFont"; }
-  [[nodiscard]] Object call(Interpreter &interpreter, std::vector<Object> arguments) override;
+  [[nodiscard]] Object call([[maybe_unused]] Interpreter& interpreter, const std::vector<Object>& arguments) override;
 private:
   std::shared_ptr<fresh::LabelObject> _self;
 };
@@ -22,7 +22,7 @@ public:
 
   [[nodiscard]] int arity() override { return 0; }
   [[nodiscard]] std::string to_string() override { return "InitText"; }
-  [[nodiscard]] Object call(Interpreter &interpreter, std::vector<Object> arguments) override;
+  [[nodiscard]] Object call([[maybe_unused]] Interpreter& interpreter, const std::vector<Object>& arguments) override;
 private:
   std::shared_ptr<fresh::LabelObject> _self;
 };
@@ -33,6 +33,6 @@ public:
   ~LabelObjectWrapper();
   [[nodiscard]] std::string to_string() override;
   [[nodiscard]] int arity() override { return -1; }
-  [[nodiscard]] Object call(Interpreter &interpreter, std::vector<Object> arguments) override;
+  [[nodiscard]] Object call([[maybe_unused]] Interpreter& interpreter, const std::vector<Object>& arguments) override;
 };
 } // namespace fescript

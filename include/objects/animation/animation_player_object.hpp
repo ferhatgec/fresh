@@ -15,10 +15,27 @@
 #define MUST_BE_ARRAY(obj_value) MUST_BE_ERROR(##obj_value, FescriptArrayIndex, "array")
 #define MUST_BE_DICT(obj_value) MUST_BE_ERROR(##obj_value, FescriptDictIndex, "dict")
 #define MUST_BE_CALLABLE(obj_value) MUST_BE_ERROR(##obj_value, FescriptCallableIndex, "callable")
+
 #define MUST_BE_BASEOBJECT(obj_value) MUST_BE_ERROR(##obj_value, FescriptBaseObjectIndex, "baseobject")
 #define MUST_BE_SPRITEOBJECT(obj_value) MUST_BE_ERROR(##obj_value, FescriptSpriteObjectIndex, "spriteobject")
 #define MUST_BE_LABELOBJECT(obj_value) MUST_BE_ERROR(##obj_value, FescriptLabelObjectIndex, "labelobject")
+
 #define MUST_BE_AREAOBJECT(obj_value) MUST_BE_ERROR(##obj_value, FescriptAreaObjectIndex, "areaobject")
+#define MUST_BE_RECTANGLEAREAOBJECT(obj_value) MUST_BE_ERROR(##obj_value, FescriptRectangleAreaObjectIndex, "rectangleareaobject")
+#define MUST_BE_CIRCLEAREAOBJECT(obj_value) MUST_BE_ERROR(##obj_value, FescriptCircleAreaObjectIndex, "circleareaobject")
+#define MUST_BE_POLYGONAREAOBJECT(obj_value) MUST_BE_ERROR(##obj_value, FescriptPolygonAreaObjectIndex, "polygonareaobject")
+
+#define MUST_BE_RECTANGLEOBJECT(obj_value) MUST_BE_ERROR(##obj_value, FescriptRectangleObjectIndex, "rectangleobject")
+#define MUST_BE_CIRCLEOBJECT(obj_value) MUST_BE_ERROR(##obj_value, FescriptCircleObjectIndex, "circleobject")
+#define MUST_BE_POLYGONOBJECT(obj_value) MUST_BE_ERROR(##obj_value, FescriptPolygonObjectIndex, "polygonobject")
+
+#define MUST_BE_BODYOBJECT(obj_value) MUST_BE_ERROR(##obj_value, FescriptBodyObjectIndex, "bodyobject")
+#define MUST_BE_RECTANGLEBODYOBJECT(obj_value) MUST_BE_ERROR(##obj_value, FescriptRectangleBodyObjectIndex, "rectanglebodyobject")
+#define MUST_BE_CIRCLEBODYOBJECT(obj_value) MUST_BE_ERROR(##obj_value, FescriptCircleBodyObjectIndex, "circlebodyobject")
+#define MUST_BE_POLYGONBODYOBJECT(obj_value) MUST_BE_ERROR(##obj_value, FescriptPolygonBodyObjectIndex, "polygonbodyobject")
+
+#define MUST_BE_WORLDOBJECT(obj_value) MUST_BE_ERROR(##obj_value, FescriptWorldObjectIndex, "worldobject")
+
 #define MUST_BE_CAMERAOBJECT(obj_value) MUST_BE_ERROR(##obj_value, FescriptCameraObjectIndex, "cameraobject")
 
 namespace fresh {

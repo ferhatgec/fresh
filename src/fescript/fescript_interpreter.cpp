@@ -25,6 +25,11 @@
 #include <fescript/wrappers/physics/fescript_rectangle_area_object.hpp>
 #include <fescript/wrappers/physics/fescript_circle_area_object.hpp>
 #include <fescript/wrappers/physics/fescript_polygon_area_object.hpp>
+#include <fescript/wrappers/physics/fescript_world_object.hpp>
+#include <fescript/wrappers/physics/fescript_body_object.hpp>
+#include <fescript/wrappers/physics/fescript_rectangle_body_object.hpp>
+#include <fescript/wrappers/physics/fescript_circle_body_object.hpp>
+#include <fescript/wrappers/physics/fescript_polygon_body_object.hpp>
 #include <fescript/wrappers/fescript_audio_player_object.hpp>
 #include <fescript/wrappers/fescript_base_object.hpp>
 #include <fescript/wrappers/fescript_camera_object.hpp>
@@ -45,9 +50,14 @@
 #include <objects/physics/circle_area_object.hpp>
 #include <objects/physics/polygon_area_object.hpp>
 #include <objects/physics/rectangle_area_object.hpp>
-
+#include <objects/physics/world_object.hpp>
+#include <objects/physics/rectangle_body_object.hpp>
+#include <objects/physics/circle_body_object.hpp>
+#include <objects/physics/polygon_body_object.hpp>
 #include <chrono>
 
+// TODO: Do not create new shared_ptr every member function call.
+// Just create one for every BaseObject instance, make them *real* class member.
 namespace fescript {
 Interpreter::Interpreter() {
   this->globals = std::make_shared<Environment>();
@@ -98,8 +108,10 @@ Interpreter::Interpreter() {
 
   ENGINEIO_INIT_CONSTANTS()
 
+  // TODO: better we get rid of this but not top priority.
   this->globals->define("EngineWindow_get_current_window_size", std::make_shared<FescriptEngineWindowGetCurrentWindowSize>());
   this->globals->define("EngineWindow_get_current_window_pos", std::make_shared<FescriptEngineWindowGetCurrentWindowPos>());
+  this->globals->define("EngineWindow_get_current_cursor_pos", std::make_shared<FescriptEngineWindowGetCurrentCursorPos>());
   this->globals->define("EngineWindow_set_window_icon", std::make_shared<FescriptEngineWindowSetWindowIcon>());
   this->globals->define("EngineWindow_set_window_title", std::make_shared<FescriptEngineWindowSetWindowTitle>());
   this->globals->define("EngineWindow_get_window_title", std::make_shared<FescriptEngineWindowGetWindowTitle>());
@@ -134,7 +146,11 @@ Interpreter::Interpreter() {
   this->globals->define("Engine_RectangleAreaObject", std::make_shared<RectangleAreaObjectWrapper>());
   this->globals->define("Engine_CircleAreaObject", std::make_shared<CircleAreaObjectWrapper>());
   this->globals->define("Engine_PolygonAreaObject", std::make_shared<PolygonAreaObjectWrapper>());
-  this->globals->define("Engine_render_objects_push", std::make_shared<FescriptEngineRenderObjectsPush>());
+  this->globals->define("Engine_WorldObject", std::make_shared<WorldObjectWrapper>());
+  this->globals->define("Engine_BodyObject", std::make_shared<BodyObjectWrapper>());
+  this->globals->define("Engine_RectangleBodyObject", std::make_shared<RectangleBodyObjectWrapper>());
+  this->globals->define("Engine_PolygonBodyObject", std::make_shared<PolygonBodyObjectWrapper>());
+  this->globals->define("Engine_CircleBodyObject", std::make_shared<CircleBodyObjectWrapper>());
 
   this->globals->define("Engine_load_fes", std::make_shared<FescriptEngineLoadFes>());
   this->globals->define("Engine_get_object", std::make_shared<FescriptEngineGetObject>());
@@ -475,7 +491,7 @@ void Interpreter::execute_block(const std::vector<std::shared_ptr<Stmt>> &statem
     } else
         throw RuntimeError{expr->paren, "expected " + std::to_string(function->arity()) + " arguments but got " + std::to_string(arguments.size()) + "."};
   }
-  return function->call(*this, std::move(arguments));
+  return function->call(*this, arguments);
 }
 
 [[nodiscard]] Object Interpreter::visit(std::shared_ptr<Get> expr) {
@@ -514,7 +530,12 @@ void Interpreter::execute_block(const std::vector<std::shared_ptr<Stmt>> &statem
     case FescriptRectangleObjectIndex:
     case FescriptRectangleAreaObjectIndex:
     case FescriptCircleAreaObjectIndex:
-    case FescriptPolygonAreaObjectIndex: {
+    case FescriptPolygonAreaObjectIndex:
+    case FescriptWorldObjectIndex:
+    case FescriptBodyObjectIndex:
+    case FescriptRectangleBodyObjectIndex:
+    case FescriptCircleBodyObjectIndex:
+    case FescriptPolygonBodyObjectIndex: {
       if(expr->is_name_an_expr)
         return "TODO"; // TODO
       return this->get_object_property(expr->name, object);
@@ -577,6 +598,11 @@ void Interpreter::execute_block(const std::vector<std::shared_ptr<Stmt>> &statem
     SET_VISIT_IMPL_OBJECT(FescriptRectangleAreaObjectIndex)
     SET_VISIT_IMPL_OBJECT(FescriptCircleAreaObjectIndex)
     SET_VISIT_IMPL_OBJECT(FescriptPolygonAreaObjectIndex)
+    SET_VISIT_IMPL_OBJECT(FescriptWorldObjectIndex)
+    SET_VISIT_IMPL_OBJECT(FescriptBodyObjectIndex)
+    SET_VISIT_IMPL_OBJECT(FescriptRectangleBodyObjectIndex)
+    SET_VISIT_IMPL_OBJECT(FescriptCircleBodyObjectIndex)
+    SET_VISIT_IMPL_OBJECT(FescriptPolygonBodyObjectIndex)
   }
   if (object.index() != FescriptInstanceIndex)
     throw RuntimeError(expr->name, "only instances have fields.");
@@ -682,6 +708,17 @@ void Interpreter::check_number_operands(const Token &op, const Object &left,
     else IS_INHERITED_BY(AnimationFrameObject) return Interpreter::get_object_property(keyword, obj_AnimationFrameObject);
     else IS_INHERITED_BY(MusicPlayerObject) return Interpreter::get_object_property(keyword, obj_MusicPlayerObject);
     else IS_INHERITED_BY(AudioPlayerObject) return Interpreter::get_object_property(keyword, obj_AudioPlayerObject);
+    else IS_INHERITED_BY(RectangleObject) return Interpreter::get_object_property(keyword, obj_RectangleObject);
+    else IS_INHERITED_BY(CircleObject) return Interpreter::get_object_property(keyword, obj_CircleObject);
+    else IS_INHERITED_BY(PolygonObject) return Interpreter::get_object_property(keyword, obj_PolygonObject);
+    else IS_INHERITED_BY(RectangleAreaObject) return Interpreter::get_object_property(keyword, obj_RectangleAreaObject);
+    else IS_INHERITED_BY(PolygonAreaObject) return Interpreter::get_object_property(keyword, obj_PolygonAreaObject);
+    else IS_INHERITED_BY(CircleAreaObject) return Interpreter::get_object_property(keyword, obj_CircleAreaObject);
+    else IS_INHERITED_BY(BodyObject) return Interpreter::get_object_property(keyword, obj_BodyObject);
+    else IS_INHERITED_BY(RectangleBodyObject) return Interpreter::get_object_property(keyword, obj_RectangleBodyObject);
+    else IS_INHERITED_BY(CircleBodyObject) return Interpreter::get_object_property(keyword, obj_CircleBodyObject);
+    else IS_INHERITED_BY(PolygonBodyObject) return Interpreter::get_object_property(keyword, obj_PolygonBodyObject);
+    else IS_INHERITED_BY(WorldObject) return Interpreter::get_object_property(keyword, obj_WorldObject);
   }
 
   switch (value.index()) {
@@ -810,6 +847,39 @@ void Interpreter::check_number_operands(const Token &op, const Object &left,
       else if(keyword.lexeme == "delete_all_polygons") return std::make_shared<FescriptPolygonAreaObjectMemberDeleteAllPolygons>(std::get<FescriptPolygonAreaObjectIndex>(value));
       else throw RuntimeError(keyword, "PolygonAreaObject property cannot be found.");
     }
+    case FescriptWorldObjectIndex: {
+      RETURN_BASE_OBJECT_PROPERTIES(FescriptWorldObjectIndex)
+      else if(keyword.lexeme == "get_substep_count") return std::make_shared<FescriptWorldObjectMemberGetSubstepCount>(std::get<FescriptWorldObjectIndex>(value));
+      else if(keyword.lexeme == "get_physics_frame") return std::make_shared<FescriptWorldObjectMemberGetPhysicsFrame>(std::get<FescriptWorldObjectIndex>(value));
+      else if(keyword.lexeme == "get_timestep") return std::make_shared<FescriptWorldObjectMemberGetTimestep>(std::get<FescriptWorldObjectIndex>(value));
+      else if(keyword.lexeme == "set_substep_count") return std::make_shared<FescriptWorldObjectMemberSetSubstepCount>(std::get<FescriptWorldObjectIndex>(value));
+      else if(keyword.lexeme == "set_physics_frame") return std::make_shared<FescriptWorldObjectMemberSetPhysicsFrame>(std::get<FescriptWorldObjectIndex>(value));
+      else throw RuntimeError(keyword, "WorldObject property cannot be found.");
+    }
+    case FescriptBodyObjectIndex: {
+      RETURN_BASE_OBJECT_PROPERTIES(FescriptBodyObjectIndex)
+      else throw RuntimeError(keyword, "BodyObject property cannot be found.");
+    }
+    case FescriptRectangleBodyObjectIndex: {
+      RETURN_BASE_OBJECT_PROPERTIES(FescriptRectangleBodyObjectIndex)
+      else if(keyword.lexeme == "set_is_static_body") return std::make_shared<FescriptRectangleBodyObjectMemberSetIsStaticBody>(std::get<FescriptRectangleBodyObjectIndex>(value));
+      else if(keyword.lexeme == "get_is_static_body") return std::make_shared<FescriptRectangleBodyObjectMemberGetIsStaticBody>(std::get<FescriptRectangleBodyObjectIndex>(value));
+      else throw RuntimeError(keyword, "RectangleBodyObject property cannot be found.");
+    }
+    case FescriptCircleBodyObjectIndex: {
+      RETURN_BASE_OBJECT_PROPERTIES(FescriptCircleBodyObjectIndex)
+      else if(keyword.lexeme == "set_is_static_body") return std::make_shared<FescriptCircleBodyObjectMemberSetIsStaticBody>(std::get<FescriptCircleBodyObjectIndex>(value));
+      else if(keyword.lexeme == "get_is_static_body") return std::make_shared<FescriptCircleBodyObjectMemberGetIsStaticBody>(std::get<FescriptCircleBodyObjectIndex>(value));
+      else if(keyword.lexeme == "set_radius") return std::make_shared<FescriptCircleBodyObjectMemberSetRadius>(std::get<FescriptCircleBodyObjectIndex>(value));
+      else if(keyword.lexeme == "get_radius") return std::make_shared<FescriptCircleBodyObjectMemberGetRadius>(std::get<FescriptCircleBodyObjectIndex>(value));
+      else throw RuntimeError(keyword, "CircleBodyObject property cannot be found.");
+    }
+    case FescriptPolygonBodyObjectIndex: {
+      RETURN_BASE_OBJECT_PROPERTIES(FescriptPolygonBodyObjectIndex)
+      else if(keyword.lexeme == "set_is_static_body") return std::make_shared<FescriptPolygonBodyObjectMemberSetIsStaticBody>(std::get<FescriptPolygonBodyObjectIndex>(value));
+      else if(keyword.lexeme == "get_is_static_body") return std::make_shared<FescriptRectangleBodyObjectMemberGetIsStaticBody>(std::get<FescriptRectangleBodyObjectIndex>(value));
+      else throw RuntimeError(keyword, "PolygonBodyObject property cannot be found.");
+    }
     default: {
       std::cout << "Engine error: Invalid pointer passed to get_object_property!\n";
       std::exit(1);
@@ -817,7 +887,7 @@ void Interpreter::check_number_operands(const Token &op, const Object &left,
   }
 }
 
-[[nodiscard]] Object Interpreter::baseobject_to_fescript_object(std::shared_ptr <fresh::BaseObject> base_obj) noexcept {
+[[nodiscard]] Object Interpreter::baseobject_to_fescript_object(std::shared_ptr<fresh::BaseObject> base_obj) noexcept {
   using namespace fresh;
   IS_INHERITED_BY(SpriteObject) return obj_SpriteObject;
   else IS_INHERITED_BY(LabelObject) return obj_LabelObject;
@@ -827,6 +897,17 @@ void Interpreter::check_number_operands(const Token &op, const Object &left,
   else IS_INHERITED_BY(AnimationFrameObject) return obj_AnimationFrameObject;
   else IS_INHERITED_BY(MusicPlayerObject) return obj_MusicPlayerObject;
   else IS_INHERITED_BY(AudioPlayerObject) return obj_AudioPlayerObject;
+  else IS_INHERITED_BY(RectangleObject) return obj_RectangleObject;
+  else IS_INHERITED_BY(CircleObject) return obj_CircleObject;
+  else IS_INHERITED_BY(PolygonObject) return obj_PolygonObject;
+  else IS_INHERITED_BY(RectangleAreaObject) return obj_RectangleAreaObject;
+  else IS_INHERITED_BY(PolygonAreaObject) return obj_PolygonAreaObject;
+  else IS_INHERITED_BY(CircleAreaObject) return obj_CircleAreaObject;
+  else IS_INHERITED_BY(BodyObject) return obj_BodyObject;
+  else IS_INHERITED_BY(RectangleBodyObject) return obj_RectangleBodyObject;
+  else IS_INHERITED_BY(CircleBodyObject) return obj_CircleBodyObject;
+  else IS_INHERITED_BY(PolygonBodyObject) return obj_PolygonBodyObject;
+  else IS_INHERITED_BY(WorldObject) return obj_WorldObject;
   else return base_obj;
 }
 
@@ -865,6 +946,11 @@ std::string Interpreter::stringify(const Object &object) {
   GET_STRINGIFY_IMPL_OBJECT(FescriptRectangleAreaObjectIndex)
   GET_STRINGIFY_IMPL_OBJECT(FescriptCircleAreaObjectIndex)
   GET_STRINGIFY_IMPL_OBJECT(FescriptPolygonAreaObjectIndex)
+  GET_STRINGIFY_IMPL_OBJECT(FescriptWorldObjectIndex)
+  GET_STRINGIFY_IMPL_OBJECT(FescriptBodyObjectIndex)
+  GET_STRINGIFY_IMPL_OBJECT(FescriptRectangleBodyObjectIndex)
+  GET_STRINGIFY_IMPL_OBJECT(FescriptCircleBodyObjectIndex)
+  GET_STRINGIFY_IMPL_OBJECT(FescriptPolygonBodyObjectIndex)
   }
   return "nil";
 }

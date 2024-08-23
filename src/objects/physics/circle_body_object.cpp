@@ -1,4 +1,8 @@
+#include <fescript/wrappers/fescript_base_object.hpp>
+#include <fescript/fescript_array.hpp>
 #include <objects/physics/circle_body_object.hpp>
+#include <objects/camera_object.hpp>
+#include <resources/polygon_resource.hpp>
 
 namespace fresh {
 CircleBodyObject::CircleBodyObject(const b2WorldId& world_id, SDL_FRect pos, idk::f32 radius, bool is_static_body)
@@ -17,13 +21,18 @@ void CircleBodyObject::sync(bool is_sync_with_camera) noexcept {
   if(this->_disabled)
     return;
   auto position = b2Body_GetPosition(this->_body_id);
-  // auto rotation = b2Body_GetRotation(this->_body_id); // TODO: we don't have rotation for BaseObject.
+  // auto rotation = b2Body_GetRotation(this->_body_id); // TODO: we don't have rotation yet, but we essentially need it since any child
+                                                         // of CircleBodyObject may contain SpriteObject or smth where rotation makes difference?
   this->get_position_info() = to_sdl(position, to_renderer(this->_pos_info.w), to_renderer(this->_pos_info.h)); // SDL_FRect { to_renderer(position.x), to_renderer(position.y), to_renderer(this->_pos_info.w), to_renderer(this->_pos_info.h) };
   APPLY_DELTAS()
 }
 
 void CircleBodyObject::set(const fescript::Token& name, fescript::Object value) {
-  // TODO: fescript integration.
+  SET_BASE_OBJECT_PROPERTIES()
+  else {
+    std::cout << "Engine [language] error: CircleBodyObject has no field named as '" << name.lexeme << "'.\n";
+    std::exit(1);
+  }
 }
 
 void CircleBodyObject::set_is_static_body(bool is_static_body) noexcept {
@@ -38,16 +47,27 @@ void CircleBodyObject::set_is_static_body(bool is_static_body) noexcept {
 void CircleBodyObject::_create_body() noexcept {
   b2BodyDef body_def = b2DefaultBodyDef();
   body_def.position = to_box2d(this->_pos_info);
-  // body_def.position.x = to_physics(this->_pos_info.x);
-  // body_def.position.y = to_physics(this->_pos_info.y);
   if(!this->_is_static_body)
     body_def.type = b2_dynamicBody;
   this->_body_id = b2CreateBody(this->_world_id, &body_def);
   b2Circle circle;
-  // circle.center = body_def.position;
-  // circle.center = {to_physics(this->_pos_info.x), to_physics(this->_pos_info.y)};
   circle.radius = to_physics(this->_radius);
   b2ShapeDef shape_def = b2DefaultShapeDef();
   b2CreateCircleShape(this->_body_id, &shape_def, &circle);
+}
+
+[[nodiscard]] const idk::f32& CircleBodyObject::get_radius() const noexcept {
+  return this->_radius;
+}
+
+void CircleBodyObject::set_radius(idk::f32 r) noexcept {
+  if(r > 0.f || f32_nearly_equals(r, 0.f)) [[likely]] {
+    this->_radius = r;
+    b2DestroyBody(this->_body_id);
+    this->_body_id = b2_nullBodyId;
+    this->_create_body();
+  } else [[unlikely]] {
+    std::cout << "Engine info: CircleBodyObject::set_radius(f32 r = " << r << "): r must satisfy >= 0.\n";
+  }
 }
 } // namespace fresh

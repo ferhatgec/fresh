@@ -15,7 +15,7 @@ BaseObjectWrapper::~BaseObjectWrapper() {}
   return "baseobject";
 }
 
-[[nodiscard]] Object BaseObjectWrapper::call(Interpreter &interpreter, std::vector<Object> arguments) {
+[[nodiscard]] Object BaseObjectWrapper::call([[maybe_unused]] Interpreter& interpreter, const std::vector<Object>& arguments) {
   return std::make_shared<fresh::BaseObject>();
 }
 } // namespace fescript

@@ -43,8 +43,6 @@ public:
       400.f, 300.f, 30.f, 30.f
     };
 
-    // **** FIXME: camera physics fucked. ****
-
     this->_world = std::make_shared<fresh::WorldObject>();
     this->_rect_body = std::make_shared<fresh::RectangleBodyObject>(this->_world->get_world_id(), rect_pos, true);
     // we attach a circle sprite, so we can actually see what box2d does.

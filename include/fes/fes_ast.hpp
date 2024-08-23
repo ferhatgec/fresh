@@ -1,7 +1,3 @@
-//
-// Created by gech on 2/5/2024.
-//
-
 #pragma once
 
 #include <types/predefined.hpp>
@@ -10,26 +6,6 @@
 #include "fes_keywords.hpp"
 #include <memory>
 
-//{
-// [Project,
-//  project_name = "Test Game",
-//  default_window_size_w = 960,
-//  default_window_size_h = 480,
-//  default_clear_color = {
-//    [Color,
-//     red = 255,
-//     green = 255,
-//     blue = 255,
-//     alpha = 255;
-//    ];
-//  },
-//  default_fes_file = "example/scene.fes",
-//  preloaded_fes_files = {
-//    [File, name = "Scene1", file = "example/scene.fes"; ],
-//    [File, name = "Scene2", file = "example/scene_1.fes"; ];
-//  };
-// ];
-//};
 namespace fresh {
 namespace fes {
 class FesBaseAST {

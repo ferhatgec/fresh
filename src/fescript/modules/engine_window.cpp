@@ -7,45 +7,55 @@
 
 namespace fescript {
 // output: [ width, height ]
-__idk_nodiscard Object FescriptEngineWindowGetCurrentWindowSize::call(Interpreter& interpreter, std::vector <Object> arguments) {
-  std::shared_ptr<FescriptArray> array = std::make_shared<FescriptArray>();
+__idk_nodiscard Object FescriptEngineWindowGetCurrentWindowSize::call([[maybe_unused]] Interpreter& interpreter, const std::vector<Object>& arguments) {
+  auto array = std::make_shared<FescriptArray>();
   {
-    const auto window_size = fresh::Engine::get_instance()->get_window()->get_window_size();
-    array->push_value(static_cast<idk::f80>(std::get<0>(window_size)));
-    array->push_value(static_cast<idk::f80>(std::get<1>(window_size)));
+    const auto& window_size = fresh::Engine::get_instance()->get_window()->get_window_size();
+    array->push_value(static_cast<idk::f80>(std::get<0>(window_size))); // w
+    array->push_value(static_cast<idk::f80>(std::get<1>(window_size))); // h
   }
   return std::move(array);
 }
 
 // output: [ position_x, position_y ]
-__idk_nodiscard Object FescriptEngineWindowGetCurrentWindowPos::call(Interpreter& interpreter, std::vector <Object> arguments) {
-  std::shared_ptr<FescriptArray> array = std::make_shared<FescriptArray>();
+__idk_nodiscard Object FescriptEngineWindowGetCurrentWindowPos::call([[maybe_unused]] Interpreter& interpreter, const std::vector<Object>& arguments) {
+  auto array = std::make_shared<FescriptArray>();
   {
-    const auto window_size = fresh::Engine::get_instance()->get_window()->get_window_position();
-    array->push_value(static_cast<idk::f80>(std::get<0>(window_size)));
-    array->push_value(static_cast<idk::f80>(std::get<1>(window_size)));
+    const auto& window_size = fresh::Engine::get_instance()->get_window()->get_window_position();
+    array->push_value(static_cast<idk::f80>(std::get<0>(window_size))); // w
+    array->push_value(static_cast<idk::f80>(std::get<1>(window_size))); // h
+  }
+  return std::move(array);
+}
+
+__idk_nodiscard Object FescriptEngineWindowGetCurrentCursorPos::call([[maybe_unused]] Interpreter& interpreter, const std::vector<Object>& arguments) {
+  auto array = std::make_shared<FescriptArray>();
+  {
+    const auto& cursor_pos = fresh::Engine::get_instance()->get_mouse_input().get_current_coordinates();
+    array->push_value(static_cast<idk::f80>(cursor_pos._first)); // x
+    array->push_value(static_cast<idk::f80>(cursor_pos._second)); // y
   }
   return std::move(array);
 }
 
 // output: bool
-__idk_nodiscard Object FescriptEngineWindowSetWindowIcon::call(Interpreter& interpreter, std::vector <Object> arguments) {
+__idk_nodiscard Object FescriptEngineWindowSetWindowIcon::call([[maybe_unused]] Interpreter& interpreter, const std::vector<Object>& arguments) {
   ERR_CHECK_STRING("EngineWindow_set_window_icon()", 1)
   return fresh::Engine::get_instance()->get_window()->set_icon(std::get<StringIndex>(arguments.front()).data());
 }
 
 // output: bool
-__idk_nodiscard Object FescriptEngineWindowSetWindowTitle::call(Interpreter& interpreter, std::vector <Object> arguments) {
+__idk_nodiscard Object FescriptEngineWindowSetWindowTitle::call([[maybe_unused]] Interpreter& interpreter, const std::vector<Object>& arguments) {
   return fresh::Engine::get_instance()->get_window()->set_title(Interpreter::stringify(arguments.front()).data());
 }
 
 // output: string
-__idk_nodiscard Object FescriptEngineWindowGetWindowTitle::call(Interpreter& interpreter, std::vector <Object> arguments) {
+__idk_nodiscard Object FescriptEngineWindowGetWindowTitle::call([[maybe_unused]] Interpreter& interpreter, const std::vector<Object>& arguments) {
   return std::string(fresh::Engine::get_instance()->get_window()->get_title().data());
 }
 
 // output: bool
-__idk_nodiscard Object FescriptEngineWindowSetWindowCursor::call(Interpreter& interpreter, std::vector <Object> arguments) {
+__idk_nodiscard Object FescriptEngineWindowSetWindowCursor::call([[maybe_unused]] Interpreter& interpreter, const std::vector<Object>& arguments) {
   if(arguments.size() < 3) {
     std::cout << "Engine error: EngineWindow_set_window_cursor() must take 3 arguments.\n";
     std::exit(1);
@@ -69,7 +79,7 @@ __idk_nodiscard Object FescriptEngineWindowSetWindowCursor::call(Interpreter& in
 }
 
 // output: bool
-__idk_nodiscard Object FescriptEngineWindowSetWindowMode::call(Interpreter& interpreter, std::vector <Object> arguments) {
+__idk_nodiscard Object FescriptEngineWindowSetWindowMode::call([[maybe_unused]] Interpreter& interpreter, const std::vector<Object>& arguments) {
   ERR_CHECK_DECIMAL("EngineWindow_set_window_mode()", 1)
   const auto& window_mode = std::get<LongDoubleIndex>(arguments.front());
   return fresh::Engine::get_instance()->get_window()->set_window_mode([window_mode]() -> fresh::Window::WindowMode {
@@ -91,7 +101,7 @@ __idk_nodiscard Object FescriptEngineWindowSetWindowMode::call(Interpreter& inte
 }
 
 // output: EngineWindow_Fullscreen, EngineWindow_FullscreenWindowed or EngineWindow_Windowed
-__idk_nodiscard Object FescriptEngineWindowGetWindowMode::call(Interpreter& interpreter, std::vector <Object> arguments) {
+__idk_nodiscard Object FescriptEngineWindowGetWindowMode::call([[maybe_unused]] Interpreter& interpreter, const std::vector<Object>& arguments) {
   auto flag = SDL_GetWindowFlags(fresh::Engine::get_instance()->get_window()->get_raw_window());
   if((flag & SDL_WINDOW_FULLSCREEN_DESKTOP) == SDL_WINDOW_FULLSCREEN_DESKTOP)
     return static_cast<idk::f80>(SDL_WINDOW_FULLSCREEN_DESKTOP);
@@ -101,7 +111,7 @@ __idk_nodiscard Object FescriptEngineWindowGetWindowMode::call(Interpreter& inte
 }
 
 // output: nil
-__idk_nodiscard Object FescriptEngineWindowSetDefaultClearColor::call(Interpreter& interpreter, std::vector <Object> arguments) {
+__idk_nodiscard Object FescriptEngineWindowSetDefaultClearColor::call([[maybe_unused]] Interpreter& interpreter, const std::vector<Object>& arguments) {
   ERR_CHECK_DECIMAL("EngineWindow_set_default_clear_color()", 4)
   fresh::Engine::get_instance()->get_window()->get_default_clear_color() = SDL_Color {
     .r = static_cast<idk::u8>(std::get<LongDoubleIndex>(arguments[0])),
@@ -113,7 +123,7 @@ __idk_nodiscard Object FescriptEngineWindowSetDefaultClearColor::call(Interprete
 }
 
 // output: bool
-__idk_nodiscard Object FescriptEngineWindowSetVSync::call(Interpreter& interpreter, std::vector <Object> arguments) {
+__idk_nodiscard Object FescriptEngineWindowSetVSync::call([[maybe_unused]] Interpreter& interpreter, const std::vector<Object>& arguments) {
   ERR_CHECK_BOOL("EngineWindow_set_vsync()", 1)
   return static_cast<bool>(
     SDL_RenderSetVSync(fresh::Engine::get_instance()->get_window()->get_renderer(), std::get<BoolIndex>(arguments.front()))
@@ -121,45 +131,45 @@ __idk_nodiscard Object FescriptEngineWindowSetVSync::call(Interpreter& interpret
 }
 
 // output: nil
-__idk_nodiscard Object FescriptEngineWindowCloseWindow::call(fescript::Interpreter& interpreter, std::vector <Object> arguments) {
+__idk_nodiscard Object FescriptEngineWindowCloseWindow::call([[maybe_unused]] Interpreter& interpreter, const std::vector<Object>& arguments) {
   fresh::Engine::get_instance()->is_engine_running() = false;
   return nullptr;
 }
 
 // output: bool
-__idk_nodiscard Object FescriptEngineWindowMaximizeWindow::call(fescript::Interpreter& interpreter, std::vector <Object> arguments) {
+__idk_nodiscard Object FescriptEngineWindowMaximizeWindow::call([[maybe_unused]] Interpreter& interpreter, const std::vector<Object>& arguments) {
   return fresh::Engine::get_instance()->get_window()->maximize();
 }
 
 // output: bool
-__idk_nodiscard Object FescriptEngineWindowMinimizeWindow::call(fescript::Interpreter& interpreter, std::vector <Object> arguments) {
+__idk_nodiscard Object FescriptEngineWindowMinimizeWindow::call([[maybe_unused]] Interpreter& interpreter, const std::vector<Object>& arguments) {
   return fresh::Engine::get_instance()->get_window()->minimize();
 }
 
 // output: nil
-__idk_nodiscard Object FescriptEngineWindowRestoreWindow::call(fescript::Interpreter& interpreter, std::vector <Object> arguments) {
+__idk_nodiscard Object FescriptEngineWindowRestoreWindow::call([[maybe_unused]] Interpreter& interpreter, const std::vector<Object>& arguments) {
   fresh::Engine::get_instance()->get_window()->restore();
   return nullptr;
 }
 
 // output: bool
-__idk_nodiscard Object FescriptEngineWindowIsWindowMaximized::call(fescript::Interpreter& interpreter, std::vector <Object> arguments) {
+__idk_nodiscard Object FescriptEngineWindowIsWindowMaximized::call([[maybe_unused]] Interpreter& interpreter, const std::vector<Object>& arguments) {
   return fresh::Engine::get_instance()->get_window()->is_maximized();
 }
 
 // output: bool
-__idk_nodiscard Object FescriptEngineWindowIsWindowMinimized::call(fescript::Interpreter& interpreter, std::vector <Object> arguments) {
+__idk_nodiscard Object FescriptEngineWindowIsWindowMinimized::call([[maybe_unused]] Interpreter& interpreter, const std::vector<Object>& arguments) {
   return fresh::Engine::get_instance()->get_window()->is_minimized();
 }
 
 // output: bool
-__idk_nodiscard Object FescriptEngineWindowSetWindowOpacity::call(fescript::Interpreter& interpreter, std::vector <Object> arguments) {
+__idk_nodiscard Object FescriptEngineWindowSetWindowOpacity::call([[maybe_unused]] Interpreter& interpreter, const std::vector<Object>& arguments) {
   ERR_CHECK_DECIMAL("EngineWindow_set_window_opacity", 1)
   return fresh::Engine::get_instance()->get_window()->set_opacity(std::get<LongDoubleIndex>(arguments.front()));
 }
 
 // output: decimal
-__idk_nodiscard Object FescriptEngineWindowGetWindowOpacity::call(fescript::Interpreter& interpreter, std::vector <Object> arguments) {
-  return fresh::Engine::get_instance()->get_window()->get_opacity();
+__idk_nodiscard Object FescriptEngineWindowGetWindowOpacity::call([[maybe_unused]] Interpreter& interpreter, const std::vector<Object>& arguments) {
+  return static_cast<idk::f80>(fresh::Engine::get_instance()->get_window()->get_opacity());
 }
 } // namespace fescript

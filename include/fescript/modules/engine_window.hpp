@@ -17,6 +17,7 @@ ENGINEWINDOW_GLOBAL_CONSTANT("EngineWindow_Windowed", 0)
 namespace fescript {
 ENGINEWINDOW_MODULE(GetCurrentWindowSize, 0)
 ENGINEWINDOW_MODULE(GetCurrentWindowPos, 0)
+ENGINEWINDOW_MODULE(GetCurrentCursorPos, 0)
 ENGINEWINDOW_MODULE(SetWindowIcon, 1)
 ENGINEWINDOW_MODULE(SetWindowTitle, 1)
 ENGINEWINDOW_MODULE(GetWindowTitle, 0)

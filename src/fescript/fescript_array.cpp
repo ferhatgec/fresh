@@ -10,7 +10,7 @@ FescriptArray::FescriptArray() {
 FescriptArray::~FescriptArray() {
 }
 
-[[nodiscard]] Object FescriptArray::get(const int index) {
+[[nodiscard]] Object FescriptArray::get(std::size_t index) const noexcept {
   if(index < this->values.size())
     return this->values[index];
   return nullptr;

@@ -9,6 +9,9 @@ namespace fescript {
 class Array;
 class Interpreter;
 class FescriptArray : public std::enable_shared_from_this<FescriptArray> {
+  // FIXME: why we are using bunch of friend class here?
+  // we do not store secret NSA documentations here,
+  // just make it public and shut the f*ck up.
   friend class Token;
   friend class Parser;
   friend class Interpreter;
@@ -19,6 +22,11 @@ class FescriptArray : public std::enable_shared_from_this<FescriptArray> {
   friend class fresh::RectangleAreaObject;
   friend class fresh::CircleAreaObject;
   friend class fresh::PolygonAreaObject;
+  friend class fresh::WorldObject;
+  friend class fresh::BodyObject;
+  friend class fresh::RectangleBodyObject;
+  friend class fresh::PolygonBodyObject;
+  friend class fresh::CircleBodyObject;
   friend class fresh::CameraObject;
   friend class fresh::AnimationPlayerObject;
   friend class fresh::AnimationFrameObject;
@@ -31,7 +39,7 @@ public:
   FescriptArray();
   ~FescriptArray();
 
-  [[nodiscard]] Object get(const int index);
+  [[nodiscard]] Object get(std::size_t index) const noexcept;
   [[nodiscard]] std::string to_string();
 
   [[nodiscard]]

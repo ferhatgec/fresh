@@ -1,13 +1,15 @@
 #pragma once
 
-#include "fescript_base_object.hpp"
+#include <fescript/wrappers/fescript_base_object.hpp>
 #include <fescript/modules/module_helpers.hpp>
 
+#define BODY_OBJECT_FUNCTION(name, arg_count) DEFINE_MODULE_CLASS(name, BodyObjectMember, arg_count)
+
 namespace fescript {
-class RectangleObjectWrapper : public BaseObjectWrapper, public std::enable_shared_from_this<RectangleObjectWrapper> {
+class BodyObjectWrapper : public BaseObjectWrapper {
 public:
-  RectangleObjectWrapper();
-  ~RectangleObjectWrapper();
+  BodyObjectWrapper();
+  virtual ~BodyObjectWrapper();
   [[nodiscard]] std::string to_string() override;
   [[nodiscard]] int arity() override { return -1; }
   [[nodiscard]] Object call([[maybe_unused]] Interpreter& interpreter, const std::vector<Object>& arguments) override;

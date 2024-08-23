@@ -13,7 +13,7 @@ AudioResource::AudioResource(const idk::StringViewChar& audio_file_path,
                              idk::u16 format,
                              idk::i32 channel,
                              idk::i32 buffer_size) noexcept {
-  this->load_audio_source(audio_file_path);
+  this->load_audio_source(audio_file_path, frequency, format, channel, buffer_size);
 }
 
 AudioResource::AudioResource(idk::StringViewChar&& audio_file_path,
@@ -21,7 +21,7 @@ AudioResource::AudioResource(idk::StringViewChar&& audio_file_path,
                              idk::u16 format,
                              idk::i32 channel,
                              idk::i32 buffer_size) noexcept {
-  this->load_audio_source(idk::move(audio_file_path));
+  this->load_audio_source(std::move(audio_file_path), frequency, format, channel, buffer_size);
 }
 
 AudioResource::~AudioResource() {

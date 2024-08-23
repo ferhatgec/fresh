@@ -4,7 +4,7 @@
 #include <objects/animation/animation_player_object.hpp>
 
 namespace fescript {
-[[nodiscard]] Object FescriptAudioPlayerObjectMemberLoadAudioSource::call(fescript::Interpreter& interpreter, std::vector <Object> arguments) {
+[[nodiscard]] Object FescriptAudioPlayerObjectMemberLoadAudioSource::call([[maybe_unused]] Interpreter& interpreter, const std::vector<Object>& arguments) {
   switch(arguments.size()) { // AudioPlayerObject::load_audio_source()
     case 0: {
       this->_self->load_audio_source("");
@@ -48,36 +48,36 @@ namespace fescript {
   return nullptr; // never reach, just for suppress compiler warning.
 }
 
-__idk_nodiscard Object FescriptAudioPlayerObjectMemberGetAudioVolume::call(Interpreter& interpreter, std::vector <Object> arguments) {
+__idk_nodiscard Object FescriptAudioPlayerObjectMemberGetAudioVolume::call([[maybe_unused]] Interpreter& interpreter, const std::vector<Object>& arguments) {
   return static_cast<idk::f80>(this->_self->get_audio_volume());
 }
 
-__idk_nodiscard Object FescriptAudioPlayerObjectMemberSyncAudioVolume::call(Interpreter& interpreter, std::vector <Object> arguments) {
+__idk_nodiscard Object FescriptAudioPlayerObjectMemberSyncAudioVolume::call([[maybe_unused]] Interpreter& interpreter, const std::vector<Object>& arguments) {
   this->_self->sync_audio_volume();
   return nullptr;
 }
 
-__idk_nodiscard Object FescriptAudioPlayerObjectMemberPauseAudio::call(Interpreter& interpreter, std::vector <Object> arguments) {
+__idk_nodiscard Object FescriptAudioPlayerObjectMemberPauseAudio::call([[maybe_unused]] Interpreter& interpreter, const std::vector<Object>& arguments) {
   this->_self->pause_audio();
   return nullptr;
 }
 
-__idk_nodiscard Object FescriptAudioPlayerObjectMemberPauseAllAudio::call(Interpreter& interpreter, std::vector <Object> arguments) {
+__idk_nodiscard Object FescriptAudioPlayerObjectMemberPauseAllAudio::call([[maybe_unused]] Interpreter& interpreter, const std::vector<Object>& arguments) {
   this->_self->pause_all_audio();
   return nullptr;
 }
 
-__idk_nodiscard Object FescriptAudioPlayerObjectMemberResumeAudio::call(Interpreter& interpreter, std::vector <Object> arguments) {
+__idk_nodiscard Object FescriptAudioPlayerObjectMemberResumeAudio::call([[maybe_unused]] Interpreter& interpreter, const std::vector<Object>& arguments) {
   this->_self->resume_audio();
   return nullptr;
 }
 
-__idk_nodiscard Object FescriptAudioPlayerObjectMemberResumeAllAudio::call(Interpreter& interpreter, std::vector <Object> arguments) {
+__idk_nodiscard Object FescriptAudioPlayerObjectMemberResumeAllAudio::call([[maybe_unused]] Interpreter& interpreter, const std::vector<Object>& arguments) {
   this->_self->resume_all_audio();
   return nullptr;
 }
 
-__idk_nodiscard Object FescriptAudioPlayerObjectMemberPlayAudio::call(Interpreter& interpreter, std::vector <Object> arguments) {
+__idk_nodiscard Object FescriptAudioPlayerObjectMemberPlayAudio::call([[maybe_unused]] Interpreter& interpreter, const std::vector<Object>& arguments) {
   if(arguments.empty())
     this->_self->play_audio();
   else
@@ -85,7 +85,7 @@ __idk_nodiscard Object FescriptAudioPlayerObjectMemberPlayAudio::call(Interprete
   return nullptr;
 }
 
-__idk_nodiscard Object FescriptAudioPlayerObjectMemberPlayFadeInAudio::call(Interpreter& interpreter, std::vector <Object> arguments) {
+__idk_nodiscard Object FescriptAudioPlayerObjectMemberPlayFadeInAudio::call([[maybe_unused]] Interpreter& interpreter, const std::vector<Object>& arguments) {
   switch(arguments.size()) {
     case 0: { // AudioPlayerObject::play_fade_in_audio()
       this->_self->play_fade_in_audio();
@@ -107,17 +107,17 @@ __idk_nodiscard Object FescriptAudioPlayerObjectMemberPlayFadeInAudio::call(Inte
   return nullptr; // never reach, just for suppress compiler warning.
 }
 
-__idk_nodiscard Object FescriptAudioPlayerObjectMemberStopAudio::call(Interpreter& interpreter, std::vector <Object> arguments) {
+__idk_nodiscard Object FescriptAudioPlayerObjectMemberStopAudio::call([[maybe_unused]] Interpreter& interpreter, const std::vector<Object>& arguments) {
   this->_self->stop_audio();
   return nullptr;
 }
 
-__idk_nodiscard Object FescriptAudioPlayerObjectMemberStopAllAudio::call(Interpreter& interpreter, std::vector <Object> arguments) {
+__idk_nodiscard Object FescriptAudioPlayerObjectMemberStopAllAudio::call([[maybe_unused]] Interpreter& interpreter, const std::vector<Object>& arguments) {
   this->_self->stop_all_audio();
   return nullptr;
 }
 
-__idk_nodiscard Object FescriptAudioPlayerObjectMemberStopFadeOutAudio::call(Interpreter& interpreter, std::vector <Object> arguments) {
+__idk_nodiscard Object FescriptAudioPlayerObjectMemberStopFadeOutAudio::call([[maybe_unused]] Interpreter& interpreter, const std::vector<Object>& arguments) {
   switch(arguments.size()) {
     case 0: { // AudioPlayerObject::stop_fade_out_audio()
       this->_self->stop_fade_out_audio();
@@ -149,7 +149,7 @@ AudioPlayerObjectWrapper::~AudioPlayerObjectWrapper() noexcept {
   return "audioplayerobject";
 }
 
-[[nodiscard]] Object AudioPlayerObjectWrapper::call(Interpreter &interpreter, std::vector<Object> arguments) {
+[[nodiscard]] Object AudioPlayerObjectWrapper::call([[maybe_unused]] Interpreter& interpreter, const std::vector<Object>& arguments) {
   // TODO: we must do type check.
   switch(arguments.size()) { // AudioPlayerObject::AudioPlayerObject()
     case 0: {

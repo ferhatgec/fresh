@@ -1,7 +1,9 @@
-#include <numbers>
+#include <objects/camera_object.hpp>
 #include <objects/physics/rectangle_body_object.hpp>
 #include <resources/polygon_resource.hpp>
-#include <thread>
+#include <fescript/wrappers/fescript_base_object.hpp>
+#include <fescript/fescript_array.hpp>
+#include <numbers>
 
 namespace fresh {
 RectangleBodyObject::RectangleBodyObject(const b2WorldId& world_id, SDL_FRect pos, bool is_static_body) {
@@ -25,7 +27,11 @@ void RectangleBodyObject::sync(bool is_sync_with_camera) noexcept {
 }
 
 void RectangleBodyObject::set(const fescript::Token& name, fescript::Object value) {
-  // TODO: fescript integration.
+  SET_BASE_OBJECT_PROPERTIES()
+  else {
+    std::cout << "Engine [language] error: PolygonBodyObject has no field named as '" << name.lexeme << "'.\n";
+    std::exit(1);
+  }
 }
 
 void RectangleBodyObject::set_is_static_body(bool is_static_body) noexcept {

@@ -26,7 +26,7 @@ FescriptFunction::FescriptFunction(std::shared_ptr<Function> declaration,
   return this->is_variadic ? (this->declaration->params.size() - 1) : this->declaration->params.size();
 }
 
-[[nodiscard]] Object FescriptFunction::call(Interpreter &interpreter, std::vector<Object> arguments) {
+[[nodiscard]] Object FescriptFunction::call([[maybe_unused]] Interpreter& interpreter, const std::vector<Object>& arguments) {
   auto environment = std::make_shared<Environment>(closure);
   for (std::size_t i = 0; i < this->declaration->params.size(); ++i) {
     if(this->declaration->params[i].is_variadic) {

@@ -10,7 +10,7 @@ public:
 
   [[nodiscard]] int arity() override { return 0; }
   [[nodiscard]] std::string to_string() override { return "InitSprite"; }
-  [[nodiscard]] Object call(Interpreter &interpreter, std::vector<Object> arguments) override;
+  [[nodiscard]] Object call([[maybe_unused]] Interpreter& interpreter, const std::vector<Object>& arguments) override;
 private:
   std::shared_ptr<fresh::SpriteObject> _self;
 };
@@ -21,6 +21,6 @@ public:
   ~SpriteObjectWrapper();
   [[nodiscard]] std::string to_string() override;
   [[nodiscard]] int arity() override { return -1; }
-  [[nodiscard]] Object call(Interpreter &interpreter, std::vector<Object> arguments) override;
+  [[nodiscard]] Object call([[maybe_unused]] Interpreter& interpreter, const std::vector<Object>& arguments) override;
 };
 } // namespace fescript

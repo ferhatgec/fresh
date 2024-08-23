@@ -16,7 +16,7 @@ public:
 
   void set(const fescript::Token& name, fescript::Object value) override;
 
-  virtual void set_is_static_body(bool is_static_body) noexcept;
+  void set_is_static_body(bool is_static_body) noexcept override;
 
   void set_rotation_by_radian_degrees(idk::f32 rad_degrees) noexcept override;
 private:

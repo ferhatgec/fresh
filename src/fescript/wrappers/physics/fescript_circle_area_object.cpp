@@ -2,8 +2,7 @@
 #include <objects/physics/circle_area_object.hpp>
 
 namespace fescript {
-// TODO: change base function to take const Interpreter&, we've never changed interpreter (Interpreter&)
-__idk_nodiscard Object FescriptCircleAreaObjectMemberIsCollidingWith::call(Interpreter& interpreter, std::vector <Object> arguments) {
+__idk_nodiscard Object FescriptCircleAreaObjectMemberIsCollidingWith::call([[maybe_unused]] Interpreter& interpreter, const std::vector<Object>& arguments) {
   if(!this->_self) {
     std::cout << "Engine error: CircleAreaObject is not initialized, yet using CircleAreaObject.is_colliding_with() is not possible.\n";
     std::exit(1);
@@ -24,7 +23,7 @@ __idk_nodiscard Object FescriptCircleAreaObjectMemberIsCollidingWith::call(Inter
   return false;
 }
 
-__idk_nodiscard Object FescriptCircleAreaObjectMemberGetRadius::call(Interpreter& interpreter, std::vector<Object> arguments) {
+__idk_nodiscard Object FescriptCircleAreaObjectMemberGetRadius::call([[maybe_unused]] Interpreter& interpreter, const std::vector<Object>& arguments) {
   if(!this->_self) {
     std::cout << "Engine error: CircleAreaObject is not initialized, yet using CircleAreaObject.get_radius() is not possible.\n";
     std::exit(1);
@@ -32,7 +31,7 @@ __idk_nodiscard Object FescriptCircleAreaObjectMemberGetRadius::call(Interpreter
   return static_cast<idk::f80>(this->_self->get_circle_resource().get_radius());
 }
 
-__idk_nodiscard Object FescriptCircleAreaObjectMemberSetRadius::call(Interpreter& interpreter, std::vector<Object> arguments) {
+__idk_nodiscard Object FescriptCircleAreaObjectMemberSetRadius::call([[maybe_unused]] Interpreter& interpreter, const std::vector<Object>& arguments) {
   if(!this->_self) {
     std::cout << "Engine error: CircleAreaObject is not initialized, yet using CircleAreaObject.set_radius() is not possible.\n";
     std::exit(1);
@@ -60,7 +59,7 @@ CircleAreaObjectWrapper::~CircleAreaObjectWrapper() {
   return "circleareaobject";
 }
 
-[[nodiscard]] Object CircleAreaObjectWrapper::call(Interpreter &interpreter, std::vector<Object> arguments) {
+[[nodiscard]] Object CircleAreaObjectWrapper::call([[maybe_unused]] Interpreter& interpreter, const std::vector<Object>& arguments) {
   auto circle_area_object = std::make_shared<fresh::CircleAreaObject>();
   this->_object_id = circle_area_object->get_object_id();
   return std::move(circle_area_object);

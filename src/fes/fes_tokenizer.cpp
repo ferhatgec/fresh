@@ -12,7 +12,7 @@ FesTokenizer::FesTokenizer(const idk::StringViewChar& fes_raw_text_data_or_file_
 }
 
 FesTokenizer::FesTokenizer(idk::StringViewChar&& fes_raw_text_data_or_file_path, bool file) {
-  this->load_from(idk::move(fes_raw_text_data_or_file_path));
+  this->load_from(std::move(fes_raw_text_data_or_file_path), file);
 }
 
 FesTokenizer::~FesTokenizer() {
@@ -40,7 +40,7 @@ void FesTokenizer::load_from(const idk::StringViewChar& fes_raw_text_data_or_fil
 void FesTokenizer::load_from(idk::StringViewChar&& fes_raw_text_data_or_file_path, bool file) noexcept {
   this->_raw_file_data.clear();
   if(file) {
-    std::ifstream file_stream(idk::move(fes_raw_text_data_or_file_path).data());
+    std::ifstream file_stream(std::move(fes_raw_text_data_or_file_path).data());
 
     if(!file_stream) {
       std::cout << "Engine info: FesTokenizer cannot load file.\n";
@@ -67,7 +67,7 @@ void FesTokenizer::tokenize() noexcept {
 
       for(++this->_i;
           (this->_raw_file_data.length() > this->_i) && (this->_raw_file_data.at_without_check_reference(this->_i) != '\n'); ++this->_i)
-        ;// skipping until next line.
+        ; // skipping until next line.
 
       --this->_i;
       break;

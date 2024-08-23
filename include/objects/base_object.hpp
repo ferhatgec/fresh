@@ -32,6 +32,13 @@ namespace fresh {
 template<std::floating_point Fp>
 inline constexpr Fp mul_2_pi_v = static_cast<Fp>(2) * std::numbers::pi_v<Fp>;
 
+enum : idk::u8 {
+  PosXIndex,
+  PosYIndex,
+  WidthIndex,
+  HeightIndex
+};
+
 // BaseObject is must be inherited if any object gonna be rendered with any position
 // visibility etc. data.
 class BaseObject {
@@ -118,7 +125,7 @@ public:
   idk::StringViewChar& get_name() noexcept;
 
   void load_fescript_rt(const idk::StringViewChar& script, bool is_file = false) noexcept;
-  void push_to_sub_objects(std::shared_ptr<BaseObject> obj) noexcept;
+  void push_to_sub_objects(const std::shared_ptr<BaseObject>& obj) noexcept;
 
   __idk_nodiscard
   std::shared_ptr<BaseObject> get_object_by_path(const std::string& path) noexcept;

@@ -32,6 +32,7 @@ set(SOURCE_FILES ${SOURCE_FILES}
         example/example_lib.cpp)
 
 add_library(fresh_lib STATIC ${SOURCE_FILES})
+
 target_include_directories(fresh_lib PRIVATE ${INCLUDE_PATHS})
 target_link_libraries(fresh_lib
         ./libs/SDL/lib/x64/SDL2

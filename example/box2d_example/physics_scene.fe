@@ -1,8 +1,14 @@
 def CameraMoveSpeed = 5;
+def World;
+def RectBody;
 
 def init(delta) =
+ World = Engine_WorldObject();
+ RectBody = Engine_RectangleBodyObject(World, [400, 300, 200, 60], true);
+ RectBody.sub_groups = [ Engine_RectangleObject([400, 300, 200, 60], [0, 0, 0, 125], false) ];
  EngineWindow_set_window_title("Box2D physics test");
  Engine_link_camera(Engine_get_object("Camera"));
+ # Engine_render_objects_push(RectBody);
 ;
 
 def update(delta) =
@@ -12,4 +18,11 @@ def update(delta) =
  if(EngineIO_is_key_pressed(EngineIO_Key_A)) = Engine_get_object("Camera").move(-CameraMoveSpeed, 0);;
  if(EngineIO_is_key_pressed(EngineIO_Key_D)) = Engine_get_object("Camera").move(CameraMoveSpeed, 0);;
 
+ if(EngineIO_is_mouse_button_pressed(EngineIO_Button_Right)) =
+  IO_println("Right mouse button clicked.");
+ ;
+
+ if(EngineIO_is_mouse_button_pressed(EngineIO_Button_Left)) =
+   IO_println("Left mouse button clicked.");
+  ;
 ;

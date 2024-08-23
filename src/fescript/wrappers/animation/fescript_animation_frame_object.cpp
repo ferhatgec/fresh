@@ -16,7 +16,7 @@ AnimationFrameObjectWrapper::~AnimationFrameObjectWrapper() noexcept {
   return "animationframeobject";
 }
 
-[[nodiscard]] Object AnimationFrameObjectWrapper::call(Interpreter &interpreter, std::vector<Object> arguments) {
+[[nodiscard]] Object AnimationFrameObjectWrapper::call([[maybe_unused]] Interpreter& interpreter, const std::vector<Object>& arguments) {
   // TODO: apply type checking here. function would crash if types are not satisfied.
   std::shared_ptr<fresh::BaseObject> obj;
   switch(arguments[2].index()) {

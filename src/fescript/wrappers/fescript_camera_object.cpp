@@ -2,7 +2,7 @@
 #include <objects/camera_object.hpp>
 
 namespace fescript {
-__idk_nodiscard Object FescriptCameraObjectMemberIsVisibleOnCamera::call(Interpreter& interpreter, std::vector <Object> arguments) {
+__idk_nodiscard Object FescriptCameraObjectMemberIsVisibleOnCamera::call([[maybe_unused]] Interpreter& interpreter, const std::vector<Object>& arguments) {
   if(!this->_self) {
     std::cout << "Engine error: CameraObject is not initialized, yet using CameraObject.is_visible_on_camera() is not possible.\n";
     std::exit(1);
@@ -14,7 +14,7 @@ __idk_nodiscard Object FescriptCameraObjectMemberIsVisibleOnCamera::call(Interpr
   RETURN_MEMBER_FUNCTION(is_visible_on_camera, "CameraObject.is_visible_on_camera()")
 }
 
-__idk_nodiscard Object FescriptCameraObjectMemberMove::call(Interpreter& interpreter, std::vector <Object> arguments) {
+__idk_nodiscard Object FescriptCameraObjectMemberMove::call([[maybe_unused]] Interpreter& interpreter, const std::vector<Object>& arguments) {
   if(!this->_self) {
     std::cout << "Engine error: CameraObject is not initialized, yet using CameraObject.is_visible_on_camera() is not possible.\n";
     std::exit(1);
@@ -39,7 +39,7 @@ CameraObjectWrapper::~CameraObjectWrapper() noexcept {
   return "cameraobject";
 }
 
-[[nodiscard]] Object CameraObjectWrapper::call(Interpreter &interpreter, std::vector<Object> arguments) {
+[[nodiscard]] Object CameraObjectWrapper::call([[maybe_unused]] Interpreter& interpreter, const std::vector<Object>& arguments) {
   auto camera_object = std::make_shared<fresh::CameraObject>();
   this->_object_id = camera_object->get_object_id();
   return std::move(camera_object);

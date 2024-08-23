@@ -1,6 +1,5 @@
 #pragma once
 
-#include "freshengine.hpp"
 #include "world_object.hpp"
 #include <objects/base_object.hpp>
 
@@ -9,6 +8,8 @@ constexpr static idk::f32 ptm_ratio = 1.f;
 
 class BodyObject : public BaseObject {
 public:
+  static constexpr bool IsStaticBodyDefault { false };
+
   explicit BodyObject(bool is_static_body = false);
   virtual ~BodyObject() = default;
 

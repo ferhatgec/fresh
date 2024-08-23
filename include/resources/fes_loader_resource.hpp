@@ -2,7 +2,6 @@
 
 #include <fes/fes_ast.hpp>
 #include <fes/fes_keywords.hpp>
-#include <fes/fes_object.hpp>
 #include <fes/fes_parser.hpp>
 #include <fes/fes_tokenizer.hpp>
 #include <objects/base_object.hpp>

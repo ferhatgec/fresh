@@ -13,6 +13,11 @@
 #include <objects/physics/circle_area_object.hpp>
 #include <objects/physics/polygon_area_object.hpp>
 #include <objects/physics/rectangle_area_object.hpp>
+#include <objects/physics/body_object.hpp>
+#include <objects/physics/circle_body_object.hpp>
+#include <objects/physics/rectangle_body_object.hpp>
+#include <objects/physics/polygon_body_object.hpp>
+#include <objects/physics/world_object.hpp>
 #include <vector>
 #include <memory>
 
@@ -55,9 +60,15 @@ else if(name.lexeme == "sub_groups") { \
      case FescriptCameraObjectIndex: { this->push_to_sub_objects(std::get<FescriptCameraObjectIndex>(object)); break; } \
      case FescriptCircleObjectIndex: { this->push_to_sub_objects(std::get<FescriptCircleObjectIndex>(object)); break; } \
      case FescriptPolygonObjectIndex: { this->push_to_sub_objects(std::get<FescriptPolygonObjectIndex>(object)); break; } \
+     case FescriptRectangleObjectIndex: { this->push_to_sub_objects(std::get<FescriptRectangleObjectIndex>(object)); break; } \
      case FescriptRectangleAreaObjectIndex: { this->push_to_sub_objects(std::get<FescriptRectangleAreaObjectIndex>(object)); break; } \
      case FescriptCircleAreaObjectIndex: { this->push_to_sub_objects(std::get<FescriptCircleAreaObjectIndex>(object)); break; } \
      case FescriptPolygonAreaObjectIndex: { this->push_to_sub_objects(std::get<FescriptPolygonAreaObjectIndex>(object)); break; } \
+     case FescriptBodyObjectIndex: { this->push_to_sub_objects(std::get<FescriptBodyObjectIndex>(object)); break; } \
+     case FescriptRectangleBodyObjectIndex: { this->push_to_sub_objects(std::get<FescriptRectangleBodyObjectIndex>(object)); break; } \
+     case FescriptCircleBodyObjectIndex: { this->push_to_sub_objects(std::get<FescriptCircleBodyObjectIndex>(object)); break; } \
+     case FescriptPolygonBodyObjectIndex: { this->push_to_sub_objects(std::get<FescriptPolygonBodyObjectIndex>(object)); break; } \
+     case FescriptWorldObjectIndex: { this->push_to_sub_objects(std::get<FescriptWorldObjectIndex>(object)); break; } \
      default: { \
       std::cout << "Engine [language] error: Cannot use types those not inherited from BaseObject."; \
       std::exit(1); \
@@ -75,9 +86,15 @@ case FescriptAreaObjectIndex: { return this->_self->##object_fn(std::get<Fescrip
 case FescriptCameraObjectIndex: { return this->_self->##object_fn(std::get<FescriptCameraObjectIndex>(arguments.front())); } \
 case FescriptCircleObjectIndex: { return this->_self->##object_fn(std::get<FescriptCircleObjectIndex>(arguments.front())); } \
 case FescriptPolygonObjectIndex: { return this->_self->##object_fn(std::get<FescriptPolygonObjectIndex>(arguments.front())); } \
+case FescriptRectangleObjectIndex: { return this->_self->##object_fn(std::get<FescriptRectangleObjectIndex>(arguments.front())); } \
 case FescriptRectangleAreaObjectIndex: { return this->_self->##object_fn(std::get<FescriptRectangleAreaObjectIndex>(arguments.front())); } \
 case FescriptCircleAreaObjectIndex: { return this->_self->##object_fn(std::get<FescriptCircleAreaObjectIndex>(arguments.front())); } \
 case FescriptPolygonAreaObjectIndex: { return this->_self->##object_fn(std::get<FescriptPolygonAreaObjectIndex>(arguments.front())); } \
+case FescriptBodyObjectIndex: { return this->_self->##object_fn(std::get<FescriptBodyObjectIndex>(arguments.front())); } \
+case FescriptRectangleBodyObjectIndex: { return this->_self->##object_fn(std::get<FescriptRectangleBodyObjectIndex>(arguments.front())); } \
+case FescriptCircleBodyObjectIndex: { return this->_self->##object_fn(std::get<FescriptCircleBodyObjectIndex>(arguments.front())); } \
+case FescriptPolygonBodyObjectIndex: { return this->_self->##object_fn(std::get<FescriptPolygonBodyObjectIndex>(arguments.front())); } \
+case FescriptWorldObjectIndex: { return this->_self->##object_fn(std::get<FescriptWorldObjectIndex>(arguments.front())); } \
 default: { \
 std::cout << "Engine [language] error: " wrapped_fn_str " requires objects those inherited from BaseObject.\n"; \
 std::exit(1); \
@@ -94,7 +111,7 @@ public:
   virtual ~BaseObjectWrapper();
   [[nodiscard]] std::string to_string() override;
   [[nodiscard]] int arity() override { return -1; }
-  [[nodiscard]] Object call(Interpreter &interpreter, std::vector<Object> arguments) override;
+  [[nodiscard]] Object call([[maybe_unused]] Interpreter& interpreter, const std::vector<Object>& arguments) override;
 protected:
   idk::StringViewChar _object_def;
   idk::u32 _object_id;

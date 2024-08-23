@@ -36,7 +36,7 @@ FescriptClass::FescriptClass(std::string name, std::shared_ptr<FescriptClass> su
   return initializer->arity(); // it checks for is_variadic, no need for doing it twice.
 }
 
-[[nodiscard]] Object FescriptClass::call(Interpreter &interpreter, std::vector<Object> arguments) {
+[[nodiscard]] Object FescriptClass::call([[maybe_unused]] Interpreter& interpreter, const std::vector<Object>& arguments) {
   auto instance = std::make_shared<FescriptInstance>(shared_from_this());
   std::shared_ptr<FescriptFunction> initializer = find_method("init");
   if (initializer != nullptr) {

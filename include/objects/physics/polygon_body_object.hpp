@@ -6,7 +6,7 @@
 namespace fresh {
 class PolygonBodyObject : public BodyObject {
 public:
-  PolygonBodyObject(const b2WorldId& world_id, SDL_FRect pos, PolygonResource vertices, bool is_static_body = false);
+  PolygonBodyObject(const b2WorldId& world_id, SDL_FRect pos, PolygonResource vertices, bool is_static_body = BodyObject::IsStaticBodyDefault);
   ~PolygonBodyObject() override = default;
 
   void sync(bool is_sync_with_camera = false) noexcept override;

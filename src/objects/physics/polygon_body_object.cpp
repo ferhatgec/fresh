@@ -1,4 +1,7 @@
 #include <objects/physics/polygon_body_object.hpp>
+#include <objects/camera_object.hpp>
+#include <fescript/wrappers/fescript_base_object.hpp>
+#include <fescript/fescript_array.hpp>
 
 namespace fresh {
 PolygonBodyObject::PolygonBodyObject(const b2WorldId& world_id, SDL_FRect pos, PolygonResource vertices, bool is_static_body) {
@@ -22,7 +25,11 @@ void PolygonBodyObject::sync(bool is_sync_with_camera) noexcept {
 }
 
 void PolygonBodyObject::set(const fescript::Token& name, fescript::Object value) {
-  // TODO: fescript integration.
+  SET_BASE_OBJECT_PROPERTIES()
+  else {
+    std::cout << "Engine [language] error: PolygonBodyObject has no field named as '" << name.lexeme << "'.\n";
+    std::exit(1);
+  }
 }
 
 void PolygonBodyObject::set_is_static_body(bool is_static_body) noexcept {

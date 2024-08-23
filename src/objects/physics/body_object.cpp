@@ -1,4 +1,5 @@
 #include <objects/physics/body_object.hpp>
+#include <freshengine.hpp>
 #include <numbers>
 
 namespace fresh {

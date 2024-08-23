@@ -5,7 +5,7 @@
 #include <objects/sprite_object.hpp>
 
 namespace fescript {
-__idk_nodiscard Object FescriptSpriteObjectMemberInitSprite::call(Interpreter& interpreter, std::vector <Object> arguments) {
+__idk_nodiscard Object FescriptSpriteObjectMemberInitSprite::call([[maybe_unused]] Interpreter& interpreter, const std::vector<Object>& arguments) {
   if(!this->_self) {
     std::cout << "Engine error: SpriteObject is not initialized, yet using SpriteObject.init_sprite() is not possible.\n";
     std::exit(1);
@@ -30,7 +30,7 @@ SpriteObjectWrapper::~SpriteObjectWrapper() {
   return "spriteobject";
 }
 
-[[nodiscard]] Object SpriteObjectWrapper::call(Interpreter &interpreter, std::vector<Object> arguments) {
+[[nodiscard]] Object SpriteObjectWrapper::call([[maybe_unused]] Interpreter& interpreter, const std::vector<Object>& arguments) {
   auto sprite_object = std::make_shared<fresh::SpriteObject>();
   this->_object_id = sprite_object->get_object_id();
   return std::move(sprite_object);

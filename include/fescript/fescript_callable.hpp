@@ -16,8 +16,7 @@ class Interpreter;
 class FescriptCallable {
 public:
   [[nodiscard]] virtual int arity() = 0;
-  [[nodiscard]] virtual Object call(Interpreter &interpreter,
-                                    std::vector<Object> arguments) = 0;
+  [[nodiscard]] virtual Object call([[maybe_unused]] Interpreter& interpreter, const std::vector<Object>& arguments) = 0;
   [[nodiscard]] virtual std::string to_string() = 0;
   virtual ~FescriptCallable() = default;
 

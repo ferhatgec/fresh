@@ -110,12 +110,11 @@ void Engine::run() {
           object->sync();
         // }
       } else {
-        std::cout << "Engine warning: No camera found or iterated object "
-                  << object->get_name() << "(" << object->_object_def << ") is invalid.\n";
+        std::cout << "Engine warning: Iterated object is invalid\n";
       }
     }
 
-    if(Engine::get_instance()->_camera_object.get())
+    if(Engine::get_instance()->_camera_object)
       Engine::get_instance()->_camera_object->sync();
 
     Engine::get_instance()->get_cursor_resource().sync_sprite();// it's synced before everything passed to framebuffer.
@@ -179,7 +178,7 @@ void Engine::push_object(std::shared_ptr<BaseObject> object) noexcept {
   if(!object.get()) {
     std::cout << "Engine info: Given BaseObject pointer is invalid.\n";
   } else {
-    fresh::RenderObjects::objects_to_render.push_back(idk::move(object));
+    fresh::RenderObjects::objects_to_render.push_back(std::move(object));
   }
 }
 
@@ -240,5 +239,4 @@ void Engine::increase_global_id() noexcept {
 void Engine::reset_global_id() noexcept {
   Engine::get_instance()->_id = 0;
 }
-
 }// namespace fresh

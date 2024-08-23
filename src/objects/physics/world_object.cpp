@@ -1,6 +1,8 @@
-#include "render_objects.hpp"
-
+#include <fescript/wrappers/fescript_base_object.hpp>
+#include <fescript/fescript_array.hpp>
 #include <objects/physics/world_object.hpp>
+#include <objects/camera_object.hpp>
+#include <render_objects.hpp>
 
 namespace fresh {
 WorldObject::WorldObject(PointResource gravity, idk::u32 physics_frame, idk::u32 substep_count) noexcept
@@ -27,7 +29,11 @@ void WorldObject::sync(bool is_sync_with_camera) noexcept {
 }
 
 void WorldObject::set(const fescript::Token& name, fescript::Object value) {
-  // TODO: fescript integration.
+  SET_BASE_OBJECT_PROPERTIES()
+  else {
+    std::cout << "Engine [language] error: CircleBodyObject has no field named as '" << name.lexeme << "'.\n";
+    std::exit(1);
+  }
 }
 
 [[nodiscard]] const b2WorldId& WorldObject::get_world_id() const noexcept {

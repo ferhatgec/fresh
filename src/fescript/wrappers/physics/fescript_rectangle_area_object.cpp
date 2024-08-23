@@ -2,7 +2,7 @@
 #include <objects/physics/rectangle_area_object.hpp>
 
 namespace fescript {
-__idk_nodiscard Object FescriptRectangleAreaObjectMemberIsCollidingWith::call(Interpreter& interpreter, std::vector <Object> arguments) {
+__idk_nodiscard Object FescriptRectangleAreaObjectMemberIsCollidingWith::call([[maybe_unused]] Interpreter& interpreter, const std::vector<Object>& arguments) {
   if(!this->_self) {
     std::cout << "Engine error: RectangleAreaObject is not initialized, yet using RectangleAreaObject.is_colliding_with() is not possible.\n";
     std::exit(1);
@@ -33,7 +33,7 @@ RectangleAreaObjectWrapper::~RectangleAreaObjectWrapper() {
   return "rectangleareaobject";
 }
 
-[[nodiscard]] Object RectangleAreaObjectWrapper::call(Interpreter &interpreter, std::vector<Object> arguments) {
+[[nodiscard]] Object RectangleAreaObjectWrapper::call([[maybe_unused]] Interpreter& interpreter, const std::vector<Object>& arguments) {
   auto rectangle_area_object = std::make_shared<fresh::RectangleAreaObject>();
   this->_object_id = rectangle_area_object->get_object_id();
   return std::move(rectangle_area_object);

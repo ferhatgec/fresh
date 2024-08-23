@@ -8,19 +8,19 @@
 #include <filesystem>
 
 namespace fescript {
-__idk_nodiscard Object FescriptIOPrint::call(Interpreter& interpreter, std::vector <Object> arguments) {
+__idk_nodiscard Object FescriptIOPrint::call([[maybe_unused]] Interpreter& interpreter, const std::vector<Object>& arguments) {
   for(auto& argument: arguments)
     std::cout << Interpreter::stringify(argument);
   return true;
 }
 
-__idk_nodiscard Object FescriptIOPrintln::call(Interpreter& interpreter, std::vector <Object> arguments) {
+__idk_nodiscard Object FescriptIOPrintln::call([[maybe_unused]] Interpreter& interpreter, const std::vector<Object>& arguments) {
   for(auto& argument: arguments)
     std::cout << Interpreter::stringify(argument) << '\n';
   return true;
 }
 
-__idk_nodiscard Object FescriptIOReadFile::call(Interpreter& interpreter, std::vector <Object> arguments) {
+__idk_nodiscard Object FescriptIOReadFile::call([[maybe_unused]] Interpreter& interpreter, const std::vector<Object>& arguments) {
   ERR_CHECK_STRING("IO_read_file()", 1)
   std::ifstream stream(std::get<StringIndex>(arguments.front()));
   if(!stream)
@@ -32,7 +32,7 @@ __idk_nodiscard Object FescriptIOReadFile::call(Interpreter& interpreter, std::v
   return content;
 }
 
-__idk_nodiscard Object FescriptIOWriteFile::call(Interpreter& interpreter, std::vector <Object> arguments) {
+__idk_nodiscard Object FescriptIOWriteFile::call([[maybe_unused]] Interpreter& interpreter, const std::vector<Object>& arguments) {
   ERR_CHECK_STRING("IO_write_file()", 2)
   std::ofstream stream(std::get<StringIndex>(arguments[0]), std::ios::app);
   if(!stream)
@@ -42,7 +42,7 @@ __idk_nodiscard Object FescriptIOWriteFile::call(Interpreter& interpreter, std::
   return true;
 }
 
-__idk_nodiscard Object FescriptIOInput::call(Interpreter& interpreter, std::vector <Object> arguments) {
+__idk_nodiscard Object FescriptIOInput::call([[maybe_unused]] Interpreter& interpreter, const std::vector<Object>& arguments) {
   if(!arguments.empty())
     std::cout << Interpreter::stringify(arguments.front());
   std::string input_str;
@@ -50,7 +50,7 @@ __idk_nodiscard Object FescriptIOInput::call(Interpreter& interpreter, std::vect
   return input_str;
 }
 
-__idk_nodiscard Object FescriptIOCharInput::call(Interpreter& interpreter, std::vector <Object> arguments) {
+__idk_nodiscard Object FescriptIOCharInput::call([[maybe_unused]] Interpreter& interpreter, const std::vector<Object>& arguments) {
   if(!arguments.empty())
     std::cout << Interpreter::stringify(arguments.front());
   idk::u8 ch = getchar();

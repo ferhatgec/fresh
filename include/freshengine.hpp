@@ -9,6 +9,11 @@
 #include "objects/sprite_object.hpp"
 #include "objects/label_object.hpp"
 #include "objects/physics/area_object.hpp"
+#include "objects/physics/world_object.hpp"
+#include "objects/physics/body_object.hpp"
+#include "objects/physics/rectangle_body_object.hpp"
+#include "objects/physics/circle_body_object.hpp"
+#include "objects/physics/polygon_body_object.hpp"
 #include "objects/camera_object.hpp"
 
 #include "objects/gui/gui_base_object.hpp"
@@ -31,7 +36,6 @@
 
 #include "fes/fes_ast.hpp"
 #include "fes/fes_keywords.hpp"
-#include "fes/fes_object.hpp"
 #include "fes/fes_parser.hpp"
 #include "fes/fes_tokenizer.hpp"
 

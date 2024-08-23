@@ -38,7 +38,12 @@ enum : std::uint8_t {
   FescriptRectangleObjectIndex,
   FescriptRectangleAreaObjectIndex,
   FescriptCircleAreaObjectIndex,
-  FescriptPolygonAreaObjectIndex
+  FescriptPolygonAreaObjectIndex,
+  FescriptWorldObjectIndex,
+  FescriptBodyObjectIndex,
+  FescriptRectangleBodyObjectIndex,
+  FescriptCircleBodyObjectIndex,
+  FescriptPolygonBodyObjectIndex
 };
 
 namespace fresh {
@@ -57,6 +62,11 @@ class RectangleObject;
 class RectangleAreaObject;
 class CircleAreaObject;
 class PolygonAreaObject;
+class WorldObject;
+class BodyObject;
+class RectangleBodyObject;
+class CircleBodyObject;
+class PolygonBodyObject;
 } // namespace fresh
 
 namespace fescript {
@@ -92,7 +102,12 @@ using Object =
                std::shared_ptr<fresh::RectangleObject>,
                std::shared_ptr<fresh::RectangleAreaObject>,
                std::shared_ptr<fresh::CircleAreaObject>,
-               std::shared_ptr<fresh::PolygonAreaObject>>;
+               std::shared_ptr<fresh::PolygonAreaObject>,
+               std::shared_ptr<fresh::WorldObject>,
+               std::shared_ptr<fresh::BodyObject>,
+               std::shared_ptr<fresh::RectangleBodyObject>,
+               std::shared_ptr<fresh::CircleBodyObject>,
+               std::shared_ptr<fresh::PolygonBodyObject>>;
 
 class Token {
 public:

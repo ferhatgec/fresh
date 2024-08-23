@@ -3,10 +3,17 @@
 #include <types/predefined.hpp>
 
 namespace fresh {
+enum : idk::u8 {
+  RedIndex,
+  GreenIndex,
+  BlueIndex,
+  AlphaIndex // 3
+};
+
 class ColorResource {
 public:
   ColorResource(idk::u8 r = 0, idk::u8 g = 0, idk::u8 b = 0, idk::u8 a = 255) noexcept;
-  ~ColorResource();
+  ~ColorResource() = default;
 
   // FIXME: we must get rid of these functions. (not the priority but should be easy to do, just a bit duplicated code)
   // _r can get any value as it is not checked after any value assign operation performed.
