@@ -78,19 +78,19 @@ SpriteObject::~SpriteObject() {
 // disable gizmos etc when exporting the project. it's easy to make with some booleans or different function
 // that being called in exporting process?
 void SpriteObject::sync(bool is_sync_with_camera) noexcept {
+  CHECK_DISABLED()
   this->_code.interpret_update();
   SDL_SetTextureBlendMode(this->_sprite_resource.get_texture(), this->_convert_blend_mode_enum());
   this->sync_pos_with_camera(is_sync_with_camera);
   this->_render_pos_info = BaseObject::_center_to_top_left_pivot(this->_render_pos_info);
-  if(!this->_disabled && this->_visible)
+  if(this->_visible)
     SDL_RenderCopyF(Engine::get_instance()->get_window()->get_renderer(),
                  this->_sprite_resource.get_texture(), NULL, &this->_render_pos_info);
   APPLY_DELTAS()
 }
 
 __idk_nodiscard
-  SpriteResource&
-  SpriteObject::get_sprite_resource() noexcept {
+SpriteResource& SpriteObject::get_sprite_resource() noexcept {
   return this->_sprite_resource;
 }
 

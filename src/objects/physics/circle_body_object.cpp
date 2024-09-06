@@ -1,10 +1,14 @@
-#include <fescript/wrappers/fescript_base_object.hpp>
+#include "log/log.hpp"
+
 #include <fescript/fescript_array.hpp>
-#include <objects/physics/circle_body_object.hpp>
+#include <fescript/wrappers/fescript_base_object.hpp>
 #include <objects/camera_object.hpp>
+#include <objects/physics/circle_body_object.hpp>
+#include <render_objects.hpp>
 #include <resources/polygon_resource.hpp>
 
 namespace fresh {
+// FIXME: spawn in certain positions gives NaN.
 CircleBodyObject::CircleBodyObject(const b2WorldId& world_id, SDL_FRect pos, idk::f32 radius, bool is_static_body)
   : _radius{radius} {
   this->_world_id = world_id;
@@ -16,14 +20,21 @@ CircleBodyObject::CircleBodyObject(const b2WorldId& world_id, SDL_FRect pos, idk
 }
 
 void CircleBodyObject::sync(bool is_sync_with_camera) noexcept {
+  CHECK_DISABLED()
   this->_code.interpret_update();
   this->sync_pos_with_camera(is_sync_with_camera);
-  if(this->_disabled)
-    return;
   auto position = b2Body_GetPosition(this->_body_id);
+  if(!b2Vec2_IsValid(position)) {
+    log_error(fresh::src(), "b2Vec2_IsValid false for object '{}'!", this->get_name().data());
+    this->_disabled = true; // disabling a node will also disable its child nodes; no code execution; either enable using another node; or manually enable.
+    this->_visible = false;
+    b2DestroyBody(this->_body_id);
+    this->_body_id = b2_nullBodyId;
+    return;
+  }
   // auto rotation = b2Body_GetRotation(this->_body_id); // TODO: we don't have rotation yet, but we essentially need it since any child
                                                          // of CircleBodyObject may contain SpriteObject or smth where rotation makes difference?
-  this->get_position_info() = to_sdl(position, to_renderer(this->_pos_info.w), to_renderer(this->_pos_info.h)); // SDL_FRect { to_renderer(position.x), to_renderer(position.y), to_renderer(this->_pos_info.w), to_renderer(this->_pos_info.h) };
+  this->get_position_info() = to_sdl(position, to_renderer(this->_pos_info.w), to_renderer(this->_pos_info.h));
   APPLY_DELTAS()
 }
 
@@ -47,12 +58,11 @@ void CircleBodyObject::set_is_static_body(bool is_static_body) noexcept {
 void CircleBodyObject::_create_body() noexcept {
   b2BodyDef body_def = b2DefaultBodyDef();
   body_def.position = to_box2d(this->_pos_info);
-  if(!this->_is_static_body)
-    body_def.type = b2_dynamicBody;
+  body_def.type = this->_is_static_body ? b2_staticBody : b2_dynamicBody;
   this->_body_id = b2CreateBody(this->_world_id, &body_def);
   b2Circle circle;
   circle.radius = to_physics(this->_radius);
-  b2ShapeDef shape_def = b2DefaultShapeDef();
+  b2ShapeDef const shape_def = b2DefaultShapeDef();
   b2CreateCircleShape(this->_body_id, &shape_def, &circle);
 }
 

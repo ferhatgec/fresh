@@ -67,7 +67,7 @@ CircleBodyObjectWrapper::~CircleBodyObjectWrapper() {
       static_cast<idk::f32>(std::get<LongDoubleIndex>(rect_arr->get(2))), // w
       static_cast<idk::f32>(std::get<LongDoubleIndex>(rect_arr->get(3)))  // h
     },
-    static_cast<idk::f32>(std::get<LongDoubleIndex>(arguments[1])),
+    static_cast<idk::f32>(std::get<LongDoubleIndex>(arguments[2])),
     arguments.size() == 4 ? std::get<BoolIndex>(arguments[3]) : fresh::BodyObject::IsStaticBodyDefault
   );
   this->_object_id = circle_body_object->get_object_id();

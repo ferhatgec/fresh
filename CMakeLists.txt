@@ -11,6 +11,7 @@ set(INCLUDE_PATHS ./libs/SDL/include/
                   ./libs/imgui/backends/
                   ./libs/idk/idk/
                   ./libs/box2d/include/
+                  ./libs/colorized/
                   ./include/)
 
 if(NOT CMAKE_BUILD_TYPE)

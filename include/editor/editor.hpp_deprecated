@@ -9,11 +9,11 @@
 # define __FRESH_ENABLE_EDITOR
 #endif // __FRESH_ENABLE_EDITOR
 
-#include "operation.hpp"
-#include "../freshengine.hpp"
-#include "../../libs/idk/idk/containers/vector.hpp"
 #include "../../libs/idk/idk/containers/stack.hpp"
+#include "../../libs/idk/idk/containers/vector.hpp"
 #include "../../libs/idk/idk/utilities/pair.hpp"
+#include "../freshengine.hpp"
+#include "operation.hpp"
 
 namespace fresh {
 class Editor {

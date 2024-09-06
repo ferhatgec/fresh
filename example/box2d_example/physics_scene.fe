@@ -1,14 +1,16 @@
-def CameraMoveSpeed = 5;
+def CameraMoveSpeed = 20;
 def World;
 def RectBody;
+def RectBodyDegrees = 0;
 
 def init(delta) =
  World = Engine_WorldObject();
  RectBody = Engine_RectangleBodyObject(World, [400, 300, 200, 60], true);
- RectBody.sub_groups = [ Engine_RectangleObject([400, 300, 200, 60], [0, 0, 0, 125], false) ];
+ RectBody.push_to_sub_objects(Engine_RectangleObject([400, 300, 200, 60], [255, 0, 0, 125], false));
  EngineWindow_set_window_title("Box2D physics test");
- Engine_link_camera(Engine_get_object("Camera"));
- # Engine_render_objects_push(RectBody);
+ Engine_link_camera(Engine_get_object("Camera")); # we get CameraObject from physics_scene.fes
+ Engine_render_objects_push(World); # we need to push WorldObject so we can sync.
+ Engine_render_objects_push(RectBody);
 ;
 
 def update(delta) =
@@ -18,11 +20,29 @@ def update(delta) =
  if(EngineIO_is_key_pressed(EngineIO_Key_A)) = Engine_get_object("Camera").move(-CameraMoveSpeed, 0);;
  if(EngineIO_is_key_pressed(EngineIO_Key_D)) = Engine_get_object("Camera").move(CameraMoveSpeed, 0);;
 
- if(EngineIO_is_mouse_button_pressed(EngineIO_Button_Right)) =
-  IO_println("Right mouse button clicked.");
+ if(EngineIO_is_key_just_pressed(EngineIO_Key_U)) =
+  RectBodyDegrees = RectBodyDegrees + Math_Pi / 36;
+  RectBody.set_rotation_by_radian_degrees(RectBodyDegrees);
  ;
 
- if(EngineIO_is_mouse_button_pressed(EngineIO_Button_Left)) =
-   IO_println("Left mouse button clicked.");
-  ;
+ if(EngineIO_is_key_just_pressed(EngineIO_Key_J)) =
+  RectBodyDegrees = RectBodyDegrees - Math_Pi / 36;
+  RectBody.set_rotation_by_radian_degrees(RectBodyDegrees);
+ ;
+
+ if(EngineIO_is_mouse_button_just_pressed(EngineIO_Button_Right)) =
+  def CursorPos = EngineWindow_get_current_cursor_pos();
+  def r = [CursorPos.0, CursorPos.1, 30, 30];
+  def Box = Engine_RectangleBodyObject(World, r, false);
+  Box.push_to_sub_objects(Engine_RectangleObject(r, [0, 0, 255, 125], false));
+  Engine_render_objects_push(Box);
+ ;
+
+ if(EngineIO_is_mouse_button_just_pressed(EngineIO_Button_Left)) =
+  def CursorPos = EngineWindow_get_current_cursor_pos();
+  def r = [CursorPos.0, CursorPos.1, 40, 40];
+  def Circle = Engine_CircleBodyObject(World, r, 30, false);
+  Circle.push_to_sub_objects(Engine_CircleObject(r, [0, 0, 255, 125], 30, false));
+  Engine_render_objects_push(Circle);
+ ;
 ;

@@ -38,10 +38,9 @@ CircleAreaObject::CircleAreaObject(std::shared_ptr<BaseObject> object) {
 }
 
 void CircleAreaObject::sync(bool is_sync_with_camera) noexcept {
+  CHECK_DISABLED()
   this->_code.interpret_update();
   this->sync_pos_with_camera(is_sync_with_camera);
-  if(!this->_visible || this->_disabled)
-    return;
 
   #ifdef __FRESH_DEBUG
   // this and other __FRESH_DEBUGs will be removed, just written for quick test of collision detection.

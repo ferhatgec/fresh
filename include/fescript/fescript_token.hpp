@@ -43,7 +43,8 @@ enum : std::uint8_t {
   FescriptBodyObjectIndex,
   FescriptRectangleBodyObjectIndex,
   FescriptCircleBodyObjectIndex,
-  FescriptPolygonBodyObjectIndex
+  FescriptPolygonBodyObjectIndex,
+  ObjectsEnd_
 };
 
 namespace fresh {
@@ -76,6 +77,7 @@ class FescriptInstance;
 class FescriptArray;
 class FescriptDict;
 class FescriptCallable;
+class BaseObjectWrapper;
 
 using Object =
   std::variant<std::string,
@@ -109,6 +111,26 @@ using Object =
                std::shared_ptr<fresh::CircleBodyObject>,
                std::shared_ptr<fresh::PolygonBodyObject>>;
 
+template<typename T> struct RemoveSmartPtr { using type = T; };
+template<typename T> struct RemoveSmartPtr<std::shared_ptr<T>> { using type = T; };
+template<typename T> struct RemoveSmartPtr<std::unique_ptr<T>> { using type = T; };
+template<typename T> struct RemoveSmartPtr<std::weak_ptr<T>> { using type = T; };
+
+template<typename T> using RemoveSmartPtrType = typename RemoveSmartPtr<T>::type;
+
+#if __idk_is_cpp11_supported && !__idk_is_cpp17_supported
+template<typename T> struct RemoveSmartPtr<std::auto_ptr<T>> { using type = T; };
+#endif
+
+template<typename ObjectType>
+concept BaseObjectType = std::derived_from<std::decay_t<RemoveSmartPtrType<std::decay_t<ObjectType>>>, fresh::BaseObject>;
+
+template<typename ObjectWrapperType>
+concept BaseObjectWrapperType = std::derived_from<std::decay_t<RemoveSmartPtrType<std::decay_t<ObjectWrapperType>>>, BaseObjectWrapper>;
+
+template<typename Type> struct IsBaseObjectType : std::bool_constant<BaseObjectType<Type>> {};
+template<typename Type> struct IsBaseObjectWrapperType : std::bool_constant<BaseObjectWrapperType<Type>> {};
+
 class Token {
 public:
   Token(TokenType type, std::string lexeme, Object literal, int line, bool is_variadic = false) noexcept;
@@ -117,7 +139,8 @@ public:
   ~Token() noexcept;
   [[nodiscard]] std::string to_string() const noexcept;
   [[nodiscard]] static std::string to_string(const Object& object) noexcept;
-public:
+  [[nodiscard]] static bool is_base_object(const Object& object) noexcept;
+
   TokenType type;
   std::string lexeme;
   Object literal;

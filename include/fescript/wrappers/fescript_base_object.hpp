@@ -1,26 +1,27 @@
 #pragma once
 
-#include <fescript/fescript_token.hpp>
+#include "fescript/modules/module_helpers.hpp"
+
 #include <fescript/fescript_callable.hpp>
-#include <types/stringview.hpp>
+#include <fescript/fescript_token.hpp>
+#include <memory>
 #include <objects/base_object.hpp>
-#include <objects/sprite_object.hpp>
-#include <objects/label_object.hpp>
 #include <objects/circle_object.hpp>
+#include <objects/label_object.hpp>
+#include <objects/physics/area_object.hpp>
+#include <objects/physics/body_object.hpp>
+#include <objects/physics/circle_area_object.hpp>
+#include <objects/physics/circle_body_object.hpp>
+#include <objects/physics/polygon_area_object.hpp>
+#include <objects/physics/polygon_body_object.hpp>
+#include <objects/physics/rectangle_area_object.hpp>
+#include <objects/physics/rectangle_body_object.hpp>
+#include <objects/physics/world_object.hpp>
 #include <objects/polygon_object.hpp>
 #include <objects/rectangle_object.hpp>
-#include <objects/physics/area_object.hpp>
-#include <objects/physics/circle_area_object.hpp>
-#include <objects/physics/polygon_area_object.hpp>
-#include <objects/physics/rectangle_area_object.hpp>
-#include <objects/physics/body_object.hpp>
-#include <objects/physics/circle_body_object.hpp>
-#include <objects/physics/rectangle_body_object.hpp>
-#include <objects/physics/polygon_body_object.hpp>
-#include <objects/physics/world_object.hpp>
+#include <objects/sprite_object.hpp>
+#include <types/stringview.hpp>
 #include <vector>
-#include <memory>
-
 
 #define RETURN_BASE_OBJECT_PROPERTIES(index) \
 if(keyword.lexeme == "pos_x") return static_cast<idk::f80>(std::get<index>(value)->get_position_info().x); \
@@ -31,10 +32,12 @@ else if(keyword.lexeme == "width") return static_cast<idk::f80>(std::get<index>(
 else if(keyword.lexeme == "height") return static_cast<idk::f80>(std::get<index>(value)->get_position_info().h); \
 else if(keyword.lexeme == "name") return std::string(std::get<index>(value)->_name.data()); \
 else if(keyword.lexeme == "object_def") return std::string(std::get<index>(value)->_object_def.data()); \
+else if(keyword.lexeme == "push_to_sub_objects") return std::make_shared<FescriptBaseObjectMemberPushSubObject>(std::get<index>(value)); \
+else if(keyword.lexeme == "set_rotation_by_radian_degrees") return std::make_shared<FescriptBaseObjectMemberSetRotationByRadianDegrees>(std::get<index>(value)); \
 else if(keyword.lexeme == "sub_groups") { \
   auto array = std::make_shared<FescriptArray>(); \
   for(const auto& object: std::get<index>(value)->_sub_objects) { \
-    array->values.push_back(Interpreter::baseobject_to_fescript_object(object)); \
+    array->values.push_back(fescript::Interpreter::baseobject_to_fescript_object(object)); \
   } \
   return std::move(array); \
  }
@@ -52,28 +55,7 @@ else if(name.lexeme == "sub_groups") { \
   this->_sub_objects.clear(); \
   auto array = std::get<FescriptArrayIndex>(value); \
   for(const auto& object: array->values) { \
-    switch(object.index()) { \
-     case FescriptBaseObjectIndex: { this->push_to_sub_objects(std::get<FescriptBaseObjectIndex>(object)); break; } \
-     case FescriptSpriteObjectIndex: { this->push_to_sub_objects(std::get<FescriptSpriteObjectIndex>(object)); break; } \
-     case FescriptLabelObjectIndex: { this->push_to_sub_objects(std::get<FescriptLabelObjectIndex>(object)); break; } \
-     case FescriptAreaObjectIndex: { this->push_to_sub_objects(std::get<FescriptAreaObjectIndex>(object)); break; } \
-     case FescriptCameraObjectIndex: { this->push_to_sub_objects(std::get<FescriptCameraObjectIndex>(object)); break; } \
-     case FescriptCircleObjectIndex: { this->push_to_sub_objects(std::get<FescriptCircleObjectIndex>(object)); break; } \
-     case FescriptPolygonObjectIndex: { this->push_to_sub_objects(std::get<FescriptPolygonObjectIndex>(object)); break; } \
-     case FescriptRectangleObjectIndex: { this->push_to_sub_objects(std::get<FescriptRectangleObjectIndex>(object)); break; } \
-     case FescriptRectangleAreaObjectIndex: { this->push_to_sub_objects(std::get<FescriptRectangleAreaObjectIndex>(object)); break; } \
-     case FescriptCircleAreaObjectIndex: { this->push_to_sub_objects(std::get<FescriptCircleAreaObjectIndex>(object)); break; } \
-     case FescriptPolygonAreaObjectIndex: { this->push_to_sub_objects(std::get<FescriptPolygonAreaObjectIndex>(object)); break; } \
-     case FescriptBodyObjectIndex: { this->push_to_sub_objects(std::get<FescriptBodyObjectIndex>(object)); break; } \
-     case FescriptRectangleBodyObjectIndex: { this->push_to_sub_objects(std::get<FescriptRectangleBodyObjectIndex>(object)); break; } \
-     case FescriptCircleBodyObjectIndex: { this->push_to_sub_objects(std::get<FescriptCircleBodyObjectIndex>(object)); break; } \
-     case FescriptPolygonBodyObjectIndex: { this->push_to_sub_objects(std::get<FescriptPolygonBodyObjectIndex>(object)); break; } \
-     case FescriptWorldObjectIndex: { this->push_to_sub_objects(std::get<FescriptWorldObjectIndex>(object)); break; } \
-     default: { \
-      std::cout << "Engine [language] error: Cannot use types those not inherited from BaseObject."; \
-      std::exit(1); \
-     } \
-    } \
+    this->push_to_sub_objects(std::move(fescript::Interpreter::fescript_object_to_baseobject(object)));\
   } \
 }
 
@@ -102,6 +84,9 @@ std::exit(1); \
 }
 
 namespace fescript {
+DEFINE_MEMBER_MODULE_CLASS(PushSubObject, BaseObjectMember, 1, fresh::BaseObject)
+DEFINE_MEMBER_MODULE_CLASS(SetRotationByRadianDegrees, BaseObjectMember, 1, fresh::BaseObject)
+
 class BaseObjectWrapper : public FescriptCallable {
 public:
   BaseObjectWrapper();

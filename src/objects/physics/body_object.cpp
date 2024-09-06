@@ -9,10 +9,9 @@ BodyObject::BodyObject(bool is_static_body)
 }
 
 void BodyObject::sync(bool is_sync_with_camera) noexcept {
+  CHECK_DISABLED()
   this->_code.interpret_update();
   this->sync_pos_with_camera(is_sync_with_camera);
-  if(this->_disabled)
-    return;
   APPLY_DELTAS()
 }
 

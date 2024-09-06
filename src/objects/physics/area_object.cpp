@@ -38,10 +38,9 @@ AreaObject::AreaObject(std::shared_ptr<BaseObject> base_object) {
 }
 
 void AreaObject::sync(bool is_sync_with_camera) noexcept {
+  CHECK_DISABLED()
   this->_code.interpret_update();
   this->sync_pos_with_camera(is_sync_with_camera);
-  if(!this->_visible || this->_disabled)
-    return;
   for(auto& object : this->_sub_objects) {
     object->sync(is_sync_with_camera);
   }

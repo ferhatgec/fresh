@@ -20,8 +20,12 @@ public:
   sync(bool is_sync_with_camera = false) noexcept override;
 
   __idk_nodiscard
-  SpriteResource&
-  get_sprite_resource() noexcept;
+  SpriteResource& get_sprite_resource() noexcept;
+
+  __idk_nodiscard
+  SpriteResource copy_get_sprite_resource() const noexcept {
+    return this->_sprite_resource;
+  }
 
   template<typename KeyType>
   KeyType&

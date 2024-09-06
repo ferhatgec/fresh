@@ -4,6 +4,8 @@
 // Distributed under the terms of the MIT License.
 //
 
+#include "log/log.hpp"
+
 #include <fescript/fescript_array.hpp>
 #include <fescript/fescript_dict.hpp>
 #include <fescript/fescript_interpreter.hpp>
@@ -155,6 +157,8 @@ Interpreter::Interpreter() {
   this->globals->define("Engine_load_fes", std::make_shared<FescriptEngineLoadFes>());
   this->globals->define("Engine_get_object", std::make_shared<FescriptEngineGetObject>());
   this->globals->define("Engine_link_camera", std::make_shared<FescriptEngineLinkCamera>());
+
+  this->globals->define("Engine_render_objects_push", std::make_shared<FescriptEngineRenderObjectsPush>());
 }
 
 void Interpreter::interpret(
@@ -223,7 +227,7 @@ idk::isize& Interpreter::get_render_object_id() noexcept {
   return expr->accept(*this);
 }
 
-[[nodiscard]] Object Interpreter::look_up_variable(const Token &name, std::shared_ptr<Expr> expr) {
+[[nodiscard]] Object Interpreter::look_up_variable(const Token &name, const std::shared_ptr<Expr>& expr) {
   if(const auto& cast_to_variable = std::dynamic_pointer_cast<Get>(expr);
       (cast_to_variable != nullptr) && (cast_to_variable->name.literal.index() == NullptrIndex)) { // variable name
     return this->look_up_variable(name, cast_to_variable->optional_variable);
@@ -233,11 +237,11 @@ idk::isize& Interpreter::get_render_object_id() noexcept {
   return this->globals->get(name);
 }
 
-void Interpreter::execute(std::shared_ptr<Stmt> stmt) {
+void Interpreter::execute(const std::shared_ptr<Stmt>& stmt) {
   stmt->accept(*this);
 }
 
-void Interpreter::resolve(std::shared_ptr<Expr> expr, int depth) {
+void Interpreter::resolve(const std::shared_ptr<Expr>& expr, int depth) {
   this->locals[expr] = depth;
 }
 
@@ -273,7 +277,7 @@ void Interpreter::execute_block(const std::vector<std::shared_ptr<Stmt>> &statem
     this->environment->define("super", superclass);
   }
   std::map<std::string, std::shared_ptr<FescriptFunction>> methods;
-  for (std::shared_ptr<Function> method : stmt->methods) {
+  for (const auto& method : stmt->methods) {
     auto function = std::make_shared<FescriptFunction>(method, this->environment, method->name.lexeme == "init");
     methods[method->name.lexeme] = std::move(function);
   }
@@ -370,17 +374,17 @@ void Interpreter::execute_block(const std::vector<std::shared_ptr<Stmt>> &statem
   // we need to type check here. pos_x and pos_y must be int32, so Object.index() must be LongDoubleIndex.
   // also, visible and disabled must be bool, so Object.index() must be BoolIndex.
   if(expr->name.lexeme == "pos_x")
-    fresh::RenderObjects::find(this->render_object_id)->get_position_info().x = static_cast<idk::i32>(std::get<LongDoubleIndex>(value));
+    fresh::RenderObjects::get_object(this->render_object_id)->get_position_info().x = static_cast<idk::f32>(std::get<LongDoubleIndex>(value));
   else if(expr->name.lexeme == "pos_y")
-    fresh::RenderObjects::find(this->render_object_id)->get_position_info().y = static_cast<idk::i32>(std::get<LongDoubleIndex>(value));
+    fresh::RenderObjects::get_object(this->render_object_id)->get_position_info().y = static_cast<idk::f32>(std::get<LongDoubleIndex>(value));
   else if(expr->name.lexeme == "visible")
-    fresh::RenderObjects::find(this->render_object_id)->get_is_visible() = std::get<BoolIndex>(value);
+    fresh::RenderObjects::get_object(this->render_object_id)->get_is_visible() = std::get<BoolIndex>(value);
   else if(expr->name.lexeme == "disabled")
-    fresh::RenderObjects::find(this->render_object_id)->get_is_disabled() = std::get<BoolIndex>(value);
+    fresh::RenderObjects::get_object(this->render_object_id)->get_is_disabled() = std::get<BoolIndex>(value);
   else if(expr->name.lexeme == "width")
-    fresh::RenderObjects::find(this->render_object_id)->get_position_info().w = static_cast<idk::i32>(fabsl(std::get<LongDoubleIndex>(value)));
+    fresh::RenderObjects::get_object(this->render_object_id)->get_position_info().w = static_cast<idk::f32>(fabsl(std::get<LongDoubleIndex>(value)));
   else if(expr->name.lexeme == "height")
-    fresh::RenderObjects::find(this->render_object_id)->get_position_info().h = static_cast<idk::i32>(fabsl(std::get<LongDoubleIndex>(value)));
+    fresh::RenderObjects::get_object(this->render_object_id)->get_position_info().h = static_cast<idk::f32>(fabsl(std::get<LongDoubleIndex>(value)));
   else {
     if (auto it = this->locals.find(expr); it != this->locals.end())
       this->environment->assign_at(it->second, expr->name, value);
@@ -642,13 +646,13 @@ void Interpreter::execute_block(const std::vector<std::shared_ptr<Stmt>> &statem
   // TODO: reserve a keyword that returns object that linked to script. then member variables will be automatically
   //  handled in set, assign and get nodes.
   if(expr->name.lexeme == "pos_x")
-    return static_cast<idk::f80>(fresh::RenderObjects::find(this->render_object_id)->get_position_info().x);
+    return static_cast<idk::f80>(fresh::RenderObjects::get_object(this->render_object_id)->get_position_info().x);
   if(expr->name.lexeme == "pos_y")
-    return static_cast<idk::f80>(fresh::RenderObjects::find(this->render_object_id)->get_position_info().y);
+    return static_cast<idk::f80>(fresh::RenderObjects::get_object(this->render_object_id)->get_position_info().y);
   if(expr->name.lexeme == "visible")
-    return fresh::RenderObjects::find(this->render_object_id)->get_is_visible();
+    return fresh::RenderObjects::get_object(this->render_object_id)->get_is_visible();
   if(expr->name.lexeme == "disabled")
-    return fresh::RenderObjects::find(this->render_object_id)->get_is_disabled();
+    return fresh::RenderObjects::get_object(this->render_object_id)->get_is_disabled();
   // TODO: object specific variables.
   return this->look_up_variable(expr->name, expr);
 }
@@ -701,24 +705,23 @@ void Interpreter::check_number_operands(const Token &op, const Object &left,
   if (value.index() == FescriptBaseObjectIndex) {
     const auto& base_obj = std::get<FescriptBaseObjectIndex>(value);
     IS_INHERITED_BY(SpriteObject) return Interpreter::get_object_property(keyword, obj_SpriteObject);
-    else IS_INHERITED_BY(LabelObject) return Interpreter::get_object_property(keyword, obj_LabelObject);
-    else IS_INHERITED_BY(AreaObject) return Interpreter::get_object_property(keyword, obj_AreaObject);
-    else IS_INHERITED_BY(CameraObject) return Interpreter::get_object_property(keyword, obj_CameraObject);
-    else IS_INHERITED_BY(AnimationPlayerObject) return Interpreter::get_object_property(keyword, obj_AnimationPlayerObject);
-    else IS_INHERITED_BY(AnimationFrameObject) return Interpreter::get_object_property(keyword, obj_AnimationFrameObject);
-    else IS_INHERITED_BY(MusicPlayerObject) return Interpreter::get_object_property(keyword, obj_MusicPlayerObject);
-    else IS_INHERITED_BY(AudioPlayerObject) return Interpreter::get_object_property(keyword, obj_AudioPlayerObject);
-    else IS_INHERITED_BY(RectangleObject) return Interpreter::get_object_property(keyword, obj_RectangleObject);
-    else IS_INHERITED_BY(CircleObject) return Interpreter::get_object_property(keyword, obj_CircleObject);
-    else IS_INHERITED_BY(PolygonObject) return Interpreter::get_object_property(keyword, obj_PolygonObject);
-    else IS_INHERITED_BY(RectangleAreaObject) return Interpreter::get_object_property(keyword, obj_RectangleAreaObject);
-    else IS_INHERITED_BY(PolygonAreaObject) return Interpreter::get_object_property(keyword, obj_PolygonAreaObject);
-    else IS_INHERITED_BY(CircleAreaObject) return Interpreter::get_object_property(keyword, obj_CircleAreaObject);
-    else IS_INHERITED_BY(BodyObject) return Interpreter::get_object_property(keyword, obj_BodyObject);
-    else IS_INHERITED_BY(RectangleBodyObject) return Interpreter::get_object_property(keyword, obj_RectangleBodyObject);
-    else IS_INHERITED_BY(CircleBodyObject) return Interpreter::get_object_property(keyword, obj_CircleBodyObject);
-    else IS_INHERITED_BY(PolygonBodyObject) return Interpreter::get_object_property(keyword, obj_PolygonBodyObject);
-    else IS_INHERITED_BY(WorldObject) return Interpreter::get_object_property(keyword, obj_WorldObject);
+    IS_INHERITED_BY(LabelObject) return Interpreter::get_object_property(keyword, obj_LabelObject);
+    IS_INHERITED_BY(AreaObject) return Interpreter::get_object_property(keyword, obj_AreaObject);
+    IS_INHERITED_BY(CameraObject) return Interpreter::get_object_property(keyword, obj_CameraObject);
+    IS_INHERITED_BY(AnimationPlayerObject) return Interpreter::get_object_property(keyword, obj_AnimationPlayerObject);
+    IS_INHERITED_BY(AnimationFrameObject) return Interpreter::get_object_property(keyword, obj_AnimationFrameObject);
+    IS_INHERITED_BY(MusicPlayerObject) return Interpreter::get_object_property(keyword, obj_MusicPlayerObject);
+    IS_INHERITED_BY(AudioPlayerObject) return Interpreter::get_object_property(keyword, obj_AudioPlayerObject);
+    IS_INHERITED_BY(RectangleObject) return Interpreter::get_object_property(keyword, obj_RectangleObject);
+    IS_INHERITED_BY(CircleObject) return Interpreter::get_object_property(keyword, obj_CircleObject);
+    IS_INHERITED_BY(PolygonObject) return Interpreter::get_object_property(keyword, obj_PolygonObject);
+    IS_INHERITED_BY(RectangleAreaObject) return Interpreter::get_object_property(keyword, obj_RectangleAreaObject);
+    IS_INHERITED_BY(PolygonAreaObject) return Interpreter::get_object_property(keyword, obj_PolygonAreaObject);
+    IS_INHERITED_BY(CircleAreaObject) return Interpreter::get_object_property(keyword, obj_CircleAreaObject);
+    IS_INHERITED_BY(RectangleBodyObject) return Interpreter::get_object_property(keyword, obj_RectangleBodyObject);
+    IS_INHERITED_BY(CircleBodyObject) return Interpreter::get_object_property(keyword, obj_CircleBodyObject);
+    IS_INHERITED_BY(PolygonBodyObject) return Interpreter::get_object_property(keyword, obj_PolygonBodyObject);
+    IS_INHERITED_BY(WorldObject) return Interpreter::get_object_property(keyword, obj_WorldObject);
   }
 
   switch (value.index()) {
@@ -889,26 +892,52 @@ void Interpreter::check_number_operands(const Token &op, const Object &left,
 
 [[nodiscard]] Object Interpreter::baseobject_to_fescript_object(std::shared_ptr<fresh::BaseObject> base_obj) noexcept {
   using namespace fresh;
+  if(!base_obj) {
+    log_error(fresh::src(), "Object to BaseObject conversion is not possible");
+    return nullptr;
+  }
+  const auto& object_def = base_obj->_object_def;
   IS_INHERITED_BY(SpriteObject) return obj_SpriteObject;
-  else IS_INHERITED_BY(LabelObject) return obj_LabelObject;
-  else IS_INHERITED_BY(AreaObject) return obj_AreaObject;
-  else IS_INHERITED_BY(CameraObject) return obj_CameraObject;
-  else IS_INHERITED_BY(AnimationPlayerObject) return obj_AnimationPlayerObject;
-  else IS_INHERITED_BY(AnimationFrameObject) return obj_AnimationFrameObject;
-  else IS_INHERITED_BY(MusicPlayerObject) return obj_MusicPlayerObject;
-  else IS_INHERITED_BY(AudioPlayerObject) return obj_AudioPlayerObject;
-  else IS_INHERITED_BY(RectangleObject) return obj_RectangleObject;
-  else IS_INHERITED_BY(CircleObject) return obj_CircleObject;
-  else IS_INHERITED_BY(PolygonObject) return obj_PolygonObject;
-  else IS_INHERITED_BY(RectangleAreaObject) return obj_RectangleAreaObject;
-  else IS_INHERITED_BY(PolygonAreaObject) return obj_PolygonAreaObject;
-  else IS_INHERITED_BY(CircleAreaObject) return obj_CircleAreaObject;
-  else IS_INHERITED_BY(BodyObject) return obj_BodyObject;
-  else IS_INHERITED_BY(RectangleBodyObject) return obj_RectangleBodyObject;
-  else IS_INHERITED_BY(CircleBodyObject) return obj_CircleBodyObject;
-  else IS_INHERITED_BY(PolygonBodyObject) return obj_PolygonBodyObject;
-  else IS_INHERITED_BY(WorldObject) return obj_WorldObject;
-  else return base_obj;
+  IS_INHERITED_BY(LabelObject) return obj_LabelObject;
+  IS_INHERITED_BY(AreaObject) return obj_AreaObject;
+  IS_INHERITED_BY(CameraObject) return obj_CameraObject;
+  IS_INHERITED_BY(AnimationPlayerObject) return obj_AnimationPlayerObject;
+  IS_INHERITED_BY(AnimationFrameObject) return obj_AnimationFrameObject;
+  IS_INHERITED_BY(MusicPlayerObject) return obj_MusicPlayerObject;
+  IS_INHERITED_BY(AudioPlayerObject) return obj_AudioPlayerObject;
+  IS_INHERITED_BY(RectangleObject) return obj_RectangleObject;
+  IS_INHERITED_BY(CircleObject) return obj_CircleObject;
+  IS_INHERITED_BY(PolygonObject) return obj_PolygonObject;
+  IS_INHERITED_BY(RectangleAreaObject) return obj_RectangleAreaObject;
+  IS_INHERITED_BY(PolygonAreaObject) return obj_PolygonAreaObject;
+  IS_INHERITED_BY(CircleAreaObject) return obj_CircleAreaObject;
+  IS_INHERITED_BY(RectangleBodyObject) return obj_RectangleBodyObject;
+  IS_INHERITED_BY(CircleBodyObject) return obj_CircleBodyObject;
+  IS_INHERITED_BY(PolygonBodyObject) return obj_PolygonBodyObject;
+  IS_INHERITED_BY(WorldObject) return obj_WorldObject;
+  return base_obj;
+}
+
+[[nodiscard]] std::shared_ptr<fresh::BaseObject> Interpreter::fescript_object_to_baseobject(Object obj) noexcept {
+  return std::visit([]<typename Type>(Type base_obj) -> std::shared_ptr<fresh::BaseObject> {
+    using ReducedType = std::decay_t<typename RemoveSmartPtr<std::decay_t<Type> /* inner cv */>::type> /* outer cv */;
+
+    // we do guarantee not to use fescript_object_to_baseobject() for these types actually but std::visit requires it
+    // must return same type.
+    if constexpr(std::is_same_v<ReducedType, std::string> ||
+                 std::is_same_v<ReducedType, bool> ||
+                 std::is_same_v<ReducedType, idk::f80> ||
+                 std::is_same_v<ReducedType, std::nullptr_t> ||
+                 std::is_same_v<ReducedType, FescriptFunction> ||
+                 std::is_same_v<ReducedType, FescriptClass> ||
+                 std::is_same_v<ReducedType, FescriptInstance> ||
+                 std::is_same_v<ReducedType, FescriptArray> ||
+                 std::is_same_v<ReducedType, FescriptDict> ||
+                 std::is_same_v<ReducedType, FescriptCallable>) {
+      return nullptr;
+    } else
+      return base_obj;
+  }, obj);
 }
 
 std::string Interpreter::stringify(const Object &object) {

@@ -20,10 +20,9 @@ WorldObject::~WorldObject() {
 }
 
 void WorldObject::sync(bool is_sync_with_camera) noexcept {
+  CHECK_DISABLED()
   this->_code.interpret_update();
   this->sync_pos_with_camera(is_sync_with_camera);
-  if(this->_disabled)
-    return;
   b2World_Step(this->_world_id, this->_timestep, this->_substep_count);
   APPLY_DELTAS()
 }

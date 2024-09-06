@@ -1,7 +1,9 @@
 #include "../../libs/SDL_image/include/SDL_image.h"
-#include <types/predefined.hpp>
+#include "log/log.hpp"
+
 #include <freshengine.hpp>
 #include <string>
+#include <types/predefined.hpp>
 
 namespace fresh {
 std::unique_ptr<Engine> Engine::_instance;
@@ -39,15 +41,15 @@ Engine::get_window() noexcept {
 }
 
 void Engine::update() {
-  std::cout << "Engine info: You should override Engine::update().\n";
+  log_info(fresh::src(), "you should override Engine::update().");
 }
 
 void Engine::init() {
-  std::cout << "Engine info: You should override Engine::init().\n";
+  log_info(fresh::src(), "you should override Engine::init().");
 }
 
 void Engine::last() {
-  std::cout << "Engine info: You should override Engine::last().\n";
+  log_info(fresh::src(), "you should override Engine::last().");
 }
 
 void Engine::run() {
@@ -58,28 +60,31 @@ void Engine::run() {
     Engine::get_instance()->_fps = 60;
   }
 
-  idk::u64 _desired_delta = 1000 / Engine::get_instance()->_fps;
-  idk::u64 _start_loop;
   Uint64 delta_now = SDL_GetPerformanceCounter();
   Uint64 delta_prev = 0;
+
+  // "2" or "best"; currently same as "linear" in SDL2.
   SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "2");
+
   while(Engine::get_instance()->_engine_running) {
     if(Engine::_event_instance.type == SDL_QUIT) {
       Engine::get_instance()->_engine_running = false;
       break;
-    } else if((Engine::_event_instance.type == SDL_WINDOWEVENT) &&
-              (Engine::_event_instance.window.event == SDL_WINDOWEVENT_SIZE_CHANGED)) {
+    }
+
+    // checks if window size changed.
+    if((Engine::_event_instance.type == SDL_WINDOWEVENT) && (Engine::_event_instance.window.event == SDL_WINDOWEVENT_SIZE_CHANGED)) {
       if(Engine::get_instance()->_scale_mode == Engine::Scaling::None) {
         Engine::get_instance()->set_scaling_mode(Engine::Scaling::None); // it will update window size.
       }
     }
 
-    _start_loop = SDL_GetTicks64();
     delta_prev = delta_now;
     delta_now = SDL_GetPerformanceCounter();
 
     RenderObjects::delta_ms = static_cast<idk::f80>((delta_now - delta_prev) * 1000) / static_cast<idk::f80>(SDL_GetPerformanceFrequency());
 
+    // update current window width/height.
     SDL_GetWindowSize(Engine::get_instance()->get_window()->_window,
                       &Engine::get_instance()->get_window()->_width,
                       &Engine::get_instance()->get_window()->_height);
@@ -97,95 +102,106 @@ void Engine::run() {
 
     this->update();
 
-    for(auto& object : fresh::RenderObjects::objects_to_render) {
-      // FIXME: sync camera pos_x, pos_y, width and height with window width and height.
-      // override pos_x and pos_y as 0.
-      if(object) {
-        // Commented code will change, might be overhaul for CameraObject.
-        // if(Engine::get_instance()->_camera_object) {
-        //  if(Engine::get_instance()->_camera_object->is_visible_on_camera(object)) {
-        //    object->sync();
-        //  }
-        // } else {
-          object->sync();
-        // }
-      } else {
-        std::cout << "Engine warning: Iterated object is invalid\n";
+    for(std::size_t i = 0; i < fresh::RenderObjects::objects_to_render.size(); ++i) {
+      const auto& sptr = fresh::RenderObjects::objects_to_render[i];
+      if(sptr) { // object is not empty
+        sptr->sync();
+        continue;
       }
+      log_warning(fresh::src(), "Engine::run() iterated object is invalid, index is {}.", i);
     }
 
-    if(Engine::get_instance()->_camera_object)
+    if(Engine::get_instance()->_camera_object) {
       Engine::get_instance()->_camera_object->sync();
+    }
 
-    Engine::get_instance()->get_cursor_resource().sync_sprite();// it's synced before everything passed to framebuffer.
-                                                                // to bypass render priority.
+    Engine::get_instance()->get_cursor_resource().sync_sprite(); // it's synced before everything passed to framebuffer.
+                                                                 // to bypass render priority.
+
     SDL_RenderPresent(Engine::get_instance()->get_window()->get_renderer());
 
-    if(Engine::get_instance()->_camera_object.get()) {
-      Engine::get_instance()->_camera_object->get_position_info().w = Engine::get_instance()->get_window()->_width;
-      Engine::get_instance()->_camera_object->get_position_info().h = Engine::get_instance()->get_window()->_height;
-    }
-
-    //if(auto delta = SDL_GetTicks64() - _start_loop; delta < _desired_delta) {
-    // SDL_Delay( _desired_delta - delta);
+    // update camera width/height.
+    // if(Engine::get_instance()->_camera_object) {
+    //  Engine::get_instance()->_camera_object->get_position_info().w = static_cast<idk::f32>(Engine::get_instance()->get_window()->_width);
+    //  Engine::get_instance()->_camera_object->get_position_info().h = static_cast<idk::f32>(Engine::get_instance()->get_window()->_height);
     //}
   }
   this->last(); // it's not that much necessary.
 }
 
+/// Engine::get_fps returns current FPS cap.
+/// TODO: it does nothing for now.
 __idk_nodiscard
-  idk::u32&
-  Engine::get_fps() noexcept {
+idk::u32& Engine::get_fps() noexcept {
   return this->_fps;
 }
 
+/// Engine::is_engine_running returns _engine_running variable.
+/// which used for checking if engine encountered any error. to exit safely; set _engine_running as false,
+/// do not force-call std::exit which may leak memory.
 __idk_nodiscard bool&
 Engine::is_engine_running() noexcept {
   return this->_engine_running;
 }
 
+/// Engine::get_keyboard_input returns KeyboardInput instance.
+/// used for handling keyboard inputs, no Unicode support.
 __idk_nodiscard
-KeyboardInput&
-Engine::get_keyboard_input() noexcept {
+KeyboardInput& Engine::get_keyboard_input() noexcept {
   return this->_keyboard_input;
 }
 
+/// Engine::get_mouse_input returns MouseInput instance.
+/// used for handling mouse inputs, limited support.
 __idk_nodiscard
-MouseInput&
-Engine::get_mouse_input() noexcept {
+MouseInput& Engine::get_mouse_input() noexcept {
   return this->_mouse_input;
 }
 
+/// Engine::get_cursor_resource returns CursorResource instance.
+/// used for changing cursor sprite.
 __idk_nodiscard
-  CursorResource&
-  Engine::get_cursor_resource() noexcept {
+CursorResource& Engine::get_cursor_resource() noexcept {
   return this->_cursor_resource;
 }
 
+/// Engine::get_clipboard_resource returns ClipboardResource instance.
+/// used for manipulating clipboard.
 __idk_nodiscard
-  ClipboardResource&
-  Engine::get_clipboard_resource() noexcept {
+ClipboardResource& Engine::get_clipboard_resource() noexcept {
   return this->_clipboard_resource;
 }
 
+/// Engine::get_objects_to_render returns RenderObjects::objects_to_render reference.
+/// you should not use it directly. use RenderObjects:: functions.
 __idk_nodiscard
-  std::vector<std::shared_ptr<BaseObject>>&
-  Engine::get_objects_to_render() noexcept {
+auto& Engine::get_objects_to_render() noexcept {
   return fresh::RenderObjects::objects_to_render;
 }
 
-void Engine::push_object(std::shared_ptr<BaseObject> object) noexcept {
-  if(!object.get()) {
-    std::cout << "Engine info: Given BaseObject pointer is invalid.\n";
-  } else {
-    fresh::RenderObjects::objects_to_render.push_back(std::move(object));
+/// Engine::link_camera assigns given camera object with its own CameraObject instance.
+/// it used for checking rendered base object can be seen by borders of camera or not.
+/// if it is not; then object won't be rendered, but still do sync.
+/// pass your camera using shared_ptr, it does not need ownership.
+void Engine::link_camera(const std::shared_ptr<CameraObject>& camera_object) noexcept {
+  Engine::get_instance()->_camera_object = camera_object;
+}
+
+/// Engine::get_camera returns CameraObject* as immutable pointer and immutable value.
+/// *but* you should never use get_camera() since you pass the CameraObject right, so you know where
+/// your object is.
+[[nodiscard]]
+const std::shared_ptr<CameraObject>& Engine::get_camera() noexcept {
+  if(!Engine::get_instance()->_camera_object) {
+    log_error(fresh::src(), "_camera_object is nullptr");
+    return nullptr;
   }
+  return Engine::get_instance()->_camera_object;
 }
 
-void Engine::link_camera(std::shared_ptr<CameraObject> camera_object) noexcept {
-  Engine::get_instance()->_camera_object = idk::move(camera_object);
-}
-
+/// Engine::set_scaling_mode sets renderer scale mode.
+/// if scaling mode set to KeepAspectRatio; it would keep resolution ratio
+/// when resizing the window. None would cover whole window, depends on having CameraObject or not.
 void Engine::set_scaling_mode(Engine::Scaling mode, idk::i32 width, idk::i32 height) noexcept {
   const auto size = Engine::get_instance()->get_window()->get_window_size();
   if(width > std::get<0>(size) || height > std::get<1>(size)) {
@@ -211,32 +227,41 @@ void Engine::set_scaling_mode(Engine::Scaling mode, idk::i32 width, idk::i32 hei
   this->_scale_mode = mode;
 }
 
+/// Engine::sin calculates sin(theta) -where theta is radian degrees- and memoize it in a hash map.
 [[nodiscard]]
 const idk::f32& Engine::sin(const idk::f32& rad_angle) noexcept {
-  if(Engine::get_instance()->_sin.contains(rad_angle))
-    return std::ref(Engine::get_instance()->_sin[rad_angle]);
-  Engine::get_instance()->_sin[rad_angle] = std::sinf(rad_angle);
-  return std::ref(Engine::get_instance()->_sin[rad_angle]);
+  if(fresh::Engine::_sin.contains(rad_angle)) {
+    return std::ref(fresh::Engine::_sin[rad_angle]);
+  }
+  fresh::Engine::_sin[rad_angle] = std::sinf(rad_angle);
+  return std::ref(fresh::Engine::_sin[rad_angle]);
 }
 
+/// Engine::cos calculates cos(theta) -where theta is radian degrees- and memoize it in a hash map.
 [[nodiscard]]
 const idk::f32& Engine::cos(const idk::f32& rad_angle) noexcept {
-  if(Engine::get_instance()->_cos.contains(rad_angle))
-    return std::ref(Engine::get_instance()->_cos[rad_angle]);
-  Engine::get_instance()->_cos[rad_angle] = std::cosf(rad_angle);
-  return std::ref(Engine::get_instance()->_cos[rad_angle]);
+  if(fresh::Engine::_cos.contains(rad_angle)) {
+    return std::ref(fresh::Engine::_cos[rad_angle]);
+  }
+  fresh::Engine::_cos[rad_angle] = std::cosf(rad_angle);
+  return std::ref(fresh::Engine::_cos[rad_angle]);
 }
 
+/// Engine::get_global_id returns current id which is associated with
+/// how many BaseObjects have been created; currently it's not thread safe;
+/// fresh isn't thread safe either.
 __idk_nodiscard
 idk::u32 Engine::get_global_id() noexcept {
-  return Engine::get_instance()->_id;
+  return fresh::Engine::_id;
 }
 
+/// Engine::increase_global_id increases current id by 1.
 void Engine::increase_global_id() noexcept {
-  ++Engine::get_instance()->_id;
+  ++fresh::Engine::_id;
 }
 
+/// Engine::reset_global_id sets current id to 0.
 void Engine::reset_global_id() noexcept {
-  Engine::get_instance()->_id = 0;
+  fresh::Engine::_id = 0;
 }
 }// namespace fresh

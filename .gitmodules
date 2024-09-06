@@ -1,0 +1,3 @@
+[submodule "libs/colorized"]
+	path = libs/colorized
+	url = https://github.com/ferhatgec/colorized.git

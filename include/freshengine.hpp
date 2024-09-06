@@ -53,6 +53,12 @@
 
 #define FreshInstanceInit() Engine::_instance = std::unique_ptr<fresh::Engine>(dynamic_cast<fresh::Engine*>(this))
 
+template<typename T>
+using UniquePtr = std::unique_ptr<T>;
+
+template<typename T>
+using SharedPtr = std::shared_ptr<T>;
+
 namespace fresh {
 class Engine {
 public:
@@ -117,19 +123,11 @@ public:
   get_clipboard_resource() noexcept;
 
   __idk_nodiscard
-  std::vector<std::shared_ptr<BaseObject>>&
-  get_objects_to_render() noexcept;
+  auto& get_objects_to_render() noexcept;
 
-  void
-  push_object(std::shared_ptr<BaseObject> object) noexcept;
+  void link_camera(const std::shared_ptr<CameraObject>& camera_object) noexcept;
 
-  void
-  link_camera(std::shared_ptr<CameraObject> camera_object) noexcept;
-
-  std::shared_ptr<CameraObject>
-  get_camera() noexcept {
-    return this->_camera_object;
-  }
+  [[nodiscard]] static const std::shared_ptr<CameraObject>& get_camera() noexcept;
 
   void set_scaling_mode(Scaling mode, idk::i32 width = -1, idk::i32 height = -1) noexcept;
 

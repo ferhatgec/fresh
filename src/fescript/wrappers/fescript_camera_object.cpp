@@ -1,3 +1,5 @@
+#include "log/log.hpp"
+
 #include <fescript/wrappers/fescript_camera_object.hpp>
 #include <objects/camera_object.hpp>
 

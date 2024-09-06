@@ -6,13 +6,25 @@
 #include <any>
 
 namespace fresh {
+/// RenderObjects class holds and owns rendered objects in a vector. if you need your object later; use
+/// RenderObjects::get_object, pass name of your object.
 class RenderObjects {
 public:
-  RenderObjects();
-  ~RenderObjects();
+  static constexpr auto NotFound = -1;
+  RenderObjects() = default;
+  ~RenderObjects() = default;
 
-  static std::shared_ptr<BaseObject> find(idk::isize object_id) noexcept;
-  static std::vector<std::shared_ptr<BaseObject>> objects_to_render; // other inherited classes will be sliced.
-  static idk::f80 delta_ms;
+  [[nodiscard]] static const std::shared_ptr<BaseObject>& get_object(std::string_view object_name) noexcept;
+  [[nodiscard]] static const std::shared_ptr<BaseObject>& get_object(std::size_t object_id) noexcept;
+  [[nodiscard]] static std::size_t get_index_of_object(std::string_view object_name) noexcept;
+
+  static void push_object(std::shared_ptr<BaseObject> object) noexcept;
+
+  [[nodiscard]] static std::shared_ptr<BaseObject>&& pop_object(std::string_view object_name) noexcept;
+  static void pop_object_delete(std::string_view object_name) noexcept;
+
+  static inline std::vector<std::shared_ptr<BaseObject>> objects_to_render; // other inherited classes will be sliced.
+  static inline idk::f80 delta_ms { 0_f80 };
+  static inline std::shared_ptr<BaseObject> NullptrRefer = nullptr;
 };
 } // namespace fresh

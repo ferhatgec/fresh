@@ -32,6 +32,7 @@ MusicPlayerObject::~MusicPlayerObject() {
 
 void
 MusicPlayerObject::sync(bool is_sync_with_camera) noexcept {
+  CHECK_DISABLED()
   this->_code.interpret_update();
   this->sync_pos_with_camera(is_sync_with_camera);
   APPLY_DELTAS()

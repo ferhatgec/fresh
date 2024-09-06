@@ -1,3 +1,5 @@
+#include "log/log.hpp"
+
 #include <fescript/modules/engine.hpp>
 
 #include <objects/animation/animation_frame_object.hpp>
@@ -36,31 +38,14 @@ __idk_nodiscard Object FescriptEngineRenderObjectsPush::call([[maybe_unused]] In
   if(arguments.empty())
     return false;
   for(const auto& argument: arguments) {
-    switch(argument.index()) {
-      PUSH_RENDER_OBJECTS_IMPL_OBJECT(FescriptBaseObjectIndex)
-      PUSH_RENDER_OBJECTS_IMPL_OBJECT(FescriptSpriteObjectIndex)
-      PUSH_RENDER_OBJECTS_IMPL_OBJECT(FescriptLabelObjectIndex)
-      PUSH_RENDER_OBJECTS_IMPL_OBJECT(FescriptAreaObjectIndex)
-      PUSH_RENDER_OBJECTS_IMPL_OBJECT(FescriptCameraObjectIndex)
-      PUSH_RENDER_OBJECTS_IMPL_OBJECT(FescriptAnimationPlayerObjectIndex)
-      PUSH_RENDER_OBJECTS_IMPL_OBJECT(FescriptAnimationFrameObjectIndex)
-      PUSH_RENDER_OBJECTS_IMPL_OBJECT(FescriptRectangleObjectIndex)
-      PUSH_RENDER_OBJECTS_IMPL_OBJECT(FescriptCircleObjectIndex)
-      PUSH_RENDER_OBJECTS_IMPL_OBJECT(FescriptPolygonObjectIndex)
-      PUSH_RENDER_OBJECTS_IMPL_OBJECT(FescriptRectangleAreaObjectIndex)
-      PUSH_RENDER_OBJECTS_IMPL_OBJECT(FescriptCircleAreaObjectIndex)
-      PUSH_RENDER_OBJECTS_IMPL_OBJECT(FescriptPolygonAreaObjectIndex)
-      PUSH_RENDER_OBJECTS_IMPL_OBJECT(FescriptWorldObjectIndex)
-      PUSH_RENDER_OBJECTS_IMPL_OBJECT(FescriptBodyObjectIndex)
-      PUSH_RENDER_OBJECTS_IMPL_OBJECT(FescriptRectangleBodyObjectIndex)
-      PUSH_RENDER_OBJECTS_IMPL_OBJECT(FescriptCircleBodyObjectIndex)
-      PUSH_RENDER_OBJECTS_IMPL_OBJECT(FescriptPolygonBodyObjectIndex)
-      default: {
-        std::cout << "Engine [language] error: Some arguments of Engine_render_objects_push() is not inherited from BaseObject.\n";
-        std::exit(1);
-      }
+    auto ptr = Interpreter::fescript_object_to_baseobject(argument);
+    if(!ptr) {
+      fresh::log_error(fresh::src(), "argument is invalid.\n");
+      return nullptr;
     }
+    fresh::RenderObjects::push_object(std::move(ptr));
   }
+  return nullptr;
 }
 
 __idk_nodiscard Object FescriptEngineLoadFes::call([[maybe_unused]] Interpreter& interpreter, const std::vector<Object>& arguments) {

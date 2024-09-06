@@ -37,10 +37,9 @@ RectangleAreaObject::RectangleAreaObject(std::shared_ptr<BaseObject> object) {
 }
 
 void RectangleAreaObject::sync(bool is_sync_with_camera) noexcept {
+  CHECK_DISABLED()
   this->_code.interpret_update();
   this->sync_pos_with_camera(is_sync_with_camera);
-  if(!this->_visible || this->_disabled)
-    return;
 
   #ifdef __FRESH_DEBUG
   std::dynamic_pointer_cast<RectangleObject>(this->_collider)->get_raw_position_info() = this->get_raw_position_info();

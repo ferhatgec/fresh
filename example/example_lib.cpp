@@ -20,10 +20,9 @@
 #include <numbers>
 
 class Application : public fresh::Engine {
-private:
   fresh::FesLoaderResource _resource;
-  std::shared_ptr<fresh::RectangleBodyObject> _rect_body;
-  std::shared_ptr<fresh::WorldObject> _world;
+  //SharedPtr<fresh::RectangleBodyObject> _rect_body;
+  //SharedPtr<fresh::WorldObject> _world;
 public:
   Application() {
     FreshInstanceInit(); // this is a *must* to initialize every part of engine correct.
@@ -37,7 +36,7 @@ public:
     this->_resource.load_fes("example/box2d_example/physics_scene.fes");
     this->_resource.generate_objects();
 
-    SDL_FRect rect_pos = {
+    /*SDL_FRect rect_pos = {
       400.f, 300.f, 200.f, 60.f
     }, rect_pos_2 = {
       400.f, 300.f, 30.f, 30.f
@@ -45,13 +44,17 @@ public:
 
     this->_world = std::make_shared<fresh::WorldObject>();
     this->_rect_body = std::make_shared<fresh::RectangleBodyObject>(this->_world->get_world_id(), rect_pos, true);
+    this->_world->get_name() = "ExampleWorldObject";
+    this->_rect_body->get_name() = "ExampleRectangleBody";
+
     // we attach a circle sprite, so we can actually see what box2d does.
     this->_rect_body->get_sub_objects().push_back(std::make_shared<fresh::RectangleObject>(rect_pos, fresh::ColorResource(0, 0, 0, 125), false));
 
-   //  this->_rect_body->set_rotation_by_radian_degrees(std::numbers::pi_v<idk::f32> / 4.f);
+    fresh::RenderObjects::push_object(std::move(this->_world));
+    fresh::RenderObjects::push_object(std::move(this->_rect_body));
 
-    Engine::get_instance()->get_objects_to_render().push_back(this->_world);
-    Engine::get_instance()->get_objects_to_render().push_back(this->_rect_body);
+    this->_world = std::dynamic_pointer_cast<fresh::WorldObject>(fresh::RenderObjects::get_object("ExampleWorldObject"));
+    this->_rect_body = std::dynamic_pointer_cast<fresh::RectangleBodyObject>(fresh::RenderObjects::get_object("ExampleRectangleBody"));*/
   }
 
   ~Application() = default;
@@ -66,7 +69,7 @@ public:
   }
   void
   update() override {
-    if(Engine::get_instance()->get_keyboard_input().is_key_just_pressed(SDL_SCANCODE_U)) {
+    /*if(Engine::get_instance()->get_keyboard_input().is_key_just_pressed(SDL_SCANCODE_U)) {
       this->_rect_body->set_rotation_by_radian_degrees(this->_rect_body->get_rotation_by_radian_degrees() + std::numbers::pi_v<idk::f32> / 36.f);
     }
 
@@ -82,24 +85,25 @@ public:
           30,
         30
       }; // TODO: if any camera linked to engine instance, convert to camera render_pos.
+      std::cout << "Rectangle: " << rect.x << " " << rect.y << " " << rect.w << " " << rect.h << "\n";
       auto box = std::make_shared<fresh::RectangleBodyObject>(this->_world->get_world_id(), rect, false);
       box->get_sub_objects().push_back(std::make_shared<fresh::RectangleObject>(rect, fresh::ColorResource(0, 0, 255, 125), false));
-      Engine::get_instance()->get_objects_to_render().push_back(std::move(box));
+      fresh::RenderObjects::push_object(std::move(box));
     }
 
     if(Engine::get_instance()->get_mouse_input().is_button_just_pressed(SDL_BUTTON_LEFT)) {
       auto cursor_pos = Engine::get_instance()->get_mouse_input().get_current_coordinates();
-
       SDL_FRect rect = {
         static_cast<idk::f32>(cursor_pos.first()),
         static_cast<idk::f32>(cursor_pos.second()),
           50,
         50
       };
+      std::cout << "Circle: " << rect.x << " " << rect.y << " " << rect.w << " " << rect.h << "\n";
       auto box = std::make_shared<fresh::CircleBodyObject>(this->_world->get_world_id(), rect, 30.f, false);
       box->get_sub_objects().push_back(std::make_shared<fresh::CircleObject>(rect, fresh::CircleResource(30.f, 0, false), fresh::ColorResource(0, 0, 255, 125)));
-      Engine::get_instance()->get_objects_to_render().push_back(std::move(box));
-    }
+      fresh::RenderObjects::push_object(std::move(box));
+    }*/
   }
 
   void
@@ -129,7 +133,7 @@ using namespace fescript;
 Interpreter interpreter;
 
 void run(std::string_view source) noexcept {
-  Scanner scanner(std::move(source));
+  Scanner scanner(source);
   std::vector<Token> tokens = scanner.scan_tokens();
   Parser parser(tokens);
   auto statements = parser.parse();

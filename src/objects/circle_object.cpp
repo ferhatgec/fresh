@@ -14,11 +14,11 @@ CircleObject::CircleObject(SDL_FRect info, CircleResource resource, ColorResourc
 }
 
 void CircleObject::sync(bool is_sync_with_camera) noexcept {
+  CHECK_DISABLED()
   this->_code.interpret_update();
   this->sync_pos_with_camera(is_sync_with_camera);
-  if(this->_disabled || !this->_visible)
-    return;
-  this->_draw_circle();
+  if(this->_visible)
+    this->_draw_circle();
   APPLY_DELTAS()
 }
 
@@ -42,8 +42,9 @@ ColorResource& CircleObject::get_color_resource() noexcept {
 
 void CircleObject::_draw_circle() noexcept {
   if(const auto& radius = this->_resource.get_radius();
-    (radius < 0.f) || f32_nearly_equals(radius, 0.f))
+    (radius < 0.f) || f32_nearly_equals(radius, 0.f)) {
     return;
+  }
 
   if(SDL_SetRenderDrawColor(Engine::get_instance()->get_window()->get_renderer(),
                             this->_color.get_red(),

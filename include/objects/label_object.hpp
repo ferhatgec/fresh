@@ -39,19 +39,20 @@ public:
   sync(bool is_sync_with_camera = false) noexcept override;
 
   __idk_nodiscard
-  idk::StringViewChar&
-  get_label_text() noexcept;
+  idk::StringViewChar& get_label_text() noexcept;
 
   __idk_nodiscard
-  FontResource&
-  get_label_font_resource() noexcept;
+  FontResource& get_label_font_resource() noexcept;
 
   __idk_nodiscard
-  SpriteResource&
-  get_label_font_texture() noexcept;
+  FontResource copy_get_label_font_resource() const noexcept {
+    return this->_label_font_resource;
+  }
 
-  void
-  initialize_label_font_surface() noexcept;
+  __idk_nodiscard
+  SpriteResource& get_label_font_texture() noexcept;
+
+  void initialize_label_font_surface() noexcept;
 
   [[nodiscard]] std::string to_string() {
     return "labelobject";

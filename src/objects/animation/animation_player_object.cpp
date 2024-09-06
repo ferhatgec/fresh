@@ -13,9 +13,10 @@ AnimationPlayerObject::~AnimationPlayerObject() {
 }
 
 void AnimationPlayerObject::sync(bool is_sync_with_camera) noexcept {
+  CHECK_DISABLED()
   this->_code.interpret_update();
   this->sync_pos_with_camera(is_sync_with_camera);
-  if(this->get_is_disabled() || !this->_start)
+  if(!this->_start)
     return;
   if(this->_timer.is_paused())
     return;

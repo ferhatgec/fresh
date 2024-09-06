@@ -63,14 +63,15 @@ public:
 
   [[nodiscard]] static Object get_object_property(const Token& keyword, Object value);
   [[nodiscard]] static Object baseobject_to_fescript_object(std::shared_ptr<fresh::BaseObject> base_obj) noexcept;
+  [[nodiscard]] static std::shared_ptr<fresh::BaseObject> fescript_object_to_baseobject(Object obj) noexcept;
 
   [[nodiscard]] std::shared_ptr<fresh::BaseObject>& get_parent_object() noexcept;
 private:
   [[nodiscard]] Object evaluate(std::shared_ptr<Expr> expr);
-  [[nodiscard]] Object look_up_variable(const Token &name, std::shared_ptr<Expr> expr);
+  [[nodiscard]] Object look_up_variable(const Token &name, const std::shared_ptr<Expr>& expr);
 
-  void execute(std::shared_ptr<Stmt> stmt);
-  void resolve(std::shared_ptr<Expr> expr, int depth);
+  void execute(const std::shared_ptr<Stmt>& stmt);
+  void resolve(const std::shared_ptr<Expr>& expr, int depth);
   void execute_block(const std::vector<std::shared_ptr<Stmt>> &statements,
                      std::shared_ptr<Environment> environment);
   void check_number_operand(const Token &op, const Object &operand);

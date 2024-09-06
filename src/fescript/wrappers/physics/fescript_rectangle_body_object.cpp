@@ -2,6 +2,8 @@
 #include <objects/camera_object.hpp>
 #include <objects/physics/rectangle_body_object.hpp>
 #include <fescript/fescript_array.hpp>
+#include <freshengine.hpp>
+#include <render_objects.hpp>
 
 namespace fescript {
 __idk_nodiscard Object FescriptRectangleBodyObjectMemberSetIsStaticBody::call([[maybe_unused]] Interpreter& interpreter, const std::vector<Object>& arguments) {

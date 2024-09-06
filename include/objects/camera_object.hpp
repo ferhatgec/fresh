@@ -33,7 +33,7 @@ public:
     };
   }
 
-  void apply(std::shared_ptr<BaseObject> obj) noexcept;
+  void apply(const std::shared_ptr<BaseObject>& obj) const noexcept;
   void set_zoom(idk::f32 new_zoom) noexcept;
   void move(idk::f32 dx, idk::f32 dy) noexcept;
 protected:

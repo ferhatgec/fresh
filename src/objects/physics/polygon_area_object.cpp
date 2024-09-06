@@ -40,10 +40,9 @@ PolygonAreaObject::PolygonAreaObject(std::shared_ptr<BaseObject> object) {
 }
 
 void PolygonAreaObject::sync(bool is_sync_with_camera) noexcept {
+  CHECK_DISABLED()
   this->_code.interpret_update();
   this->sync_pos_with_camera(is_sync_with_camera);
-  if(!this->_visible || this->_disabled)
-    return;
 
   #ifdef __FRESH_DEBUG
   std::dynamic_pointer_cast<PolygonObject>(this->_collider)->get_polygon_resource().get_polygons() = this->_resource.get_polygons();

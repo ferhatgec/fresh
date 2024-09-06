@@ -10,11 +10,12 @@
 #include <fescript/fescript_function.hpp>
 #include <fescript/fescript_instance.hpp>
 #include <fescript/fescript_interpreter.hpp>
+#include <utility>
 
 namespace fescript {
 Token::Token(TokenType type, std::string lexeme, Object literal, int line, bool is_variadic) noexcept
     : type{type},
-      lexeme{lexeme},
+      lexeme{std::move(lexeme)},
       literal{std::move(literal)},
       line{line},
       is_variadic{is_variadic} {
@@ -48,5 +49,9 @@ Token::~Token() noexcept {
 
 [[nodiscard]] std::string Token::to_string(const Object& object) noexcept {
   return Interpreter::stringify(object);
+}
+
+[[nodiscard]] bool Token::is_base_object(const Object& obj) noexcept {
+  return obj.index() >= FescriptBaseObjectIndex && obj.index() < ObjectsEnd_;
 }
 }// namespace fescript

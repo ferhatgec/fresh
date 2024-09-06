@@ -60,11 +60,11 @@ void LabelObject::initialize_text(idk::StringViewChar&& label_text,
 }
 
 void LabelObject::sync(bool is_sync_with_camera) noexcept {
+  CHECK_DISABLED()
   this->_code.interpret_update();
   this->sync_pos_with_camera(is_sync_with_camera);
   this->_render_pos_info = BaseObject::_center_to_top_left_pivot(this->_render_pos_info);
-  if(!this->_disabled &&
-    this->_visible &&
+  if(this->_visible &&
     !this->_label_text.is_empty() &&
     !this->_label_font_resource.get_font_path().is_empty() &&
     this->_label_font_resource.get_font_size() > 0)

@@ -16,7 +16,7 @@ public:
   CircleObjectWrapper();
   ~CircleObjectWrapper();
   [[nodiscard]] std::string to_string() override;
-  [[nodiscard]] int arity() override { return 0; }
+  [[nodiscard]] int arity() override { return -1; }
   [[nodiscard]] Object call([[maybe_unused]] Interpreter& interpreter, const std::vector<Object>& arguments) override;
 };
 } // namespace fescript

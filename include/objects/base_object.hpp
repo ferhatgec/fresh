@@ -15,7 +15,7 @@
 
 #include "../../libs/SDL/include/SDL.h"
 
-
+#define CHECK_DISABLED() if(this->_disabled) return;
 #define APPLY_DELTAS() for(auto& object: this->_sub_objects) { \
                         object->_pos_info.x += this->delta_x(); \
                         object->_pos_info.y += this->delta_y(); \
@@ -24,6 +24,8 @@
                         object->set_rotation_by_radian_degrees(object->get_rotation_by_radian_degrees() + this->delta_rot()); \
                         object->sync(is_sync_with_camera); \
                         object->get_position_info(); \
+                        object->get_is_visible() = this->get_is_visible(); \
+                        object->get_is_disabled() = this->get_is_disabled(); \
                        } \
                        this->_last_rotation_degrees = this->_rotation_degrees; \
                        this->get_position_info();
@@ -125,7 +127,11 @@ public:
   idk::StringViewChar& get_name() noexcept;
 
   void load_fescript_rt(const idk::StringViewChar& script, bool is_file = false) noexcept;
-  void push_to_sub_objects(const std::shared_ptr<BaseObject>& obj) noexcept;
+  void push_to_sub_objects(std::shared_ptr<BaseObject> obj) noexcept;
+
+  [[nodiscard]] SDL_FRect copy_get_position_info() const noexcept {
+    return this->_pos_info;
+  }
 
   __idk_nodiscard
   std::shared_ptr<BaseObject> get_object_by_path(const std::string& path) noexcept;

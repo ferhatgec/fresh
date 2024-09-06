@@ -4,6 +4,7 @@
 #include <fescript/fescript_array.hpp>
 
 namespace fresh {
+// TODO: Box2D uses counter clockwise winding; we need to use clockwise to counter clockwise winding.
 PolygonBodyObject::PolygonBodyObject(const b2WorldId& world_id, SDL_FRect pos, PolygonResource vertices, bool is_static_body) {
   this->_world_id = world_id;
   this->_pos_info = pos;
@@ -14,10 +15,9 @@ PolygonBodyObject::PolygonBodyObject(const b2WorldId& world_id, SDL_FRect pos, P
 }
 
 void PolygonBodyObject::sync(bool is_sync_with_camera) noexcept {
+  CHECK_DISABLED()
   this->_code.interpret_update();
   this->sync_pos_with_camera(is_sync_with_camera);
-  if(this->_disabled)
-    return;
   auto position = b2Body_GetPosition(this->_body_id);
   // auto rotation = b2Body_GetRotation(this->_body_id); // TODO: we don't have rotation for BaseObject.
   this->get_position_info() = SDL_FRect { position.x, position.y, this->_pos_info.w, this->_pos_info.h };

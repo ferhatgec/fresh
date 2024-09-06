@@ -4,6 +4,8 @@
 // Distributed under the terms of the MIT License.
 //
 
+#include "log/log.hpp"
+
 #include <fescript/fescript_environment.hpp>
 
 namespace fescript {
@@ -15,6 +17,14 @@ Environment::Environment(std::shared_ptr<Environment> enclosing)
     : enclosing{std::move(enclosing)} {
 }
 
+[[nodiscard]] Object Environment::get(const std::string& name) {
+  if (auto it = this->values.find(name); it != this->values.end())
+    return it->second;
+  if (this->enclosing != nullptr)
+    return this->enclosing->get(name);
+  fresh::log_error(fresh::src(), "undefined variable {}", name);
+}
+
 [[nodiscard]] Object Environment::get(const Token &name) {
   if (auto it = this->values.find(name.lexeme); it != this->values.end())
     return it->second;
@@ -24,7 +34,7 @@ Environment::Environment(std::shared_ptr<Environment> enclosing)
 }
 
 [[nodiscard]] Object Environment::get_at(int distance, const std::string &name) {
-  return this->ancestor(distance)->values[name];
+  return this->ancestor(distance)->get(name);
 }
 
 void Environment::assign(const Token &name, Object value) {
@@ -33,7 +43,7 @@ void Environment::assign(const Token &name, Object value) {
     return;
   }
   if (this->enclosing != nullptr) {
-    this->enclosing->assign(name, std::move(value));
+    this->enclosing->assign(name, value);
     return;
   }
   throw RuntimeError(name, "undefined variable '" + name.lexeme + "'.");

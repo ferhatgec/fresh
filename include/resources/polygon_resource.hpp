@@ -10,7 +10,7 @@
 
 namespace fresh {
 __idk_nodiscard
-inline bool f32_nearly_equals(const idk::f32 a, const idk::f32 b, const idk::f32& epsilon = std::numeric_limits<idk::f32>::epsilon()) noexcept {
+inline bool f32_nearly_equals(const idk::f32& a, const idk::f32& b, const idk::f32& epsilon = std::numeric_limits<idk::f32>::epsilon()) noexcept {
   return a + epsilon >= b && a - epsilon <= b;
 }
 

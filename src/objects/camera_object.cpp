@@ -24,13 +24,12 @@ CameraObject::is_visible_on_camera(std::shared_ptr<fresh::BaseObject> object) no
 }
 
 void CameraObject::sync(bool is_sync_with_camera) noexcept {
-  this->_pos_info.w = 400;
-  this->_pos_info.h = 300;
+  CHECK_DISABLED()
   this->_code.interpret_update();
   APPLY_DELTAS()
 }
 
-void CameraObject::apply(std::shared_ptr<BaseObject> obj) noexcept {
+void CameraObject::apply(const std::shared_ptr<BaseObject>& obj) const noexcept {
   SDL_FRect new_pos = obj->_pos_info;
   new_pos.x -= this->_pos_info.x * this->_zoom_level;
   new_pos.y -= this->_pos_info.y * this->_zoom_level;

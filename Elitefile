@@ -97,9 +97,7 @@ set files as "/Tp./src/application/window.cpp
               /Tp./libs/imgui/backends/imgui_impl_sdlrenderer2.cpp
               /Tp./libs/imgui/backends/imgui_impl_sdl2.cpp
               /Tp./libs/imgui/backends/imgui_impl_opengl3.cpp
-              /Tp./src/freshengine.cpp
-              /Tp./src/editor/operation.cpp
-              /Tp./src/editor/editor.cpp"
+              /Tp./src/freshengine.cpp"
 
 set object_files as "window.obj
                      sprite_resource.obj
@@ -196,9 +194,7 @@ set object_files as "window.obj
                      imgui_impl_sdlrenderer2.obj
                      imgui_impl_sdl2.obj
                      imgui_impl_opengl3.obj
-                     freshengine.obj
-                     operation.obj
-                     editor.obj"
+                     freshengine.obj"
 
 
 set static_dependencies as "./libs/SDL/lib/x64/SDL2.lib
@@ -222,9 +218,10 @@ set include_dirs as "/I./libs/SDL/include/
                     /I./libs/imgui/backends/
                     /I./libs/idk/idk/
                     /I./libs/box2d/include/
+                    /I./libs/colorized/
                     /I./include/"
 
-set compiler_params as "/O2 /MD /EHsc /D__FRESH_DEBUG /D__FRESH_ENABLE_EDITOR /std:c++20 /MP /DWIN64"
+set compiler_params as "/O2 /MD /EHsc /Zi /DEBUG /fsanitize=address /std:c++20 /MP /DWIN64"
 set just_compile_example as "false"
 
 for signal "start" [

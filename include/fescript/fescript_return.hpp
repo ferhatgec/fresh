@@ -13,7 +13,7 @@
 namespace fescript {
 class FescriptReturnException : std::exception {
 public:
-  FescriptReturnException(Object value) : value{value} {}
+  FescriptReturnException(const Object& value) : value{value} {}
   const Object value;
 };
 }// namespace fescript

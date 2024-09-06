@@ -18,11 +18,11 @@ PolygonObject::~PolygonObject() {
 }
 
 void PolygonObject::sync(bool is_sync_with_camera) noexcept {
+  CHECK_DISABLED()
   this->_code.interpret_update();
   this->sync_pos_with_camera(is_sync_with_camera);
-  if(this->_disabled)
-    return;
-  this->_draw_polygon();
+  if(this->_visible)
+    this->_draw_polygon();
   APPLY_DELTAS()
 }
 

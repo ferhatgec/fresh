@@ -79,10 +79,9 @@ void BaseObject::sync_pos_with_camera(bool is_sync_with_camera) noexcept {
 }
 
 void BaseObject::sync(bool is_sync_with_camera) noexcept {
+  CHECK_DISABLED()
   this->_code.interpret_update();
   this->sync_pos_with_camera(is_sync_with_camera);
-  if(!this->_visible || this->_disabled)
-    return;
   APPLY_DELTAS()
 }
 
@@ -143,7 +142,7 @@ void BaseObject::push_object(std::shared_ptr<BaseObject> sub_object) noexcept {
     return;
   }
 
-  this->push_to_sub_objects(sub_object);
+  this->push_to_sub_objects(std::move(sub_object));
   // this->_sub_objects.push_back(idk::move(sub_object));
 }
 
@@ -201,13 +200,13 @@ void BaseObject::load_fescript_rt(const idk::StringViewChar& script, bool is_fil
   std::cout << this->_name << " " << this->script_file_name << '\n';
 }
 
-void BaseObject::push_to_sub_objects(const std::shared_ptr<BaseObject>& obj) noexcept {
+void BaseObject::push_to_sub_objects(std::shared_ptr<BaseObject> obj) noexcept {
   if(!obj) {
     std::cout << "Engine error: Invalid BaseObject/-inherited object passed to push_to_sub_objects()!\n";
     std::exit(1);
   }
   obj->_parent = this->_give_shared_ptr();
-  this->_sub_objects.push_back(obj);
+  this->_sub_objects.push_back(std::move(obj));
 }
 
 __idk_nodiscard
@@ -229,7 +228,7 @@ void BaseObject::set_rotation_by_radian_degrees(idk::f32 rad_degrees) noexcept {
 }
 
 [[nodiscard]] idk::f32 BaseObject::counter_clockwise_to_clockwise(idk::f32 rad_degrees) noexcept {
-  return -std::fmodf(rad_degrees, mul_2_pi_v<idk::f32>);
+  return std::fmodf(rad_degrees + mul_2_pi_v<idk::f32>, mul_2_pi_v<idk::f32>);
 }
 
 __idk_nodiscard
