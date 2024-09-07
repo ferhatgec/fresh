@@ -27,29 +27,12 @@ public:
     return this->_sprite_resource;
   }
 
-  template<typename KeyType>
-  KeyType&
-  get_property() noexcept {
-    return this->get_sprite_resource();
-  }
-
-  template<>
-  SpriteResource&
-  get_property<SpriteResource>() noexcept {
-    return this->_sprite_resource;
-  }
-
-  template<>
-  bool&
-  get_property<bool>() noexcept {
-    return this->_visible;
-  }
-
   [[nodiscard]] std::string to_string() {
     return "spriteobject";
   }
 
   void set(const fescript::Token& name, fescript::Object value) override;
+  void set_rotation_by_radian_degrees(idk::f32 rad_degrees) noexcept override;
 private:
   __idk_nodiscard
   SDL_BlendMode
@@ -60,5 +43,6 @@ protected:
 #endif
   bool _still_focus { false };
   SpriteResource _sprite_resource;
+  idk::f32 _cache_degrees;
 };
 } // namespace fresh

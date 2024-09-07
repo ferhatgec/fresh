@@ -7,6 +7,7 @@
   script_resource = "example/box2d_example/physics_scene.fe",
   sub_groups = {
    [LabelObject,
+    name = "Text_WASD",
     group_id = auto,
     width = 150,
     height = 25,

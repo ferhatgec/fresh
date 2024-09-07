@@ -1,9 +1,12 @@
-#include <fescript/wrappers/fescript_base_object.hpp>
+#include "log/log.hpp"
+
 #include <fescript/fescript_array.hpp>
+#include <fescript/wrappers/fescript_base_object.hpp>
 #include <freshengine.hpp>
 
 namespace fresh {
-LabelObject::LabelObject() {
+LabelObject::LabelObject()
+  : _cache_degrees{0.f} {
   this->_object_def = "labelobject";
   this->_label_render_type = LabelRenderType::Blended;
 }
@@ -26,10 +29,16 @@ LabelObject::LabelObject(LabelObject* label_object) {
 
 LabelObject::LabelObject(const FontResource& label_font_resource, const BaseObject& metadata) {
   this->_object_def = "labelobject";
+  this->_label_font_resource = _label_font_resource;
+  this->_rotation_degrees = metadata._rotation_degrees;
+  this->_cache_degrees = BaseObject::counter_clockwise_to_clockwise(this->_rotation_degrees * 180.f / std::numbers::pi_v<idk::f32>);
 }
 
 LabelObject::LabelObject(FontResource&& label_font_resource, BaseObject&& metadata) {
   this->_object_def = "labelobject";
+  this->_label_font_resource = std::move(_label_font_resource);
+  this->_rotation_degrees = std::move(metadata)._rotation_degrees;
+  this->_cache_degrees = BaseObject::counter_clockwise_to_clockwise(this->_rotation_degrees * 180.f / std::numbers::pi_v<idk::f32>);
 }
 
 LabelObject::~LabelObject() {
@@ -43,7 +52,6 @@ void LabelObject::initialize_text(const idk::StringViewChar& label_text,
   this->_fg = fg;
   this->_bg = bg;
   this->_label_render_type = label_render_type;
-
   this->initialize_label_font_surface();
 }
 
@@ -67,11 +75,22 @@ void LabelObject::sync(bool is_sync_with_camera) noexcept {
   if(this->_visible &&
     !this->_label_text.is_empty() &&
     !this->_label_font_resource.get_font_path().is_empty() &&
-    this->_label_font_resource.get_font_size() > 0)
-    SDL_RenderCopyF(Engine::get_instance()->get_window()->get_renderer(),
-                 this->_label_font_texture.get_texture(),
-                 NULL,
-                 &this->_render_pos_info);
+    this->_label_font_resource.get_font_size() > 0) {
+    if(f32_nearly_equals(this->_rotation_degrees, 0.f)) {
+      SDL_RenderCopyF(Engine::get_instance()->get_window()->get_renderer(),
+                   this->_label_font_texture.get_texture(),
+                   NULL,
+                   &this->_render_pos_info);
+    } else {
+      SDL_RenderCopyExF(Engine::get_instance()->get_window()->get_renderer(),
+                   this->_label_font_texture.get_texture(),
+                   NULL,
+                   &this->_render_pos_info,
+                   this->_cache_degrees,
+                   NULL,
+                   SDL_FLIP_NONE);
+    }
+  }
   APPLY_DELTAS()
 }
 
@@ -96,47 +115,31 @@ __idk_nodiscard
 void LabelObject::initialize_label_font_surface() noexcept {
   SDL_Surface* label_surface = nullptr;
 
-  if(!this->get_label_font_resource().get_font()) {
-    std::cout << "Engine error: get_font() returns invalid pointer!\n";
+  if(this->get_label_font_resource().get_font() == nullptr) {
+    log_error(src(), "get_font() returns invalid pointer.");
+    return;
   }
-
   switch(this->_label_render_type) {
   case LabelRenderType::LCD: {
-    label_surface = TTF_RenderText_LCD(this->get_label_font_resource().get_font(),
-                                       this->_label_text.data(),
-                                       this->_fg,
-                                       this->_bg);
+    label_surface = TTF_RenderText_LCD(this->get_label_font_resource().get_font(), this->_label_text.data(), this->_fg, this->_bg);
     break;
   }
-
   case LabelRenderType::Solid: {
-    label_surface = TTF_RenderText_Solid(this->get_label_font_resource().get_font(),
-                                         this->_label_text.data(),
-                                         this->_fg);
+    label_surface = TTF_RenderText_Solid(this->get_label_font_resource().get_font(), this->_label_text.data(), this->_fg);
     break;
   }
-
   case LabelRenderType::Shaded: {
-    label_surface = TTF_RenderText_Shaded(this->get_label_font_resource().get_font(),
-                                          this->_label_text.data(),
-                                          this->_fg,
-                                          this->_bg);
+    label_surface = TTF_RenderText_Shaded(this->get_label_font_resource().get_font(), this->_label_text.data(), this->_fg, this->_bg);
     break;
   }
-
   case LabelRenderType::Blended: {
-    label_surface = TTF_RenderText_Blended(this->get_label_font_resource().get_font(),
-                                           this->_label_text.data(),
-                                           this->_fg);
+    label_surface = TTF_RenderText_Blended(this->get_label_font_resource().get_font(), this->_label_text.data(), this->_fg);
     break;
   }
-
   default: {
     std::cout << "Engine error: Reached LabelRenderType out of bounds.\n";
     // using solid as default, but there will never be reached until something breaks up.
-    label_surface = TTF_RenderText_Solid(this->get_label_font_resource().get_font(),
-                                         this->_label_text.data(),
-                                         this->_fg);
+    label_surface = TTF_RenderText_Solid(this->get_label_font_resource().get_font(), this->_label_text.data(), this->_fg);
     break;
   }
   }
@@ -174,5 +177,15 @@ void LabelObject::set(const fescript::Token& name, fescript::Object value) {
     std::cout << "Engine [language] error: SpriteObject has no field named as '" << name.lexeme << "'.\n";
     std::exit(1);
   }
+}
+
+void LabelObject::set_rotation_by_radian_degrees(idk::f32 rad_degrees) noexcept {
+  if(f32_nearly_equals(rad_degrees, this->_rotation_degrees)) {
+    return;
+  }
+  this->_rotation_degrees = rad_degrees;
+  // radians to degrees (SDL uses degrees and clockwise winding)
+  // fresh uses radian degrees and clockwise winding.
+  this->_cache_degrees = this->_rotation_degrees * 180.f / std::numbers::pi_v<idk::f32>;
 }
 }// namespace fresh

@@ -59,6 +59,7 @@ public:
   }
 
   void set(const fescript::Token& name, fescript::Object value) override;
+  void set_rotation_by_radian_degrees(idk::f32 rad_degrees) noexcept override;
 
   [[nodiscard]] SDL_Color& get_background_color() noexcept {
     return this->_bg;
@@ -77,5 +78,7 @@ protected:
 
   SpriteResource _label_font_texture;
   FontResource _label_font_resource;
+
+  idk::f32 _cache_degrees;
 };
 } // namespace fresh

@@ -8,7 +8,8 @@
 #endif
 
 namespace fresh {
-SpriteObject::SpriteObject() {
+SpriteObject::SpriteObject()
+  : _cache_degrees{0.f} {
 #ifdef __FRESH_ENABLE_EDITOR
   _gizmo = std::make_shared<GuiBaseObject>();
 #endif
@@ -17,6 +18,7 @@ SpriteObject::SpriteObject() {
   Engine::get_instance()->increase_global_id();
 }
 
+// TODO: delete this.
 SpriteObject::SpriteObject(SpriteObject* sprite_object) {
 #ifdef __FRESH_ENABLE_EDITOR
   _gizmo = std::make_shared<GuiBaseObject>();
@@ -29,7 +31,6 @@ SpriteObject::SpriteObject(SpriteObject* sprite_object) {
     this->_copy_last_pos_info = this->_pos_info;
     this->_visible = sprite_object->_visible;
     this->_disabled = sprite_object->_disabled;
-
     this->_sprite_resource = sprite_object->_sprite_resource;
 
     delete sprite_object;
@@ -41,6 +42,8 @@ SpriteObject::SpriteObject(SpriteObject* sprite_object) {
 SpriteObject::SpriteObject(const SpriteResource& sprite_resource, const BaseObject& metadata) {
   this->_pos_info = metadata._pos_info;
   this->_copy_last_pos_info = this->_pos_info;
+  this->_rotation_degrees = metadata._rotation_degrees;
+  this->_cache_degrees = BaseObject::counter_clockwise_to_clockwise(this->_rotation_degrees * 180.f / std::numbers::pi_v<idk::f32>);
   this->_visible = metadata._visible;
   this->_disabled = metadata._disabled;
 
@@ -80,12 +83,23 @@ SpriteObject::~SpriteObject() {
 void SpriteObject::sync(bool is_sync_with_camera) noexcept {
   CHECK_DISABLED()
   this->_code.interpret_update();
-  SDL_SetTextureBlendMode(this->_sprite_resource.get_texture(), this->_convert_blend_mode_enum());
   this->sync_pos_with_camera(is_sync_with_camera);
-  this->_render_pos_info = BaseObject::_center_to_top_left_pivot(this->_render_pos_info);
-  if(this->_visible)
-    SDL_RenderCopyF(Engine::get_instance()->get_window()->get_renderer(),
-                 this->_sprite_resource.get_texture(), NULL, &this->_render_pos_info);
+  if(this->_visible) {
+    SDL_SetTextureBlendMode(this->_sprite_resource.get_texture(), this->_convert_blend_mode_enum());
+    this->_render_pos_info = BaseObject::_center_to_top_left_pivot(this->_render_pos_info);
+    if(f32_nearly_equals(this->_rotation_degrees, 0.f)) {
+      SDL_RenderCopyF(Engine::get_instance()->get_window()->get_renderer(),
+                   this->_sprite_resource.get_texture(), NULL, &this->_render_pos_info);
+    } else {
+      SDL_RenderCopyExF(Engine::get_instance()->get_window()->get_renderer(),
+                        this->_sprite_resource.get_texture(),
+                        NULL,
+                        &this->_render_pos_info,
+                        this->_cache_degrees,
+                        NULL,
+                        SDL_FLIP_NONE);
+    }
+  }
   APPLY_DELTAS()
 }
 
@@ -127,5 +141,15 @@ void SpriteObject::set(const fescript::Token& name, fescript::Object value) {
     std::cout << "Engine [language] error: SpriteObject has no field named as '" << name.lexeme << "'.\n";
     std::exit(1);
   }
+}
+
+void SpriteObject::set_rotation_by_radian_degrees(idk::f32 rad_degrees) noexcept {
+  if(f32_nearly_equals(rad_degrees, this->_rotation_degrees)) {
+    return;
+  }
+  this->_rotation_degrees = rad_degrees;
+  // radians to degrees (SDL uses degrees and clockwise winding)
+  // fresh uses radian degrees and clockwise winding.
+  this->_cache_degrees = this->_rotation_degrees * 180.f / std::numbers::pi_v<idk::f32>;
 }
 }// namespace fresh
