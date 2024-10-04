@@ -1,7 +1,7 @@
 #pragma once
 
 #include "module_helpers.hpp"
-#include "../../../libs/SDL/include/SDL_video.h"
+#include <SDL_video.h>
 #include <fescript/fescript_class.hpp>
 #include <fescript/fescript_callable.hpp>
 #include <types/predefined.hpp>

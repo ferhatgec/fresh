@@ -13,7 +13,7 @@
 
 #include <resources/point_resource.hpp>
 
-#include "../../libs/SDL/include/SDL.h"
+#include <SDL.h>
 
 #define CHECK_DISABLED() if(this->_disabled) return;
 #define APPLY_DELTAS() for(auto& object: this->_sub_objects) { \

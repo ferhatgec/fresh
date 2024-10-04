@@ -1,5 +1,5 @@
 #include <freshengine.hpp>
-#include "../../libs/SDL/include/SDL.h"
+#include <SDL.h>
 
 namespace fresh {
 CursorResource::CursorResource() {

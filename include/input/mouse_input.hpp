@@ -3,7 +3,7 @@
 #include <types/predefined.hpp>
 #include <utilities/pair.hpp>
 #include <containers/vector.hpp>
-#include "../../libs/SDL/include/SDL.h"
+#include <SDL.h>
 
 namespace fresh {
 class MouseInput {

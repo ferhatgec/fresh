@@ -6,7 +6,7 @@
 // makes easier to access things without reallocating them so much.
 
 #include <types/stringview.hpp>
-#include "../../libs/SDL_ttf/include/SDL_ttf.h"
+#include <SDL_ttf.h>
 
 namespace fresh {
 class FontResource {

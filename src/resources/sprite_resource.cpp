@@ -1,5 +1,5 @@
 #include <freshengine.hpp>
-#include "../../libs/SDL_image/include/SDL_image.h"
+#include <SDL_image.h>
 
 // TODO: sprite batching?
 namespace fresh {

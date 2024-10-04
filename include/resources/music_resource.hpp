@@ -1,7 +1,7 @@
 #pragma once
 
 #include <types/stringview.hpp>
-#include "../../libs/SDL_mixer/include/SDL_mixer.h"
+#include <SDL_mixer.h>
 
 namespace fresh {
 // MusicResource and AudioResource is not the same thing,

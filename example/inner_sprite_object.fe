@@ -1,9 +1,0 @@
-def Name = "";
-
-def init(delta) =
- Name = Engine_get_object("..").name;
-;
-
-def update(delta) =
- IO_println(Name);
-;

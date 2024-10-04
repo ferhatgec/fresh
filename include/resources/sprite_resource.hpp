@@ -4,7 +4,7 @@
 // visibility etc. parameters.
 
 #include <types/stringview.hpp>
-#include "../../libs/SDL/include/SDL.h"
+#include <SDL.h>
 
 namespace fresh {
 enum class SpriteBlendMode {

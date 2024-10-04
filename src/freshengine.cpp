@@ -1,6 +1,5 @@
-#include "../../libs/SDL_image/include/SDL_image.h"
-#include "log/log.hpp"
-
+#include <SDL_image.h>
+#include <log/log.hpp>
 #include <freshengine.hpp>
 #include <string>
 #include <types/predefined.hpp>

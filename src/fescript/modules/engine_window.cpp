@@ -1,4 +1,4 @@
-#include "../../../libs/SDL/include/SDL_render.h"
+#include <SDL_render.h>
 #include <fescript/modules/engine_window.hpp>
 #include <fescript/fescript_array.hpp>
 #include <fescript/fescript_token.hpp>

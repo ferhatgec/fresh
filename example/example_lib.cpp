@@ -33,7 +33,7 @@ public:
                                                         SDL_WINDOWPOS_CENTERED);
     Engine::get_instance()->get_window()->init_window();
     Engine::get_instance()->set_scaling_mode(fresh::Engine::Scaling::KeepAspectRatio, 600, 600);
-    this->_resource.load_fes("example/box2d_example/physics_scene.fes");
+    this->_resource.load_fes("physics_scene.fes");
     this->_resource.generate_objects();
 
     /*SDL_FRect rect_pos = {

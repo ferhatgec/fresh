@@ -1,7 +1,6 @@
 #pragma once
-
 #include "module_helpers.hpp"
-#include "../../../libs/SDL/include/SDL_scancode.h"
+#include <SDL_scancode.h>
 #include <fescript/fescript_class.hpp>
 #include <fescript/fescript_callable.hpp>
 #include <types/predefined.hpp>

@@ -5,7 +5,7 @@
 #include <types/stringview.hpp>
 #include <types/tuple.hpp>
 
-#include "../../libs/SDL/include/SDL.h"
+#include <SDL.h>
 
 namespace fresh {
 class Window {

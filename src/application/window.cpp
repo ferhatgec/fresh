@@ -1,6 +1,6 @@
 #include <application/window.hpp>
 #include <iostream>
-#include "../../libs/SDL_image/include/SDL_image.h"
+#include <SDL_image.h>
 
 namespace fresh {
 Window::Window() {}
