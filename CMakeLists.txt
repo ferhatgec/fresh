@@ -8,12 +8,11 @@ endif()
 
 include(FetchContent)
 set(FETCHCONTENT_QUIET FALSE)
-option(USE_SDL "Use SDL2 as backend" ON)
 option(BUILD_EXAMPLE "Build example to see if fresh works correctly" ON)
 
 FetchContent_Declare(
   box2d
-  GIT_REPOSITORY https://github.com/ferhatgec/box2d.git
+  GIT_REPOSITORY https://github.com/erincatto/box2d.git
   SOURCE_DIR ${CMAKE_SOURCE_DIR}/libs/box2d
   GIT_TAG origin/main
   GIT_SHALLOW TRUE
@@ -43,12 +42,11 @@ FetchContent_Declare(
   GIT_SHALLOW TRUE
 )
 FetchContent_MakeAvailable(idk)
-if(USE_SDL)
-  find_package(SDL2 REQUIRED)
-  find_package(SDL2_ttf REQUIRED)
-  find_package(SDL2_image REQUIRED)
-  find_package(SDL2_mixer REQUIRED)
-endif()
+
+find_package(SDL2 REQUIRED)
+find_package(SDL2_ttf REQUIRED)
+find_package(SDL2_image REQUIRED)
+find_package(SDL2_mixer REQUIRED)
 
 set(INCLUDE_PATHS ${CMAKE_SOURCE_DIR}/libs/imgui/
                   ${CMAKE_SOURCE_DIR}/libs/imgui/backends/
@@ -56,11 +54,8 @@ set(INCLUDE_PATHS ${CMAKE_SOURCE_DIR}/libs/imgui/
                   ${CMAKE_SOURCE_DIR}/libs/box2d/include/
                   ${CMAKE_SOURCE_DIR}/libs/colorized/
                   ${CMAKE_SOURCE_DIR}/include/)
-set_property(GLOBAL PROPERTY FRESH_INCLUDE_PATHS ${INCLUDE_PATHS})
 
-if(NOT CMAKE_BUILD_TYPE)
-  set(CMAKE_BUILD_TYPE Release ... FORCE)
-endif()
+set_property(GLOBAL PROPERTY FRESH_INCLUDE_PATHS ${INCLUDE_PATHS})
 
 file(GLOB_RECURSE SOURCE_FILES ${CMAKE_SOURCE_DIR}/include/*.hpp ${CMAKE_SOURCE_DIR}/src/*.cpp)
 
@@ -74,41 +69,34 @@ set(SOURCE_FILES ${SOURCE_FILES}
   ${CMAKE_SOURCE_DIR}/libs/imgui/backends/imgui_impl_opengl3.cpp
   ${CMAKE_SOURCE_DIR}/example/example_lib.cpp)
 
-if(USE_SDL)
-  set(SOURCE_FILES ${SOURCE_FILES}
-    ${CMAKE_SOURCE_DIR}/libs/imgui/backends/imgui_impl_sdlrenderer2.cpp
-    ${CMAKE_SOURCE_DIR}/libs/imgui/backends/imgui_impl_sdl2.cpp
-  )
-endif()
+set(SOURCE_FILES ${SOURCE_FILES}
+  ${CMAKE_SOURCE_DIR}/libs/imgui/backends/imgui_impl_sdlrenderer2.cpp
+  ${CMAKE_SOURCE_DIR}/libs/imgui/backends/imgui_impl_sdl2.cpp)
 
 add_library(fresh_lib STATIC ${SOURCE_FILES})
 target_include_directories(fresh_lib PRIVATE ${INCLUDE_PATHS})
 
 function(Fresh_CopyRequiredDLLs target)
-  if(USE_SDL)
-    if(WIN32)
-      # adding both Debug and Release builds.
-      add_custom_command(TARGET ${target} POST_BUILD
-        COMMAND ${CMAKE_COMMAND} -E copy ${SDL2_DIR}/../bin/SDL2d.dll ${CMAKE_CURRENT_BINARY_DIR}/$<CONFIG>
-        COMMAND ${CMAKE_COMMAND} -E copy ${SDL2_ttf_DIR}/../bin/SDL2_ttfd.dll ${CMAKE_CURRENT_BINARY_DIR}/$<CONFIG>
-        COMMAND ${CMAKE_COMMAND} -E copy ${SDL2_image_DIR}/../bin/SDL2_imaged.dll ${CMAKE_CURRENT_BINARY_DIR}/$<CONFIG>
-        COMMAND ${CMAKE_COMMAND} -E copy ${SDL2_mixer_DIR}/../bin/SDL2_mixerd.dll ${CMAKE_CURRENT_BINARY_DIR}/$<CONFIG>
-        COMMAND ${CMAKE_COMMAND} -E copy ${SDL2_DIR}/../bin/SDL2.dll ${CMAKE_CURRENT_BINARY_DIR}/$<CONFIG>
-        COMMAND ${CMAKE_COMMAND} -E copy ${SDL2_ttf_DIR}/../bin/SDL2_ttf.dll ${CMAKE_CURRENT_BINARY_DIR}/$<CONFIG>
-        COMMAND ${CMAKE_COMMAND} -E copy ${SDL2_image_DIR}/../bin/SDL2_image.dll ${CMAKE_CURRENT_BINARY_DIR}/$<CONFIG>
-        COMMAND ${CMAKE_COMMAND} -E copy ${SDL2_mixer_DIR}/../bin/SDL2_mixer.dll ${CMAKE_CURRENT_BINARY_DIR}/$<CONFIG>
-      )
-    endif()
-
-    target_link_libraries(${target} PRIVATE
-      SDL2::SDL2main
-      SDL2::SDL2
-      SDL2_image::SDL2_image
-      SDL2_ttf::SDL2_ttf
-      SDL2_mixer::SDL2_mixer)
-  elseif()
-    message("fre2d backend is not available right now")
+  if(WIN32)
+    # adding both Debug and Release builds.
+    add_custom_command(TARGET ${target} POST_BUILD
+      COMMAND ${CMAKE_COMMAND} -E copy ${SDL2_DIR}/../bin/SDL2d.dll ${CMAKE_CURRENT_BINARY_DIR}/$<CONFIG>
+      COMMAND ${CMAKE_COMMAND} -E copy ${SDL2_ttf_DIR}/../bin/SDL2_ttfd.dll ${CMAKE_CURRENT_BINARY_DIR}/$<CONFIG>
+      COMMAND ${CMAKE_COMMAND} -E copy ${SDL2_image_DIR}/../bin/SDL2_imaged.dll ${CMAKE_CURRENT_BINARY_DIR}/$<CONFIG>
+      COMMAND ${CMAKE_COMMAND} -E copy ${SDL2_mixer_DIR}/../bin/SDL2_mixerd.dll ${CMAKE_CURRENT_BINARY_DIR}/$<CONFIG>
+      COMMAND ${CMAKE_COMMAND} -E copy ${SDL2_DIR}/../bin/SDL2.dll ${CMAKE_CURRENT_BINARY_DIR}/$<CONFIG>
+      COMMAND ${CMAKE_COMMAND} -E copy ${SDL2_ttf_DIR}/../bin/SDL2_ttf.dll ${CMAKE_CURRENT_BINARY_DIR}/$<CONFIG>
+      COMMAND ${CMAKE_COMMAND} -E copy ${SDL2_image_DIR}/../bin/SDL2_image.dll ${CMAKE_CURRENT_BINARY_DIR}/$<CONFIG>
+      COMMAND ${CMAKE_COMMAND} -E copy ${SDL2_mixer_DIR}/../bin/SDL2_mixer.dll ${CMAKE_CURRENT_BINARY_DIR}/$<CONFIG>
+    )
   endif()
+
+  target_link_libraries(${target} PRIVATE
+    SDL2::SDL2main
+    SDL2::SDL2
+    SDL2_image::SDL2_image
+    SDL2_ttf::SDL2_ttf
+    SDL2_mixer::SDL2_mixer)
 endfunction()
 
 target_link_libraries(fresh_lib PRIVATE box2d)
