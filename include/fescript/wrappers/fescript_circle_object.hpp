@@ -5,18 +5,8 @@
 
 namespace fescript {
 DEFINE_MEMBER_MODULE_CLASS(GetRadius, CircleObjectMember, 0, fresh::CircleObject)
-DEFINE_MEMBER_MODULE_CLASS(GetSegments, CircleObjectMember, 0, fresh::CircleObject)
 DEFINE_MEMBER_MODULE_CLASS(GetIsFilled, CircleObjectMember, 0, fresh::CircleObject)
 DEFINE_MEMBER_MODULE_CLASS(SetRadius, CircleObjectMember, 1, fresh::CircleObject)
-DEFINE_MEMBER_MODULE_CLASS(SetSegments, CircleObjectMember, 1, fresh::CircleObject)
 DEFINE_MEMBER_MODULE_CLASS(SetIsFilled, CircleObjectMember, 1, fresh::CircleObject)
-
-class CircleObjectWrapper : public BaseObjectWrapper, public std::enable_shared_from_this<CircleObjectWrapper> {
-public:
-  CircleObjectWrapper();
-  ~CircleObjectWrapper();
-  [[nodiscard]] std::string to_string() override;
-  [[nodiscard]] int arity() override { return -1; }
-  [[nodiscard]] Object call([[maybe_unused]] Interpreter& interpreter, const std::vector<Object>& arguments) override;
-};
+DEFINE_MODULE_CLASS_CUSTOM_DERIVED_FROM(Wrapper, CircleObject, -1, FescriptBaseObjectWrapper)
 } // namespace fescript

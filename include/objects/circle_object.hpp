@@ -1,8 +1,10 @@
 #pragma once
 
-#include "base_object.hpp"
 #include <resources/circle_resource.hpp>
 #include <resources/color_resource.hpp>
+#include <circle.hpp>
+#include <shader.hpp>
+#include "base_object.hpp"
 
 namespace fresh {
 class CircleObject : public BaseObject {
@@ -10,13 +12,13 @@ public:
   friend class FesLoaderResource;
 
   CircleObject() = default;
-  CircleObject(SDL_FRect info, CircleResource resource, ColorResource color);
+  CircleObject(BBoxResource info, CircleResource resource, ColorResource color);
   ~CircleObject() = default;
 
   void
-  sync(bool is_sync_with_camera = false) noexcept override;
+  sync() noexcept override;
 
-  [[nodiscard]] std::string to_string() {
+  [[nodiscard]] constexpr const char* to_string() noexcept override {
     return "circleobject";
   }
 
@@ -27,13 +29,12 @@ public:
 
   __idk_nodiscard
   ColorResource& get_color_resource() noexcept;
-private:
-  void _draw_circle() noexcept;
-  void _draw_unfilled_circle() noexcept;
-  void _draw_horizontal_line(idk::f32 x1, idk::f32 x2, idk::f32 y) noexcept;
-  void _draw_single_point(idk::f32 x, idk::f32 y) noexcept;
+
+  void init_signal() noexcept override;
 protected:
   CircleResource _resource;
   ColorResource _color;
+  fre2d::Circle _circle;
+  fre2d::Shader _shader;
 };
 } // namespace fresh

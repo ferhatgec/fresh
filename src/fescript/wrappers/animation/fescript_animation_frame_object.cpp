@@ -5,18 +5,7 @@
 #include <objects/camera_object.hpp>
 
 namespace fescript {
-AnimationFrameObjectWrapper::AnimationFrameObjectWrapper() {
-  this->_object_def = "animationframeobject";
-}
-
-AnimationFrameObjectWrapper::~AnimationFrameObjectWrapper() noexcept {
-}
-
-[[nodiscard]] std::string AnimationFrameObjectWrapper::to_string() {
-  return "animationframeobject";
-}
-
-[[nodiscard]] Object AnimationFrameObjectWrapper::call([[maybe_unused]] Interpreter& interpreter, const std::vector<Object>& arguments) {
+[[nodiscard]] Object FescriptAnimationFrameObjectWrapper::call([[maybe_unused]] Interpreter& interpreter, const std::vector<Object>& arguments) {
   // TODO: apply type checking here. function would crash if types are not satisfied.
   std::shared_ptr<fresh::BaseObject> obj;
   switch(arguments[2].index()) {
@@ -39,7 +28,7 @@ AnimationFrameObjectWrapper::~AnimationFrameObjectWrapper() noexcept {
       arguments[3], // replace_value
       std::get<StringIndex>(arguments[4]).data() // property
     );
-  this->_object_id = animation_frame_object->get_object_id();
+  this->_object_id = animation_frame_object->get_id();
   return std::move(animation_frame_object);
 }
 } // namespace fescript

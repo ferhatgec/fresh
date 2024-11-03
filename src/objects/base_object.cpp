@@ -9,49 +9,35 @@
 
 #include <freshengine.hpp>
 
-#include <iostream>
-#include <fstream>
 #include <filesystem>
+#include <fstream>
+#include <iostream>
 #include <numbers>
+
+#include "log/log.hpp"
 
 namespace fresh {
 BaseObject::BaseObject() {
-  this->_pos_info = SDL_FRect { 0.f, 0.f, 0.f, 0.f };
+  this->_pos_info = BBoxResource { 0.f, 0.f, 0.f, 0.f };
   this->_rotation_degrees = this->_last_rotation_degrees = 0.f;
   this->_copy_last_pos_info = this->_pos_info;
-  this->_object_id = Engine::get_instance()->get_global_id();
-  this->_object_def = "baseobject";
+  this->_object_id = FreshInstance->get_id();
   this->script_content = "";
   this->script_file_name = "";
-  Engine::get_instance()->increase_global_id();
+  this->_initialized = false;
+  FreshInstance->increase_global_id();
 }
 
-BaseObject::BaseObject(bool disabled, bool visible, idk::f32 pos_x, idk::f32 pos_y, idk::f32 width, idk::f32 height, idk::f32 rotation_degrees)
-    : _disabled{disabled},
-      _visible{visible},
-      _rotation_degrees{rotation_degrees} {
-  this->_last_rotation_degrees = 0.f;
-  this->_pos_info = SDL_FRect {
-    pos_x, pos_y, width, height
-  };
-  this->_copy_last_pos_info = this->_pos_info;
-  this->_object_id = Engine::get_instance()->get_global_id();
-  this->_object_def = "baseobject";
-  this->script_content = "";
-  this->script_file_name = "";
-  Engine::get_instance()->increase_global_id();
-}
-
-BaseObject::~BaseObject() {}
-
-__idk_nodiscard
-bool& BaseObject::get_is_disabled() noexcept {
+[[nodiscard]] const bool& BaseObject::get_disabled() const noexcept {
   return this->_disabled;
 }
 
-__idk_nodiscard
-bool& BaseObject::get_is_visible() noexcept {
+[[nodiscard]] const bool& BaseObject::get_visible() const noexcept {
   return this->_visible;
+}
+
+[[nodiscard]] const bool& BaseObject::get_initialized() const noexcept {
+  return this->_initialized;
 }
 
 void BaseObject::set_disabled(bool disabled) noexcept {
@@ -62,167 +48,216 @@ void BaseObject::set_visible(bool visible) noexcept {
   this->_visible = visible;
 }
 
-void BaseObject::sync_pos_with_camera(bool is_sync_with_camera) noexcept {
-  if(is_sync_with_camera) { // Object is child member of Camera, so we can't apply Camera
-    this->_pos_info.x += this->delta_x();
-    this->_pos_info.y += this->delta_y();
-    this->_pos_info.w += this->delta_w();
-    this->_pos_info.h += this->delta_h();
-  } else {
-    if(fresh::Engine::get_instance()->get_camera()) {
-      fresh::Engine::get_instance()->get_camera()->apply(this->_give_shared_ptr());
-      return;
-    }
-  }
-  // no camera, so we use position as it is.
-  this->_render_pos_info = this->_pos_info;
-}
-
-void BaseObject::sync(bool is_sync_with_camera) noexcept {
+void BaseObject::sync() noexcept {
   CHECK_DISABLED()
   this->_code.interpret_update();
-  this->sync_pos_with_camera(is_sync_with_camera);
-  APPLY_DELTAS()
+  this->apply_changes();
 }
 
-__idk_nodiscard
-SDL_FRect& BaseObject::get_position_info() noexcept {
-  this->_copy_last_pos_info = this->_pos_info;
-  return this->_pos_info;
-}
-
-__idk_nodiscard
-SDL_FRect& BaseObject::get_raw_position_info() noexcept {
-  return this->_pos_info;
-}
-
-__idk_nodiscard
-SDL_FRect& BaseObject::get_render_position_info() noexcept {
-  if(!Engine::get_instance()->get_camera()) {
-    this->_render_pos_info = this->_pos_info; // if there is no camera, then CameraObject::apply won't be called,
-                                              // so _render_pos_info is may be uninitialized. for now, we can directly access _render_pos_info and change it.
-                                              // but we will change it with getters and setters, which will provide better API and checks.
+void BaseObject::apply_changes() noexcept {
+  for (const auto& object: this->_sub_objects) {
+    if(!object) {
+      log_error(src(), "invalid object.");
+      return;
+    }
+    object->set_position(object->get_position() + this->get_delta());
+    object->set_rotation(object->get_rotation() + this->get_delta_rot());
+    object->set_visible(this->get_visible());
+    object->set_disabled(this->get_disabled());
+    // child objects of 'object' now have delta.
+    object->sync();
+    // reset delta values since we already applied them.
+    object->reset_delta();
   }
-  return this->_render_pos_info;
+  this->reset_delta();
 }
 
-__idk_nodiscard
-const idk::u32& BaseObject::get_object_id() noexcept {
+[[nodiscard]] const BBoxResource& BaseObject::get_position() const noexcept {
+  return this->_pos_info;
+}
+
+void BaseObject::set_position(const BBoxResource& pos) noexcept {
+  this->_copy_last_pos_info = this->_pos_info;
+  this->_pos_info = pos;
+}
+
+[[nodiscard]] const idk::f32& BaseObject::get_x() const noexcept {
+  return this->_pos_info.get_x();
+}
+
+[[nodiscard]] const idk::f32& BaseObject::get_y() const noexcept {
+  return this->_pos_info.get_y();
+}
+
+[[nodiscard]] const idk::f32& BaseObject::get_w() const noexcept {
+  return this->_pos_info.get_w();
+}
+
+[[nodiscard]] const idk::f32& BaseObject::get_h() const noexcept {
+  return this->_pos_info.get_h();
+}
+
+void BaseObject::set_x(idk::f32 x) noexcept {
+  this->_copy_last_pos_info.set_x(this->_pos_info.get_x());
+  this->_pos_info.set_x(x);
+}
+
+void BaseObject::set_y(idk::f32 y) noexcept {
+  this->_copy_last_pos_info.set_y(this->_pos_info.get_y());
+  this->_pos_info.set_y(y);
+}
+
+void BaseObject::set_w(idk::f32 w) noexcept {
+  this->_copy_last_pos_info.set_w(this->_pos_info.get_w());
+  this->_pos_info.set_w(w);
+}
+
+void BaseObject::set_h(idk::f32 h) noexcept {
+  this->_copy_last_pos_info.set_h(this->_pos_info.get_h());
+  this->_pos_info.set_h(h);
+}
+
+[[nodiscard]] const idk::u32& BaseObject::get_id() const noexcept {
   return this->_object_id;
 }
 
-__idk_nodiscard
-idk::f32 BaseObject::delta_x() noexcept {
-  return this->_pos_info.x - this->_copy_last_pos_info.x;
+[[nodiscard]] BBoxResource BaseObject::get_delta() const noexcept {
+  return {
+    this->get_delta_x(),
+    this->get_delta_y(),
+    this->get_delta_w(),
+    this->get_delta_h()
+  };
 }
 
-__idk_nodiscard
-idk::f32 BaseObject::delta_y() noexcept {
-  return this->_pos_info.y - this->_copy_last_pos_info.y;
+[[nodiscard]] idk::f32 BaseObject::get_delta_x() const noexcept {
+  return this->_pos_info.get_x() - this->_copy_last_pos_info.get_x();
 }
 
-__idk_nodiscard
-idk::f32 BaseObject::delta_w() noexcept {
-  return this->_pos_info.w - this->_copy_last_pos_info.w;
+[[nodiscard]] idk::f32 BaseObject::get_delta_y() const noexcept {
+  return this->_pos_info.get_y() - this->_copy_last_pos_info.get_y();
 }
 
-__idk_nodiscard
-idk::f32 BaseObject::delta_h() noexcept {
-  return this->_pos_info.h - this->_copy_last_pos_info.h;
+[[nodiscard]] idk::f32 BaseObject::get_delta_w() const noexcept {
+  return this->_pos_info.get_w() - this->_copy_last_pos_info.get_w();
 }
 
-__idk_nodiscard
-idk::f32 BaseObject::delta_rot() noexcept {
+[[nodiscard]] idk::f32 BaseObject::get_delta_h() const noexcept {
+  return this->_pos_info.get_h() - this->_copy_last_pos_info.get_h();
+}
+
+[[nodiscsard]] idk::f32 BaseObject::get_delta_rot() const noexcept {
   return this->_rotation_degrees - this->_last_rotation_degrees;
+}
+
+[[nodiscard]] const std::string& BaseObject::get_fescript_path() const noexcept {
+  return this->script_file_name;
+}
+
+void BaseObject::reset_delta() noexcept {
+  this->_copy_last_pos_info = this->_pos_info;
+  this->_last_rotation_degrees = this->_rotation_degrees;
 }
 
 void BaseObject::push_object(std::shared_ptr<BaseObject> sub_object) noexcept {
   if(!sub_object) [[unlikely]] {
-    std::cout << "Engine warning: push_object argument contains an invalid pointer!\n";
+    log_warning(src(), "BaseObject::push_object(): invalid pointer.");
     return;
   }
-
-  this->push_to_sub_objects(std::move(sub_object));
-  // this->_sub_objects.push_back(idk::move(sub_object));
+  sub_object->_parent = this->_give_shared_ptr();
+  this->_sub_objects.push_back(std::move(sub_object));
 }
 
 void BaseObject::set(const fescript::Token& name, fescript::Object value) {
   SET_BASE_OBJECT_PROPERTIES()
   else {
-    std::cout << "Engine [language] error: BaseObject has not field named as '" << name.lexeme << "'.\n";
+    std::cout << "Engine [language] error: BaseObject has not field named as '"
+              << name.lexeme << "'.\n";
     std::exit(1);
   }
 }
 
-__idk_nodiscard
-std::vector<std::shared_ptr<BaseObject>>& BaseObject::get_sub_objects() noexcept {
+void BaseObject::sync_init() noexcept {
+  this->init_signal();
+  for(auto& child: this->_sub_objects) {
+    child->init_signal();
+    child->sync_init();
+  }
+}
+
+[[nodiscard]] std::vector<std::shared_ptr<BaseObject>>& BaseObject::get_childs() noexcept {
   return this->_sub_objects;
 }
 
-__idk_nodiscard
-idk::StringViewChar& BaseObject::get_name() noexcept {
+[[nodiscard]] const std::string& BaseObject::get_name() const noexcept {
   return this->_name;
 }
 
-void BaseObject::load_fescript_rt(const idk::StringViewChar& script, bool is_file) noexcept {
-  if(script.is_empty())
-    return;
-  idk::StringViewChar script_content = "";
-  if(is_file) {
-    std::ifstream script_stream(script.data());
-    for(std::string temp_str = ""; std::getline(script_stream, temp_str); script_content.push_back(temp_str.data()))
-      script_content.push_back('\n');
-    script_stream.close();
-    this->script_file_name = script;
-  } else
-    script_content = script;
-  
-  this->script_content = script_content;
+void BaseObject::set_name(const std::string& name) noexcept {
+  this->_name = name;
+}
 
-  fescript::Scanner scanner(script_content.data());
-  std::vector<fescript::Token> tokens = scanner.scan_tokens();
-  fescript::Parser parser(tokens);
-  auto statements = parser.parse();
-  if (fescript::had_error || fescript::had_runtime_error)
+void BaseObject::load_fescript_rt(const std::string& script, bool is_file) noexcept {
+  if(script.empty()) {
     return;
-  fescript::Resolver resolver{this->_code};
-  resolver.resolve(statements);
-  if (fescript::had_error || fescript::had_runtime_error) {
-    std::cout << "Engine error: Unable to handle runtime error.\n";
-    std::exit(1);
   }
+  {
+    std::string script_content;
+    if(is_file) {
+      std::ifstream script_stream(script);
+
+      for(std::string temp_str; std::getline(script_stream, temp_str); script_content.append(temp_str)) {
+        script_content.push_back('\n');
+      }
+
+      this->script_file_name = script;
+    } else {
+      script_content = script;
+    }
+    this->script_content = script_content;
+  }
+  const auto& tokens = fescript::Scanner(this->script_content).scan_tokens();
+  auto statements = fescript::Parser(tokens).parse();
+
+  if (fescript::had_error || fescript::had_runtime_error) {
+    log_error(src(), "caught fescript parse error.");
+    return;
+  }
+  fescript::Resolver(this->_code).resolve(statements);
+
+  if (fescript::had_error || fescript::had_runtime_error) {
+    log_error(src(), "caught fescript resolve error.");
+    return;
+  }
+
   this->_code.get_statements() = statements;
   this->_code.get_render_object_id() = this->_object_id;
   this->_code.get_parent_object() = this->_give_shared_ptr();
+
   // we run interpreter first to calculate first values of variables.
-  // it will prevent variable not found in scope style problems.
+  // it prevents "variable not found in scope" style problems.
   this->_code.interpret(this->_code.get_statements());
-  std::cout << this->_name << " " << this->script_file_name << '\n';
-}
 
-void BaseObject::push_to_sub_objects(std::shared_ptr<BaseObject> obj) noexcept {
-  if(!obj) {
-    std::cout << "Engine error: Invalid BaseObject/-inherited object passed to push_to_sub_objects()!\n";
-    std::exit(1);
+  if (fescript::had_error || fescript::had_runtime_error) {
+    log_error(src(), "caught fescript interpret error.");
+    return;
   }
-  obj->_parent = this->_give_shared_ptr();
-  this->_sub_objects.push_back(std::move(obj));
+  log_info(src(), "script loaded: '{}', '{}'", this->_name, this->script_file_name);
 }
 
-__idk_nodiscard
-std::shared_ptr<BaseObject> BaseObject::get_object_by_path(const std::string& path) noexcept {
-  std::shared_ptr<BaseObject> current = this->_give_shared_ptr();
-  for(const auto& entry: std::filesystem::path(path))
-    current = this->_get_object_by_single_path(entry.string());
+[[nodiscard]] const std::shared_ptr<BaseObject>& BaseObject::get_object_by_path(const std::string& path) noexcept {
+  auto current = this->_give_shared_ptr();
+  for(const auto& entry: std::filesystem::path(path)) {
+    current = current->_get_object_by_single_path(entry.string());
+  }
   return current;
 }
 
-[[nodiscard]]
-const idk::f32& BaseObject::get_rotation_by_radian_degrees() const noexcept {
+[[nodiscard]] const idk::f32& BaseObject::get_rotation() const noexcept {
   return this->_rotation_degrees;
 }
 
-void BaseObject::set_rotation_by_radian_degrees(idk::f32 rad_degrees) noexcept {
+void BaseObject::set_rotation(idk::f32 rad_degrees) noexcept {
   this->_last_rotation_degrees = this->_rotation_degrees;
   this->_rotation_degrees = std::fmodf(rad_degrees, mul_2_pi_v<idk::f32>);
 }
@@ -231,52 +266,29 @@ void BaseObject::set_rotation_by_radian_degrees(idk::f32 rad_degrees) noexcept {
   return std::fmodf(rad_degrees + mul_2_pi_v<idk::f32>, mul_2_pi_v<idk::f32>);
 }
 
-__idk_nodiscard
-std::shared_ptr<BaseObject>
-BaseObject::_get_object_by_single_path(const std::string& path) noexcept {
-  if(path == "." || path.empty())
+[[nodiscard]] const std::shared_ptr<BaseObject>& BaseObject::_get_object_by_single_path(const std::string& path) noexcept {
+  if(path == "." || path.empty()) {
     return this->_give_shared_ptr();
-  if(path == "..")
+  }
+  if(path == "..") {
+    if(!this->_parent) {
+      log_warning(src(), "parent object is invalid; {} might be top on the list.", this->get_name());
+    }
     return this->_parent;
+  }
   for(auto& sub_obj: this->_sub_objects) {
-    if(sub_obj->_name == path.data()) {
+    if(sub_obj->_name == path) {
       return sub_obj;
     }
   }
-  std::cout << "Engine [language] error: Cannot find '" << path << "' in sub objects of" << this->_name << " object.\n";
-  return this->_give_shared_ptr();
+  log_warning(src(), "cannot find '{}' in members of {}.", this->get_name());
+  return nullptr;
 }
 
-__idk_nodiscard PointResource BaseObject::_rectangle_convert_to_top_left(const SDL_FRect& pos) noexcept {
-  return { pos.x - pos.w / 2.f, pos.y - pos.h / 2.f };
-}
-
-__idk_nodiscard PointResource BaseObject::_rectangle_convert_to_top_right(const SDL_FRect& pos) noexcept {
-  return { pos.x + pos.w / 2.f, pos.y - pos.h / 2.f };
-}
-
-__idk_nodiscard PointResource BaseObject::_rectangle_convert_to_bottom_left(const SDL_FRect& pos) noexcept {
-  return { pos.x - pos.w / 2.f, pos.y + pos.h / 2.f };
-}
-
-__idk_nodiscard PointResource BaseObject::_rectangle_convert_to_bottom_right(const SDL_FRect& pos) noexcept {
-  return { pos.x + pos.w / 2.f, pos.y + pos.h / 2.f };
-}
-
-[[nodiscard]]
-std::shared_ptr<BaseObject> BaseObject::_give_shared_ptr() noexcept {
-  if(!this->_shared_ptr_this)
+[[nodiscard]] const std::shared_ptr<BaseObject>& BaseObject::_give_shared_ptr() noexcept {
+  if(!this->_shared_ptr_this) {
     this->_shared_ptr_this = std::shared_ptr<BaseObject>(this);
+  }
   return this->_shared_ptr_this;
-}
-
-[[nodiscard]]
-SDL_FRect BaseObject::_center_to_top_left_pivot(SDL_FRect pos_size) noexcept  {
-  return SDL_FRect {
-    pos_size.x - pos_size.w / 2.f,
-    pos_size.y - pos_size.h / 2.f,
-    pos_size.w,
-    pos_size.h
-  };
 }
 }// namespace fresh

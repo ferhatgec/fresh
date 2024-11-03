@@ -7,93 +7,90 @@
 #include <objects/base_object.hpp>
 #include <functional>
 
-// FesLoaderResource is an easy way to integrate freshEngineScene files into your game.
-// it's automatically allocate / deallocate objects behind the scenes.
-// also it's easy to change scene with using another FesLoaderResource.
-
 namespace fresh {
 class FesLoaderResource {
 public:
-  friend class Editor;
-  FesLoaderResource();
-  ~FesLoaderResource();
+  FesLoaderResource() noexcept = default;
+  ~FesLoaderResource() noexcept = default;
 
-  __idk_nodiscard
-  fes::FesParser&
-  get_fes_parser() noexcept;
+  [[nodiscard]] fes::FesParser& get_parser() noexcept;
+  void load_fes(const std::string& ctx, bool is_file = true) noexcept;
 
-  void
-  load_fes(const idk::StringViewChar& file_or_raw_text, bool file = true) noexcept;
+  [[nodiscard]] std::shared_ptr<BaseObject> generate() noexcept;
 
-  void
-  load_fes(idk::StringViewChar&& file_or_raw_text, bool file = true) noexcept;
+  /// FesLoaderResource::generate_from_ast(std::shared_ptr<FesObjectAST>) generates
+  /// std::shared_ptr<BaseObject> that contains the same information as
+  /// FesObjectAST version.
+  [[nodiscard]] std::shared_ptr<BaseObject> generate_from_ast(
+    const std::shared_ptr<fes::FesObjectAST>& fes_obj
+  ) noexcept;
 
-  void
-  generate_objects() noexcept;
+  /// FesLoaderResource::generate_from_object(std::shared_ptr<BaseObject>) generates
+  /// std::shared_ptr<FesObjectAST> that contains the same information as
+  /// BaseObject version.
+  [[nodiscard]] std::shared_ptr<fes::FesObjectAST> generate_from_object(
+    const std::shared_ptr<BaseObject>& fresh_obj
+  ) noexcept;
 
-  __idk_nodiscard
-  std::shared_ptr<BaseObject>
-  return_generated_objects() noexcept;
+  [[nodiscard]] std::string serialize(
+    const std::shared_ptr<BaseObject>& base_object
+  ) noexcept;
 
-  __idk_nodiscard
-  idk::StringViewChar
-  convert_into_fes() noexcept;
+  [[nodiscard]] std::string serialize_object(
+    const std::shared_ptr<fes::FesObjectAST>& fes_obj,
+    std::uint32_t whitespace_count = 0
+  ) noexcept;
 
-  idk::StringViewChar scene_fes_file_path = "";
+  [[nodiscard]] std::string serialize_list(
+    const std::vector<std::shared_ptr<fes::FesObjectAST>>& fes_obj,
+    std::uint32_t whitespace_count = 0
+  ) noexcept;
 private:
-  __idk_nodiscard
-  idk::StringViewChar
-  _convert_list(std::shared_ptr<fes::FesObjectAST> list_node) noexcept;
+  /// FesLoaderResource::_set_baseobject_properties(std::shared_ptr<FesObjectAST>, std::shared_ptr<BaseObject>)
+  /// fills BaseObject class properties using FesObjectAST properties. specific properties of custom BaseObject-derived
+  /// classes should call this function first; then should set their own properties from their FesObjectAST derived
+  /// classes. so; xObject should have FesxObjectAST interface too.
+  static void _set_baseobject_properties(
+    const std::shared_ptr<fes::FesObjectAST>& fes_obj,
+    const std::shared_ptr<BaseObject>& fresh_obj
+  ) noexcept;
 
-  __idk_nodiscard
-  idk::StringViewChar
-  _convert_object(std::shared_ptr<fes::FesObjectAST> object_node) noexcept;
+  static void _set_fesobject_properties(
+    const std::shared_ptr<BaseObject>& fresh_obj,
+    const std::shared_ptr<fes::FesObjectAST>& fes_obj
+  ) noexcept;
 
-  __idk_nodiscard
-  idk::StringViewChar
-  _convert_render_objects() noexcept;
+  /// FesLoaderResource::_create_object(Keywords) used for creating new BaseObject-derived
+  /// objects. but you probably need to cast it later then.
+  /// ----
+  /// note: fes::Import is an exception here.
+  [[nodiscard]] static std::shared_ptr<BaseObject> _create_object(fes::Keywords kw) noexcept;
 
-  __idk_nodiscard
-  std::shared_ptr<fes::FesObjectAST>
-  _convert_object_from_render_objects(std::shared_ptr<BaseObject> object_node) noexcept;
+  [[nodiscard]] static std::shared_ptr<fes::FesObjectAST> _create_fes_object(
+    const char* fresh_kw
+  ) noexcept;
 
-  // TODO: Type must be inherited from AST objects.
-  template<typename Type>
-  std::shared_ptr<Type>
-  _convert_object_from_base_object(std::shared_ptr<BaseObject> object_node,
-                                   std::function<void(std::shared_ptr<Type>&, const std::shared_ptr<BaseObject>&)> extra = [&](
-                                                                                                                              std::shared_ptr<Type>& obj,
-                                                                                                                              const std::shared_ptr<BaseObject>& object_node
-                                                                                                                             ) -> void {}) noexcept {
-    std::shared_ptr<Type> obj = std::make_shared<Type>();
-    FesLoaderResource::_convert_base_object_properties(obj, object_node);
-    extra(obj, object_node); // additional function that takes obj and object_node as argument.
-    return std::move(obj);
-  }
+  static void _serialize_append(
+    std::string& ctx,
+    const std::string& input,
+    std::uint32_t whitespace_count,
+    bool newline = false
+  ) noexcept;
 
-  void
-  _convert_base_object_properties(std::shared_ptr<fes::FesObjectAST> conv_obj,
-                                 const std::shared_ptr<BaseObject>& object_node) noexcept;
+  [[nodiscard]] static std::string _whitespace_generate(
+    std::uint32_t whitespace_count
+  ) noexcept;
 
-  __idk_nodiscard
-  std::shared_ptr<BaseObject>
-  _generate_object(std::shared_ptr<fes::FesObjectAST> object_node) noexcept;
+  [[nodiscard]] static std::string _bool_to_str(bool input) noexcept;
 
-  void
-  _generate() noexcept;
-
-  __idk_nodiscard
-  std::shared_ptr<BaseObject>
-  _generate_with_return() noexcept;
-
-  template<typename ObjectClassType>
-  __idk_nodiscard
-  std::shared_ptr<BaseObject>
-  _generate_baseobject_ptr(std::shared_ptr<fes::FesObjectAST> object_node) noexcept;
-
-  idk::u64 _object_ids { 0_u64 };
   fes::FesParser _parser;
+  std::string _ctx;
+  bool _file;
 
-  static idk::isize _space_indentation;
+  /// FesLoaderResource::id_counter is globally accessible counter
+  /// that is used for initializing _object_id. it might be better
+  /// if we use some hash functions instead of just counting
+  /// the newly created objects.
+  static inline std::uint32_t id_counter { 0 };
 };
 } // namespace fresh

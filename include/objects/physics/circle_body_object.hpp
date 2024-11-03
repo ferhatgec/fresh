@@ -5,12 +5,12 @@
 namespace fresh {
 class CircleBodyObject : public BodyObject {
 public:
-  CircleBodyObject(const b2WorldId& world_id, SDL_FRect pos, idk::f32 radius, bool is_static_body = false);
+  CircleBodyObject(const b2WorldId& world_id, BBoxResource pos, idk::f32 radius, bool is_static_body = false);
   ~CircleBodyObject() override = default;
 
-  void sync(bool is_sync_with_camera = false) noexcept override;
+  void sync() noexcept override;
 
-  [[nodiscard]] std::string to_string() {
+  [[nodiscard]] constexpr const char* to_string() noexcept override {
     return "circlebodyobject";
   }
 

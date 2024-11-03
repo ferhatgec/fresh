@@ -35,7 +35,7 @@ Token::~Token() noexcept {
 [[nodiscard]] std::string Token::to_string() const noexcept {
   std::string literal_text;
   switch (this->type) {
-  case TokenType::IDENTIFIER: {
+  case TokenType::TOKEN_IDENTIFIER: {
     literal_text = this->lexeme;
     break;
   }

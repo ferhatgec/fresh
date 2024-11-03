@@ -16,22 +16,12 @@
 #include "objects/physics/polygon_body_object.hpp"
 #include "objects/camera_object.hpp"
 
-#include "objects/gui/gui_base_object.hpp"
-#include "objects/gui/gui_button_object.hpp"
-
-// those objects are used in editor but it doesn't mean that it can't be used
-// in other things. those are just basic data structures.
-#include "objects/editor/editor_project_color_object.hpp"
-#include "objects/editor/editor_project_file_object.hpp"
-#include "objects/editor/editor_project_object.hpp"
-
 #include "resources/sprite_resource.hpp"
 #include "resources/timer_resource.hpp"
 #include "resources/cursor_resource.hpp"
 #include "resources/font_resource.hpp"
 #include "resources/clipboard_resource.hpp"
 #include "resources/audio_resource.hpp"
-#include "resources/music_resource.hpp"
 #include "resources/fes_loader_resource.hpp"
 
 #include "fes/fes_ast.hpp"
@@ -41,134 +31,117 @@
 
 #include "render_objects.hpp"
 #include "resources/polygon_resource.hpp"
+#include "log/log.hpp"
 
 #include <any>
 #include <memory>
 #include <vector>
 
-#ifdef FreshInstanceInit
+#include "renderer.hpp"
+#include <thread>
+
 // it can be changed after definition, that's here for guarantee.
+#ifdef FreshInstanceInit
 # undef FreshInstanceInit
 #endif
 
-#define FreshInstanceInit() Engine::_instance = std::unique_ptr<fresh::Engine>(dynamic_cast<fresh::Engine*>(this))
-
-template<typename T>
-using UniquePtr = std::unique_ptr<T>;
-
-template<typename T>
-using SharedPtr = std::shared_ptr<T>;
+#define FreshInstanceInit() fresh::Engine::_instance = std::unique_ptr<fresh::Engine>(dynamic_cast<fresh::Engine*>(this))
+#define FreshInstance fresh::Engine::get_instance()
 
 namespace fresh {
 class Engine {
-public:
-  enum class Scaling {
-    KeepAspectRatio,
-    None
-  };
+ public:
+  /// Engine::Engine() is constructor of Engine class.
+  /// it is called automatically.
+  Engine() noexcept;
 
-  friend class Editor;
+  /// Engine::~Engine() is destructor of Engine class. override it for your
+  /// game that derives Engine class.
+  virtual ~Engine() noexcept = default;
 
-  Engine();
-  Engine(std::shared_ptr<Window> window);
+  /// Engine::get_instance() returns active global instance of Engine class.
+  /// if there is not; then creates one.
+  [[nodiscard]] static std::unique_ptr<Engine>& get_instance() noexcept;
 
-  virtual ~Engine();
+  /// Engine::get_window() returns current active window.
+  [[nodiscard]] std::shared_ptr<Window>& get_window() noexcept;
 
-  __idk_nodiscard
-  static std::unique_ptr<Engine>&
-  get_instance() noexcept;
+  /// Engine::update() is overridable method that is called right before
+  /// draw calls are applied to the framebuffer.
+  virtual void update();
 
-  __idk_nodiscard
-  static SDL_Event&
-  get_event_instance() noexcept;
+  /// Engine::init() is overridable method that is called right after
+  /// first initialization of all objects is done.
+  virtual void init();
 
-  __idk_nodiscard
-  std::shared_ptr<Window>&
-  get_window() noexcept;
+  /// Engine::last() is overridable method that is called at the end of
+  /// Engine::run() method; might be great fit for deallocating resources or
+  /// for debugging purposes.
+  virtual void last();
 
-  virtual void
-  update();
+  /// Engine::run() does the required calls; like doing first initialization;
+  /// delta time calculation; handling input/outputs, etc.
+  void run();
 
-  virtual void
-  init();
+  /// Engine::get_engine_running() returns _engine_running property;
+  /// which used for checking if engine encountered any errors.
+  /// to exit safely without leaking memory;
+  /// use Engine::set_engine_running() method. it will check the value of
+  /// _engine_running property 1 tick after.
+  [[nodiscard]] const bool& get_engine_running() const noexcept;
 
-  virtual void
-  last();
+  /// Engine::set_engine_running(bool) is write-only access to the
+  /// _engine_running property. set _engine_running to false; to stop render
+  /// loop after 1 tick.
+  void set_engine_running(bool engine_running) noexcept;
 
-  void
-  run(); // it will run the engine with user overridden update() and init().
+  __idk_nodiscard KeyboardInput& get_keyboard_input() noexcept;
 
-  __idk_nodiscard
-  idk::u32&
-  get_fps() noexcept;
+  __idk_nodiscard MouseInput& get_mouse_input() noexcept;
 
-  __idk_nodiscard
-  bool&
-  is_engine_running() noexcept;
+  __idk_nodiscard CursorResource& get_cursor_resource() noexcept;
 
-  __idk_nodiscard
-  KeyboardInput&
-  get_keyboard_input() noexcept;
+  __idk_nodiscard ClipboardResource& get_clipboard_resource() noexcept;
 
-  __idk_nodiscard
-  MouseInput&
-  get_mouse_input() noexcept;
+  [[nodiscard]] fre2d::FontManager& get_font_manager() noexcept;
 
-  __idk_nodiscard
-  CursorResource&
-  get_cursor_resource() noexcept;
+  /// Engine::link_camera(std::shared_ptr<CameraObject>) links given camera
+  /// with Engine-backed camera instance.
+  void link_camera(std::shared_ptr<CameraObject> camera_object) noexcept;
 
-  __idk_nodiscard
-  ClipboardResource&
-  get_clipboard_resource() noexcept;
+  /// Engine::get_camera() returns current Engine-backed/bounded Camera.
+  [[nodiscard]] static const std::shared_ptr<CameraObject>&
+  get_camera() noexcept;
 
-  __idk_nodiscard
-  auto& get_objects_to_render() noexcept;
+  /// Engine::get_id() returns global id that counts how many objects
+  /// have been created. not thread-safe; generally fresh isn't thread-safe too.
+  [[nodiscard]] static const idk::u32& get_id() noexcept;
 
-  void link_camera(const std::shared_ptr<CameraObject>& camera_object) noexcept;
+  /// Engine::increase_global_id() increases global id by 1.
+  static void increase_global_id() noexcept;
 
-  [[nodiscard]] static const std::shared_ptr<CameraObject>& get_camera() noexcept;
-
-  void set_scaling_mode(Scaling mode, idk::i32 width = -1, idk::i32 height = -1) noexcept;
-
-  [[nodiscard]]
-  static const idk::f32& sin(const idk::f32& rad_angle) noexcept;
-
-  [[nodiscard]]
-  static const idk::f32& cos(const idk::f32& rad_angle) noexcept;
-
-  __idk_nodiscard
-  idk::u32 get_global_id() noexcept;
-
-  void increase_global_id() noexcept;
-  void reset_global_id() noexcept;
+  /// Engine::reset_global_id() resets global id to 0.
+  static void reset_global_id() noexcept;
 
   static std::unique_ptr<Engine> _instance;
-private:
-  std::shared_ptr<Window>       _window;
+ private:
+  friend class FontResource;
+
+  std::shared_ptr<Window> _window;
   std::shared_ptr<CameraObject> _camera_object;
 
   KeyboardInput _keyboard_input;
-  MouseInput    _mouse_input;
+  MouseInput _mouse_input;
+  fre2d::FontManager _font_manager;
 
-  bool _engine_running { true };
+  bool _engine_running{true};
 
-  static SDL_Event _event_instance;
+  idk::u32 _fps{60_u32};
 
-  idk::u32 _fps { 60_u32 };
-
-  CursorResource    _cursor_resource;
+  CursorResource _cursor_resource;
   ClipboardResource _clipboard_resource;
-  TimerResource     _timer_resource;
-  Scaling           _scale_mode;
+  TimerResource _timer_resource;
 
-  static inline idk::u32 _id { 0 };
-
-  static inline std::unordered_map<idk::f32, idk::f32, std::hash<idk::f32>, decltype([](const idk::f32& lhs, const idk::f32& rhs) -> bool {
-    return f32_nearly_equals(lhs, rhs);
-  })> _sin;
-  static inline std::unordered_map<idk::f32, idk::f32, std::hash<idk::f32>, decltype([](const idk::f32& lhs, const idk::f32& rhs) -> bool {
-    return f32_nearly_equals(lhs, rhs);
-  })> _cos;
+  static inline idk::u32 _id{0};
 };
 } // namespace fresh

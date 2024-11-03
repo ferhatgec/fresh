@@ -3,11 +3,8 @@
 #include "objects/base_object.hpp"
 #include <vector>
 #include <memory>
-#include <any>
 
 namespace fresh {
-/// RenderObjects class holds and owns rendered objects in a vector. if you need your object later; use
-/// RenderObjects::get_object, pass name of your object.
 class RenderObjects {
 public:
   static constexpr auto NotFound = -1;

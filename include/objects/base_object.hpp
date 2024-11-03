@@ -1,39 +1,15 @@
 #pragma once
 
 #include <vector>
-#include <numbers>
-#include <concepts>
-
 #include <types/predefined.hpp>
-#include <types/stringview.hpp>
-#include <utilities/type_traits.hpp>
-
 #include <fescript/fescript_interpreter.hpp>
 #include <fescript/fescript_token.hpp>
-
 #include <resources/point_resource.hpp>
-
-#include <SDL.h>
+#include <resources/bbox_resource.hpp>
 
 #define CHECK_DISABLED() if(this->_disabled) return;
-#define APPLY_DELTAS() for(auto& object: this->_sub_objects) { \
-                        object->_pos_info.x += this->delta_x(); \
-                        object->_pos_info.y += this->delta_y(); \
-                        object->_pos_info.w += this->delta_w(); \
-                        object->_pos_info.h += this->delta_h(); \
-                        object->set_rotation_by_radian_degrees(object->get_rotation_by_radian_degrees() + this->delta_rot()); \
-                        object->sync(is_sync_with_camera); \
-                        object->get_position_info(); \
-                        object->get_is_visible() = this->get_is_visible(); \
-                        object->get_is_disabled() = this->get_is_disabled(); \
-                       } \
-                       this->_last_rotation_degrees = this->_rotation_degrees; \
-                       this->get_position_info();
 
 namespace fresh {
-template<std::floating_point Fp>
-inline constexpr Fp mul_2_pi_v = static_cast<Fp>(2) * std::numbers::pi_v<Fp>;
-
 enum : idk::u8 {
   PosXIndex,
   PosYIndex,
@@ -45,7 +21,184 @@ enum : idk::u8 {
 // visibility etc. data.
 class BaseObject {
 public:
-  friend class SpriteObject; // all predefined objects are friend class of BaseObject by default.
+  BaseObject();
+  virtual ~BaseObject() = default;
+
+  /// BaseObject::get_disabled() is read-only access to _disabled property.
+  [[nodiscard]] const bool& get_disabled() const noexcept;
+
+  /// BaseObject::get_visible() is read-only access to _visible property.
+  [[nodiscard]] const bool& get_visible() const noexcept;
+
+  /// BaseObject::get_initialized() is read-only access to _initialized property.
+  [[nodiscard]] const bool& get_initialized() const noexcept;
+
+  /// BaseObject::set_disabled(bool) is write-only access to _disabled property.
+  void set_disabled(bool disabled) noexcept;
+
+  /// BaseObject::set_visible(bool) is write-only access to _visible property.
+  void set_visible(bool visible) noexcept;
+
+  /// BaseObject::sync() applies position/rotation/size changes
+  /// and calls attached script every frame.
+  /// ----
+  /// note: no need to call sync() directly;
+  ///       instance of Engine class will do it for you automatically.
+  virtual void sync() noexcept;
+
+  /// BaseObject::apply_changes() iterates over child objects and applies
+  /// position/rotation/size changes of parent object.
+  /// it does same functionality as this->apply_changes(); from old API; with
+  /// C++ interface instead of using preprocessors.
+  /// ----
+  /// note: no need to call apply_changes() directly;
+  ///       sync() will call it for you automatically.
+  void apply_changes() noexcept;
+
+  /// BaseObject::get_position() is read-only access to _pos_info property.
+  [[nodiscard]] const BBoxResource& get_position() const noexcept;
+  /// BaseObject::set_position(BBoxResource) is write-only access to _pos_info property.
+  void set_position(const BBoxResource& pos) noexcept;
+
+  /// BaseObject::get_x() is read-only access to _pos_info._x property.
+  [[nodiscard]] const idk::f32& get_x() const noexcept;
+  /// BaseObject::get_y() is read-only access to _pos_info._y property.
+  [[nodiscard]] const idk::f32& get_y() const noexcept;
+  /// BaseObject::get_w() is read-only access to _pos_info._w property.
+  [[nodiscard]] const idk::f32& get_w() const noexcept;
+  /// BaseObject::get_h() is read-only access to _pos_info._h property.
+  [[nodiscard]] const idk::f32& get_h() const noexcept;
+
+  /// BaseObject::get_x() is write-only access to _pos_info._x property.
+  void set_x(idk::f32 x) noexcept;
+  /// BaseObject::get_y() is write-only access to _pos_info._y property.
+  void set_y(idk::f32 y) noexcept;
+  /// BaseObject::get_w() is write-only access to _pos_info._w property.
+  void set_w(idk::f32 w) noexcept;
+  /// BaseObject::get_h() is write-only access to _pos_info._h property.
+  void set_h(idk::f32 h) noexcept;
+
+  /// BaseObject::get_id() is read-only access to _object_id property.
+  [[nodiscard]] const idk::u32& get_id() const noexcept;
+
+  /// BaseObject::get_delta() copies current delta values into BBoxResource.
+  /// calculation done by _pos_info - _copy_last_pos_info.
+  [[nodiscard]] BBoxResource get_delta() const noexcept;
+
+  /// BaseObject::get_delta_x() copies and calculates current delta x.
+  [[nodiscard]] idk::f32 get_delta_x() const noexcept;
+  /// BaseObject::get_delta_y() copies and calculates current delta y.
+  [[nodiscard]] idk::f32 get_delta_y() const noexcept;
+  /// BaseObject::get_delta_w() copies and calculates current delta w.
+  [[nodiscard]] idk::f32 get_delta_w() const noexcept;
+  /// BaseObject::get_delta_h() copies and calculates current delta h.
+  [[nodiscard]] idk::f32 get_delta_h() const noexcept;
+  /// BaseObject::get_delta_rot() copies and calculates current delta rotation.
+  [[nodiscard]] idk::f32 get_delta_rot() const noexcept;
+
+  /// BaseObject::get_fescript_path() is read-only access to script_file_name
+  /// property.
+  [[nodiscard]] const std::string& get_fescript_path() const noexcept;
+
+  /// BaseObject::reset_delta() sets delta values to 0.
+  void reset_delta() noexcept;
+
+  /// BaseObject::push_object(std::shared_ptr<BaseObject>) pushes given object
+  /// into child object list.
+  void push_object(std::shared_ptr<BaseObject> sub_object) noexcept;
+
+  /// BaseObject::to_string() returns lowercase object class name.
+  [[nodiscard]] virtual constexpr const char* to_string() noexcept {
+    return "baseobject";
+  }
+
+  virtual void set(const fescript::Token& name, fescript::Object value);
+  virtual void init_signal() noexcept {}
+
+  /// BaseObject::sync_init() pushes initialize signal for every child object
+  void sync_init() noexcept;
+
+  /// BaseObject::get_childs() returns a reference of container where
+  /// all child objects are stored. you can change or even nullptr it.
+  [[nodiscard]] std::vector<std::shared_ptr<BaseObject>>& get_childs() noexcept;
+
+  /// BaseObject::get_name() returns current name of object.
+  [[nodiscard]] const std::string& get_name() const noexcept;
+
+  /// BaseObject::set_name(std::string) is write-only access to _name property.
+  void set_name(const std::string& name) noexcept;
+
+  /// BaseObject::load_fescript_rt(std::string, bool) loads given script
+  /// that can be either file or script's content; then loads it using fescript
+  /// parser and interpreter classes. first run of script must be done since
+  /// global variables are only read and assigned once; then only functions
+  /// are being called.
+  /// --------
+  /// fun fact: i don't remember what _rt stands for.
+  void load_fescript_rt(const std::string& script, bool is_file = false) noexcept;
+
+  /// BaseObject::get_object_by_path(std::string) splits given path
+  /// by '/' or '\' -depends on filesystem- then walks through to the parent
+  /// or child objects.
+  /// ----
+  /// note: ".."  will let you access to parent object;
+  /// meanwhile "." will point to current object.
+  [[nodiscard]] const std::shared_ptr<BaseObject>& get_object_by_path(const std::string& path) noexcept;
+
+  /// BaseObject::get_rotation() returns current rotation angle by radian degrees.
+  [[nodiscard]] const idk::f32& get_rotation() const noexcept;
+
+  /// BaseObject::set_rotation(float) sets current rotation to given rad_degrees.
+  /// this method is overridable because some classes creates new resources in-place
+  /// upon rotation changes to cache it then use.
+  virtual void set_rotation(idk::f32 rad_degrees) noexcept;
+
+  [[nodiscard]] static idk::f32 counter_clockwise_to_clockwise(idk::f32 rad_degrees) noexcept;
+private:
+  /// BaseObject::_give_shared_ptr() mimics std::enable_shared_from_this when
+  /// multiple inheritance applied to the class; creates additional shared_ptr
+  /// that constructed only for once from this pointer; then used over and over again.
+  /// normally you don't need this so this is private; since every objects
+  /// should use shared_ptr by default instead of raw pointers. since fresh
+  /// not multithreaded; there should be no problem to change what it points to.
+  [[nodiscard]] const std::shared_ptr<BaseObject>& _give_shared_ptr() noexcept;
+
+  /// BaseObject::_get_object_by_single_path returns an object that takes only
+  /// one name which is extracted using BaseObject::get_object_by_path(std::string).
+  /// BaseObject::get_object_by_path(std::string) iterates over every name;
+  /// then calls BaseObject::_get_object_by_single_path(std::string).
+  [[nodiscard]] const std::shared_ptr<BaseObject>& _get_object_by_single_path(
+    const std::string& path
+  ) noexcept;
+
+  /// BaseObject::_shared_ptr_this stores what _give_shared_ptr() returns.
+  std::shared_ptr<BaseObject> _shared_ptr_this;
+protected:
+  /// BaseObject::_sub_objects stores child objects.
+  std::vector<std::shared_ptr<BaseObject>> _sub_objects;
+  /// BaseObject::_parent points to parent object; by default it's nullptr.
+  std::shared_ptr<BaseObject> _parent = nullptr;
+
+  bool _disabled { false };
+  bool _visible { true };
+
+  idk::f32 _rotation_degrees;
+  idk::f32 _last_rotation_degrees;
+
+  BBoxResource _pos_info;
+  BBoxResource _copy_last_pos_info; // it's here to calculate velocity
+  idk::u32 _object_id;
+
+  std::string _name;
+
+  fescript::Interpreter _code;
+  std::string script_file_name;
+  std::string script_content;
+  std::string imported_from;
+
+  bool _initialized;
+
+  friend class SpriteObject;
   friend class LabelObject;
   friend class AreaObject;
   friend class RectangleAreaObject;
@@ -53,10 +206,7 @@ public:
   friend class PolygonAreaObject;
   friend class CameraObject;
   friend class FesLoaderResource;
-  friend class GuiBaseObject;
-  friend class GuiButtonObject;
   friend class AudioPlayerObject;
-  friend class MusicPlayerObject;
   friend class AnimationPlayerObject;
   friend class AnimationFrameObject;
   friend class CircleObject;
@@ -68,121 +218,6 @@ public:
   friend class PolygonBodyObject;
   friend class WorldObject;
   friend class Engine;
-  friend class Editor;
   friend class fescript::Interpreter;
-
-  BaseObject();
-  BaseObject(bool disabled, bool visible, idk::f32 pos_x, idk::f32, idk::f32 width, idk::f32 height, idk::f32 rotation_degrees = 0.f);
-
-  virtual ~BaseObject();
-
-  __idk_nodiscard
-  bool& get_is_disabled() noexcept;
-
-  __idk_nodiscard
-  bool& get_is_visible() noexcept;
-
-  void set_disabled(bool disabled) noexcept;
-  void set_visible(bool visible) noexcept;
-
-  virtual void sync_pos_with_camera(bool is_sync_with_camera = false) noexcept;
-  virtual void sync(bool is_sync_with_camera = false) noexcept; // sync your *object*, pass through the renderer every frame
-
-  __idk_nodiscard
-  virtual SDL_FRect& get_position_info() noexcept;
-
-  __idk_nodiscard
-  SDL_FRect& get_raw_position_info() noexcept;
-
-  __idk_nodiscard
-  SDL_FRect& get_render_position_info() noexcept;
-
-  __idk_nodiscard
-  const idk::u32& get_object_id() noexcept;
-
-  __idk_nodiscard
-  idk::f32 delta_x() noexcept;
-
-  __idk_nodiscard
-  idk::f32 delta_y() noexcept;
-
-  __idk_nodiscard
-  idk::f32 delta_w() noexcept;
-
-  __idk_nodiscard
-  idk::f32 delta_h() noexcept;
-
-  __idk_nodiscard
-  idk::f32 delta_rot() noexcept;
-
-  void push_object(std::shared_ptr<BaseObject> sub_object) noexcept;
-
-  [[nodiscard]] std::string to_string() { return "baseobject"; }
-  virtual void set(const fescript::Token& name, fescript::Object value);
-
-  __idk_nodiscard
-  std::vector<std::shared_ptr<BaseObject>>& get_sub_objects() noexcept;
-
-  __idk_nodiscard
-  idk::StringViewChar& get_name() noexcept;
-
-  void load_fescript_rt(const idk::StringViewChar& script, bool is_file = false) noexcept;
-  void push_to_sub_objects(std::shared_ptr<BaseObject> obj) noexcept;
-
-  [[nodiscard]] SDL_FRect copy_get_position_info() const noexcept {
-    return this->_pos_info;
-  }
-
-  __idk_nodiscard
-  std::shared_ptr<BaseObject> get_object_by_path(const std::string& path) noexcept;
-
-  [[nodiscard]]
-  const idk::f32& get_rotation_by_radian_degrees() const noexcept;
-
-  virtual void set_rotation_by_radian_degrees(idk::f32 rad_degrees) noexcept;
-
-  [[nodiscard]] static idk::f32 counter_clockwise_to_clockwise(idk::f32 rad_degrees) noexcept;
-private:
-  [[nodiscard]]
-  std::shared_ptr<BaseObject> _give_shared_ptr() noexcept;
-
-  [[nodiscard]]
-  static SDL_FRect _center_to_top_left_pivot(SDL_FRect pos_size) noexcept;
-
-  std::shared_ptr<BaseObject> _shared_ptr_this;
-protected:
-  idk::StringViewChar _object_def;
-  std::vector<std::shared_ptr<BaseObject>> _sub_objects;
-  std::shared_ptr<BaseObject> _parent = nullptr;
-
-  __idk_nodiscard
-  std::shared_ptr<BaseObject>
-  _get_object_by_single_path(const std::string& path) noexcept;
-
-  __idk_nodiscard static PointResource _rectangle_convert_to_top_left(const SDL_FRect& pos) noexcept;
-  __idk_nodiscard static PointResource _rectangle_convert_to_top_right(const SDL_FRect& pos) noexcept;
-  __idk_nodiscard static PointResource _rectangle_convert_to_bottom_left(const SDL_FRect& pos) noexcept;
-  __idk_nodiscard static PointResource _rectangle_convert_to_bottom_right(const SDL_FRect& pos) noexcept;
-
-  bool _disabled { false };
-  bool _visible { true };
-  bool _block_transform { false };
-
-  idk::f32 _rotation_degrees;
-  idk::f32 _last_rotation_degrees;
-
-  SDL_FRect _pos_info;
-  SDL_FRect _render_pos_info;
-
-  SDL_FRect _blocked_pos_info; // we return this to block the changing of _pos_info.
-  SDL_FRect _copy_last_pos_info; // it's here to calculate velocity
-  idk::u32 _object_id;
-
-  idk::StringViewChar _name;
-
-  fescript::Interpreter _code;
-  idk::StringViewChar script_file_name;
-  idk::StringViewChar script_content;
-  idk::StringViewChar imported_from;
 };
 } // namespace fresh

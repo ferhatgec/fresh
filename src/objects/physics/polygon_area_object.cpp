@@ -10,20 +10,10 @@
 
 namespace fresh {
 PolygonAreaObject::PolygonAreaObject() {
-  this->_object_def = "polygonareaobject";
-  #ifdef __FRESH_DEBUG
-  this->_collider = std::make_shared<PolygonObject>();
-  this->_color = { 0, 200, 0, 50 };
-  #endif // __FRESH_DEBUG
 }
 
-PolygonAreaObject::PolygonAreaObject(SDL_FRect pos_info) {
-  this->_object_def = "polygonareaobject";
+PolygonAreaObject::PolygonAreaObject(BBoxResource pos_info) {
   this->_pos_info = pos_info;
-  #ifdef __FRESH_DEBUG
-  this->_collider = std::make_shared<PolygonObject>();
-  this->_color = { 0, 200, 0, 100 };
-  #endif // __FRESH_DEBUG
 }
 
 PolygonAreaObject::PolygonAreaObject(std::shared_ptr<BaseObject> object) {
@@ -31,27 +21,21 @@ PolygonAreaObject::PolygonAreaObject(std::shared_ptr<BaseObject> object) {
     std::cout << "Engine error: Passed null pointer to PolygonAreaObject ctor.\n";
     return;
   }
-  this->_object_def = "polygonareaobject";
-  this->_pos_info = object->get_position_info();
-  #ifdef __FRESH_DEBUG
-  this->_collider = std::make_shared<PolygonObject>();
-  this->_color = { 0, 200, 0, 100 };
-  #endif // __FRESH_DEBUG
+  this->_pos_info = object->get_position();
 }
 
-void PolygonAreaObject::sync(bool is_sync_with_camera) noexcept {
+void PolygonAreaObject::sync() noexcept {
   CHECK_DISABLED()
   this->_code.interpret_update();
-  this->sync_pos_with_camera(is_sync_with_camera);
 
   #ifdef __FRESH_DEBUG
   std::dynamic_pointer_cast<PolygonObject>(this->_collider)->get_polygon_resource().get_polygons() = this->_resource.get_polygons();
   std::dynamic_pointer_cast<PolygonObject>(this->_collider)->get_raw_position_info() = this->get_raw_position_info();
   std::dynamic_pointer_cast<PolygonObject>(this->_collider)->get_color_resource() = this->_color;
-  std::dynamic_pointer_cast<PolygonObject>(this->_collider)->sync(is_sync_with_camera);
+  std::dynamic_pointer_cast<PolygonObject>(this->_collider)->sync();
   #endif // __FRESH_DEBUG
 
-  APPLY_DELTAS()
+  this->apply_changes();
 }
 
 __idk_nodiscard

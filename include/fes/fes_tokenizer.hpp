@@ -1,49 +1,52 @@
+// MIT License
 //
-// Created by gech on 2/4/2024.
+// Copyright (c) 2024 Ferhat Geçdoğan All Rights Reserved.
+// Distributed under the terms of the MIT License.
 //
-
 #pragma once
 
-// fes is FreshEngineScene, it's human readable text scene format
+// fes is FreshEngineScene, it's human-readable text scene format
 // especially developed and optimized for freshEngine.
 
-#include <types/stringview.hpp>
-#include "../../libs/idk/idk/containers/vector.hpp"
-#include "../../libs/idk/idk/utilities/pair.hpp"
+#include <string>
+#include <string_view>
+#include <vector>
+#include <utility>
+#include <unordered_map>
+#include <types/predefined.hpp>
 #include "fes_keywords.hpp"
 
-namespace fresh {
-namespace fes {
+namespace fresh::fes {
 class FesTokenizer {
 public:
   friend class FesParser;
-  FesTokenizer();
-  FesTokenizer(const idk::StringViewChar& fes_raw_text_data_or_file_path, bool file = true);
-  FesTokenizer(idk::StringViewChar&& fes_raw_text_data_or_file_path, bool file = true);
-  ~FesTokenizer();
+  FesTokenizer() noexcept;
+  ~FesTokenizer() noexcept = default;
 
-  // most of the time, fes scenes contains not that large data.
-  // so memory mapped i/o is a bit overkill here, so we will use normal way.
-  // if you want to read files fast, use it on your own, then pass file argument as false.
-  // fes will automatically initialize raw_text_data variable with fes_raw_text_data_or_file_path.
-  void
-  load_from(const idk::StringViewChar& fes_raw_text_data_or_file_path, bool file = true) noexcept;
+  /// FesTokenizer::load_from(std::string, bool) loads given context;
+  /// and tokenizes it.
+  void load_from(const std::string& ctx, bool file = true) noexcept;
 
-  void
-  load_from(idk::StringViewChar&& fes_raw_text_data_or_file_path, bool file = true) noexcept;
+  /// FesTokenizer::tokenize() does the tokenization process.
+  void tokenize() noexcept;
+  std::vector<std::pair<std::string, Keywords>> _tokens;
 
-  void
-  tokenize() noexcept;
-
-  idk::StringViewChar _raw_file_data;
 private:
   void
   _check_and_push() noexcept;
 protected:
-  idk::Vector<idk::Pair<idk::StringViewChar, Keywords>> _tokens;
-  idk::StringViewChar _temp;
-  idk::usize _i { 0_usize };
-  bool _is_string_data { false };
+  std::string _raw_file_data, _temp;
+  idk::usize _i;
+  bool _is_string_data;
+
+  static inline std::unordered_map<std::string, Keywords> keywords = {
+    {"[", Keywords::NodeInit},
+    {"]", Keywords::NodeInit},
+    {",", Keywords::NextObject},
+    {";", Keywords::LastObject},
+    {"{", Keywords::ListObjectInit},
+    {"}", Keywords::ListObjectEnd},
+    {"=", Keywords::Assign}
+  };
 };
-} // namespace fes
-} // namespace fresh
+} // namespace fresh::fes

@@ -13,7 +13,7 @@
 #define SIZE 128
 
 namespace fescript {
-__idk_nodiscard Object FescriptOSPlatform::call([[maybe_unused]] Interpreter& interpreter, const std::vector<Object>& arguments) {
+[[nodiscard]] Object FescriptOSPlatform::call([[maybe_unused]] Interpreter& interpreter, const std::vector<Object>& arguments) {
 #if defined(_WIN16) || defined(_WIN32) || defined(_WIN64) || defined(__WIN32__) || defined(__TOS_WIN__) || defined(__WINDOWS__)
   return "win32";
 #elif defined(macintosh) || defined(Macintosh) || (defined(__APPLE__) && defined(__MACH__))
@@ -35,7 +35,7 @@ __idk_nodiscard Object FescriptOSPlatform::call([[maybe_unused]] Interpreter& in
 #endif
 }
 
-__idk_nodiscard Object FescriptOSExec::call([[maybe_unused]] Interpreter& interpreter, const std::vector<Object>& arguments) {
+[[nodiscard]] Object FescriptOSExec::call([[maybe_unused]] Interpreter& interpreter, const std::vector<Object>& arguments) {
   ERR_CHECK_STRING("OS_exec()", 1)
   char buffer[SIZE];
   std::string result;
@@ -49,7 +49,7 @@ __idk_nodiscard Object FescriptOSExec::call([[maybe_unused]] Interpreter& interp
   return result;
 }
 
-__idk_nodiscard Object FescriptOSArch::call([[maybe_unused]] Interpreter& interpreter, const std::vector<Object>& arguments) {
+[[nodiscard]] Object FescriptOSArch::call([[maybe_unused]] Interpreter& interpreter, const std::vector<Object>& arguments) {
 #if defined(__amd64__) || defined(__amd64) || defined(__x86_64__) || defined(__x86_64) || defined(_M_AMD64)
   return "amd64";
 #elif defined(__arm__) || defined(_M_ARM) || defined(_M_ARMT)
@@ -68,15 +68,15 @@ __idk_nodiscard Object FescriptOSArch::call([[maybe_unused]] Interpreter& interp
 }
 
 // output: string
-__idk_nodiscard Object FescriptOSGetClipboardText::call([[maybe_unused]] Interpreter& interpreter, const std::vector<Object>& arguments) {
-  return std::string(fresh::Engine::get_instance()->get_clipboard_resource().get_clipboard_data().data());
+[[nodiscard]] Object FescriptOSGetClipboardText::call([[maybe_unused]] Interpreter& interpreter, const std::vector<Object>& arguments) {
+  return std::string(FreshInstance->get_clipboard_resource().get_clipboard_data().data());
 }
 
 // output: nil
-__idk_nodiscard Object FescriptOSSetClipboardText::call([[maybe_unused]] Interpreter& interpreter, const std::vector<Object>& arguments) {
+[[nodiscard]] Object FescriptOSSetClipboardText::call([[maybe_unused]] Interpreter& interpreter, const std::vector<Object>& arguments) {
   ERR_CHECK_STRING("OS_set_clipboard_text", 1)
-  fresh::Engine::get_instance()->get_clipboard_resource().get_clipboard_data() = std::get<StringIndex>(arguments.front()).data();
-  fresh::Engine::get_instance()->get_clipboard_resource().sync_clipboard_data();
+  FreshInstance->get_clipboard_resource().set_clipboard_data(std::get<StringIndex>(arguments.front()).data());
+  FreshInstance->get_clipboard_resource().sync_clipboard_data();
   return nullptr;
 }
 }

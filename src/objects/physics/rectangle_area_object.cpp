@@ -7,20 +7,10 @@
 
 namespace fresh {
 RectangleAreaObject::RectangleAreaObject() {
-  this->_object_def = "rectangleareaobject";
-  #ifdef __FRESH_DEBUG
-  this->_collider = std::make_shared<RectangleObject>();
-  this->_color = { 0, 200, 0, 50 };
-  #endif // __FRESH_DEBUG
 }
 
-RectangleAreaObject::RectangleAreaObject(SDL_FRect pos_info) {
-  this->_object_def = "rectangleareaobject";
+RectangleAreaObject::RectangleAreaObject(BBoxResource pos_info) {
   this->_pos_info = pos_info;
-  #ifdef __FRESH_DEBUG
-  this->_collider = std::make_shared<RectangleObject>();
-  this->_color = { 0, 200, 0, 50 };
-  #endif // __FRESH_DEBUG
 }
 
 RectangleAreaObject::RectangleAreaObject(std::shared_ptr<BaseObject> object) {
@@ -28,38 +18,26 @@ RectangleAreaObject::RectangleAreaObject(std::shared_ptr<BaseObject> object) {
     std::cout << "Engine error: Passed null pointer to RectangleAreaObject ctor.\n";
     return;
   }
-  this->_object_def = "rectangleareaobject";
-  this->_pos_info = object->get_position_info();
-  #ifdef __FRESH_DEBUG
-  this->_collider = std::make_shared<RectangleObject>();
-  this->_color = { 0, 200, 0, 50 };
-  #endif // __FRESH_DEBUG
+  this->_pos_info = object->get_position();
 }
 
-void RectangleAreaObject::sync(bool is_sync_with_camera) noexcept {
+void RectangleAreaObject::sync() noexcept {
   CHECK_DISABLED()
   this->_code.interpret_update();
-  this->sync_pos_with_camera(is_sync_with_camera);
 
-  #ifdef __FRESH_DEBUG
-  std::dynamic_pointer_cast<RectangleObject>(this->_collider)->get_raw_position_info() = this->get_raw_position_info();
-  std::dynamic_pointer_cast<RectangleObject>(this->_collider)->get_color_resource() = this->_color;
-  std::dynamic_pointer_cast<RectangleObject>(this->_collider)->sync(is_sync_with_camera);
-  #endif // __FRESH_DEBUG
-
-  APPLY_DELTAS()
+  this->apply_changes();
 }
 
 // rectangle to rectangle (using directly object's properties, which shouldn't be used in practice)
 __idk_nodiscard
 bool RectangleAreaObject::is_colliding_with(std::shared_ptr<BaseObject> object) noexcept {
-  return (!object || this->get_is_disabled() || object->get_is_disabled())
+  return (!object || this->get_disabled() || object->get_disabled())
     ? false
     // simple 2D AABB collision detection for rectangles.
-    : (_pos_info.x < object->_pos_info.x + object->_pos_info.w &&
-          _pos_info.x + _pos_info.w > object->_pos_info.x &&
-          _pos_info.y < object->_pos_info.y + object->_pos_info.h &&
-          _pos_info.y + _pos_info.h > object->_pos_info.y);
+    : (_pos_info.get_x() < object->_pos_info.get_x() + object->_pos_info.get_w() &&
+          _pos_info.get_x() + _pos_info.get_w() > object->_pos_info.get_x() &&
+          _pos_info.get_y() < object->_pos_info.get_y() + object->_pos_info.get_h() &&
+          _pos_info.get_y() + _pos_info.get_h() > object->_pos_info.get_y());
 }
 
 // rectangle to circle

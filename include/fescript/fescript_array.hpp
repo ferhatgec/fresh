@@ -1,52 +1,34 @@
 #pragma once
 
 #include "fescript_token.hpp"
-#include <objects/physics/polygon_area_object.hpp>
-#include <objects/physics/rectangle_area_object.hpp>
 #include <vector>
 
 namespace fescript {
 class Array;
 class Interpreter;
 class FescriptArray : public std::enable_shared_from_this<FescriptArray> {
-  // FIXME: why we are using bunch of friend class here?
-  // we do not store secret NSA documentations here,
-  // just make it public and shut the f*ck up.
   friend class Token;
   friend class Parser;
   friend class Interpreter;
-  friend class fresh::BaseObject;
-  friend class fresh::SpriteObject;
-  friend class fresh::LabelObject;
-  friend class fresh::AreaObject;
-  friend class fresh::RectangleAreaObject;
-  friend class fresh::CircleAreaObject;
-  friend class fresh::PolygonAreaObject;
-  friend class fresh::WorldObject;
-  friend class fresh::BodyObject;
-  friend class fresh::RectangleBodyObject;
-  friend class fresh::PolygonBodyObject;
-  friend class fresh::CircleBodyObject;
-  friend class fresh::CameraObject;
-  friend class fresh::AnimationPlayerObject;
-  friend class fresh::AnimationFrameObject;
-  friend class fresh::MusicPlayerObject;
-  friend class fresh::AudioPlayerObject;
-  friend class fresh::CircleObject;
-  friend class fresh::PolygonObject;
-  friend class fresh::RectangleObject;
 public:
-  FescriptArray();
-  ~FescriptArray();
+  FescriptArray() noexcept;
+  ~FescriptArray() noexcept = default;
 
-  [[nodiscard]] Object get(std::size_t index) const noexcept;
-  [[nodiscard]] std::string to_string();
+  [[nodiscard]] const Object& get_value(std::size_t index) const noexcept;
+  [[nodiscard]] const std::string& to_string() noexcept;
 
-  [[nodiscard]]
-  std::vector<Object>& get_values() noexcept;
+  [[nodiscard]] const std::vector<Object>& get_values() noexcept;
 
-  void push_value(Object value) noexcept;
+  void set_array(const std::vector<Object>& values) noexcept;
+  void set_array(std::vector<Object>&& values) noexcept;
+  void push_value(const Object& value) noexcept;
+  void pop_value() noexcept;
+  void clear() noexcept;
+  void remove_value(std::size_t index) noexcept;
+  void push_value(std::size_t index, const Object& value) noexcept;
 private:
-  std::vector<Object> values;
+  std::string _to_string_cache;
+  std::vector<Object> _values;
+  bool _needs_update;
 };
 }

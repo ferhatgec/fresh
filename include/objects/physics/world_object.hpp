@@ -12,13 +12,13 @@ public:
     DefaultSubstepCount = 4
   };
 
-  WorldObject(PointResource gravity = {0.f, -9.81}, idk::u32 physics_frame = DefaultPhysicsFPS, idk::u32 substep_count = DefaultSubstepCount) noexcept;
+  WorldObject(PointResource gravity = {0.f, -40.f}, idk::u32 physics_frame = DefaultPhysicsFPS, idk::u32 substep_count = DefaultSubstepCount) noexcept;
   ~WorldObject() override;
 
   void
-  sync(bool is_sync_with_camera = false) noexcept override;
+  sync() noexcept override;
 
-  [[nodiscard]] std::string to_string() {
+  [[nodiscard]] constexpr const char* to_string() noexcept override {
     return "worldobject";
   }
 

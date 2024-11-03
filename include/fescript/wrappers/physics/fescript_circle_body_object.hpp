@@ -10,13 +10,5 @@ DEFINE_MEMBER_MODULE_CLASS(SetIsStaticBody, CircleBodyObjectMember, 1, fresh::Ci
 DEFINE_MEMBER_MODULE_CLASS(GetIsStaticBody, CircleBodyObjectMember, 0, fresh::CircleBodyObject)
 DEFINE_MEMBER_MODULE_CLASS(GetRadius, CircleBodyObjectMember, 0, fresh::CircleBodyObject)
 DEFINE_MEMBER_MODULE_CLASS(SetRadius, CircleBodyObjectMember, 1, fresh::CircleBodyObject)
-
-class CircleBodyObjectWrapper : public BodyObjectWrapper {
-public:
-  CircleBodyObjectWrapper();
-  ~CircleBodyObjectWrapper();
-  [[nodiscard]] std::string to_string() override;
-  [[nodiscard]] int arity() override { return -1; }
-  [[nodiscard]] Object call([[maybe_unused]] Interpreter& interpreter, const std::vector<Object>& arguments) override;
-};
+DEFINE_MODULE_CLASS_CUSTOM_DERIVED_FROM(Wrapper, CircleBodyObject, -1, FescriptBodyObjectWrapper)
 } // namespace fescript

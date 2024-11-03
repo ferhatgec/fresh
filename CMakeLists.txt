@@ -9,6 +9,20 @@ endif()
 include(FetchContent)
 set(FETCHCONTENT_QUIET FALSE)
 option(BUILD_EXAMPLE "Build example to see if fresh works correctly" ON)
+option(FRESH_UPDATES_DISCONNECTED "Do not check for updates every build" ON)
+option(FRESH_DO_NOT_FETCH_LIBRARIES "Do not fetch libraries, good for making changes to dependencies" OFF)
+
+set(FETCHCONTENT_UPDATES_DISCONNECTED_box2d ${FRESH_UPDATES_DISCONNECTED})
+set(FETCHCONTENT_UPDATES_DISCONNECTED_colorized ${FRESH_UPDATES_DISCONNECTED})
+set(FETCHCONTENT_UPDATES_DISCONNECTED_imgui ${FRESH_UPDATES_DISCONNECTED})
+set(FETCHCONTENT_UPDATES_DISCONNECTED_fre2d ${FRESH_UPDATES_DISCONNECTED})
+set(FETCHCONTENT_UPDATES_DISCONNECTED_miniaudio ${FRESH_UPDATES_DISCONNECTED})
+
+set(FETCHCONTENT_FULLY_DISCONNECTED_box2d ${FRESH_DO_NOT_FETCH_LIBRARIES})
+set(FETCHCONTENT_FULLY_DISCONNECTED_colorized ${FRESH_DO_NOT_FETCH_LIBRARIES})
+set(FETCHCONTENT_FULLY_DISCONNECTED_imgui ${FRESH_DO_NOT_FETCH_LIBRARIES})
+set(FETCHCONTENT_FULLY_DISCONNECTED_fre2d ${FRESH_DO_NOT_FETCH_LIBRARIES})
+set(FETCHCONTENT_FULLY_DISCONNECTED_miniaudio ${FRESH_DO_NOT_FETCH_LIBRARIES})
 
 FetchContent_Declare(
   box2d
@@ -42,18 +56,36 @@ FetchContent_Declare(
   GIT_SHALLOW TRUE
 )
 FetchContent_MakeAvailable(idk)
+FetchContent_Declare(
+  fre2d
+  GIT_REPOSITORY https://github.com/ferhatgec/fre2d.git
+  SOURCE_DIR ${CMAKE_SOURCE_DIR}/libs/fre2d
+  GIT_SHALLOW TRUE
+)
+FetchContent_MakeAvailable(fre2d)
+FetchContent_Declare(
+  miniaudio
+  GIT_REPOSITORY https://github.com/mackron/miniaudio
+  SOURCE_DIR ${CMAKE_SOURCE_DIR}/libs/miniaudio
+  GIT_SHALLOW TRUE
+)
+FetchContent_MakeAvailable(miniaudio)
 
-find_package(SDL2 REQUIRED)
-find_package(SDL2_ttf REQUIRED)
-find_package(SDL2_image REQUIRED)
-find_package(SDL2_mixer REQUIRED)
+get_property(FRE2D_INCLUDE_PATHS GLOBAL PROPERTY "FRE2D_INCLUDE_PATHS")
 
-set(INCLUDE_PATHS ${CMAKE_SOURCE_DIR}/libs/imgui/
-                  ${CMAKE_SOURCE_DIR}/libs/imgui/backends/
-                  ${CMAKE_SOURCE_DIR}/libs/idk/idk/
-                  ${CMAKE_SOURCE_DIR}/libs/box2d/include/
-                  ${CMAKE_SOURCE_DIR}/libs/colorized/
-                  ${CMAKE_SOURCE_DIR}/include/)
+# TODO: Replace every SDL2 functions using FRE2D if any no class matches
+# with SDL functions like circle drawing; then implement them in fre2d then
+# come back again.
+set(INCLUDE_PATHS
+  "${CMAKE_SOURCE_DIR}/libs/imgui/"
+  "${CMAKE_SOURCE_DIR}/libs/imgui/backends/"
+  "${CMAKE_SOURCE_DIR}/libs/idk/idk/"
+  "${CMAKE_SOURCE_DIR}/libs/box2d/include/"
+  "${CMAKE_SOURCE_DIR}/libs/colorized/"
+  "${CMAKE_SOURCE_DIR}/libs/fre2d/"
+  "${CMAKE_SOURCE_DIR}/miniaudio/"
+  "${CMAKE_SOURCE_DIR}/include/"
+  ${FRE2D_INCLUDE_PATHS})
 
 set_property(GLOBAL PROPERTY FRESH_INCLUDE_PATHS ${INCLUDE_PATHS})
 
@@ -69,38 +101,9 @@ set(SOURCE_FILES ${SOURCE_FILES}
   ${CMAKE_SOURCE_DIR}/libs/imgui/backends/imgui_impl_opengl3.cpp
   ${CMAKE_SOURCE_DIR}/example/example_lib.cpp)
 
-set(SOURCE_FILES ${SOURCE_FILES}
-  ${CMAKE_SOURCE_DIR}/libs/imgui/backends/imgui_impl_sdlrenderer2.cpp
-  ${CMAKE_SOURCE_DIR}/libs/imgui/backends/imgui_impl_sdl2.cpp)
-
 add_library(fresh_lib STATIC ${SOURCE_FILES})
-target_include_directories(fresh_lib PRIVATE ${INCLUDE_PATHS})
-
-function(Fresh_CopyRequiredDLLs target)
-  if(WIN32)
-    # adding both Debug and Release builds.
-    add_custom_command(TARGET ${target} POST_BUILD
-      COMMAND ${CMAKE_COMMAND} -E copy ${SDL2_DIR}/../bin/SDL2d.dll ${CMAKE_CURRENT_BINARY_DIR}/$<CONFIG>
-      COMMAND ${CMAKE_COMMAND} -E copy ${SDL2_ttf_DIR}/../bin/SDL2_ttfd.dll ${CMAKE_CURRENT_BINARY_DIR}/$<CONFIG>
-      COMMAND ${CMAKE_COMMAND} -E copy ${SDL2_image_DIR}/../bin/SDL2_imaged.dll ${CMAKE_CURRENT_BINARY_DIR}/$<CONFIG>
-      COMMAND ${CMAKE_COMMAND} -E copy ${SDL2_mixer_DIR}/../bin/SDL2_mixerd.dll ${CMAKE_CURRENT_BINARY_DIR}/$<CONFIG>
-      COMMAND ${CMAKE_COMMAND} -E copy ${SDL2_DIR}/../bin/SDL2.dll ${CMAKE_CURRENT_BINARY_DIR}/$<CONFIG>
-      COMMAND ${CMAKE_COMMAND} -E copy ${SDL2_ttf_DIR}/../bin/SDL2_ttf.dll ${CMAKE_CURRENT_BINARY_DIR}/$<CONFIG>
-      COMMAND ${CMAKE_COMMAND} -E copy ${SDL2_image_DIR}/../bin/SDL2_image.dll ${CMAKE_CURRENT_BINARY_DIR}/$<CONFIG>
-      COMMAND ${CMAKE_COMMAND} -E copy ${SDL2_mixer_DIR}/../bin/SDL2_mixer.dll ${CMAKE_CURRENT_BINARY_DIR}/$<CONFIG>
-    )
-  endif()
-
-  target_link_libraries(${target} PRIVATE
-    SDL2::SDL2main
-    SDL2::SDL2
-    SDL2_image::SDL2_image
-    SDL2_ttf::SDL2_ttf
-    SDL2_mixer::SDL2_mixer)
-endfunction()
-
-target_link_libraries(fresh_lib PRIVATE box2d)
-Fresh_CopyRequiredDLLs(fresh_lib)
+target_include_directories(fresh_lib PUBLIC ${INCLUDE_PATHS})
+target_link_libraries(fresh_lib PUBLIC box2d fre2d_lib)
 
 if(BUILD_EXAMPLE)
   add_subdirectory(${CMAKE_SOURCE_DIR}/example/)

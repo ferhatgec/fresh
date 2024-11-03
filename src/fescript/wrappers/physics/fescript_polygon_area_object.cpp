@@ -2,7 +2,7 @@
 #include <objects/physics/polygon_area_object.hpp>
 
 namespace fescript {
-__idk_nodiscard Object FescriptPolygonAreaObjectMemberIsCollidingWith::call([[maybe_unused]] Interpreter& interpreter, const std::vector<Object>& arguments) {
+[[nodiscard]] Object FescriptPolygonAreaObjectMemberIsCollidingWith::call([[maybe_unused]] Interpreter& interpreter, const std::vector<Object>& arguments) {
   if(!this->_self) {
     std::cout << "Engine error: PolygonAreaObject is not initialized, yet using PolygonAreaObject.is_colliding_with() is not possible.\n";
     std::exit(1);
@@ -21,7 +21,7 @@ __idk_nodiscard Object FescriptPolygonAreaObjectMemberIsCollidingWith::call([[ma
   return false;
 }
 
-__idk_nodiscard Object FescriptPolygonAreaObjectMemberPushPolygon::call([[maybe_unused]] Interpreter& interpreter, const std::vector<Object>& arguments) {
+[[nodiscard]] Object FescriptPolygonAreaObjectMemberPushPolygon::call([[maybe_unused]] Interpreter& interpreter, const std::vector<Object>& arguments) {
   if(!this->_self) {
     std::cout << "Engine error: PolygonAreaObject is not initialized, yet using PolygonAreaObject.push_polygon() is not possible.\n";
     std::exit(1);
@@ -32,7 +32,7 @@ __idk_nodiscard Object FescriptPolygonAreaObjectMemberPushPolygon::call([[maybe_
   return nullptr;
 }
 
-__idk_nodiscard Object FescriptPolygonAreaObjectMemberDeleteAllPolygons::call([[maybe_unused]] Interpreter& interpreter, const std::vector<Object>& arguments) {
+[[nodiscard]] Object FescriptPolygonAreaObjectMemberDeleteAllPolygons::call([[maybe_unused]] Interpreter& interpreter, const std::vector<Object>& arguments) {
   if(!this->_self) {
     std::cout << "Engine error: PolygonAreaObject is not initialized, yet using PolygonAreaObject.delete_all_polygons() is not possible.\n";
     std::exit(1);
@@ -41,21 +41,9 @@ __idk_nodiscard Object FescriptPolygonAreaObjectMemberDeleteAllPolygons::call([[
   return nullptr;
 }
 
-PolygonAreaObjectWrapper::PolygonAreaObjectWrapper() {
-  this->_object_def = "polygonareaobject";
-}
-
-PolygonAreaObjectWrapper::~PolygonAreaObjectWrapper() {
-}
-
-// TODO: just return _object_def. do not override to_string from BaseObjectWrapper, remove virtual.
-[[nodiscard]] std::string PolygonAreaObjectWrapper::to_string() {
-  return "polygonareaobject";
-}
-
-[[nodiscard]] Object PolygonAreaObjectWrapper::call([[maybe_unused]] Interpreter& interpreter, const std::vector<Object>& arguments) {
+[[nodiscard]] Object FescriptPolygonAreaObjectWrapper::call([[maybe_unused]] Interpreter& interpreter, const std::vector<Object>& arguments) {
   auto polygon_area_object = std::make_shared<fresh::PolygonAreaObject>();
-  this->_object_id = polygon_area_object->get_object_id();
+  this->_object_id = polygon_area_object->get_id();
   return std::move(polygon_area_object);
 }
 } // namespace fescript

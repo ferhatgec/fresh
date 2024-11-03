@@ -6,77 +6,68 @@
 
 namespace fresh {
 RectangleObject::RectangleObject(bool is_filled)
-  : _is_filled{is_filled} {
-  this->_vertices.get_polygons().reserve(4);
-  this->_object_def = "rectangleobject";
-}
+  : _is_filled{is_filled} {}
 
-RectangleObject::RectangleObject(SDL_FRect info, ColorResource color, bool is_filled)
+RectangleObject::RectangleObject(BBoxResource info, ColorResource color, bool is_filled)
   : _color{color}, _is_filled{is_filled} {
-  this->_object_def = "rectangleobject";
   this->_pos_info = info;
-
-  // store plain, not rotated 4 vertices; then we can apply given rotation.
-  this->_vertices.get_polygons().resize(4);
-  this->_vertices.get_polygons()[0] = BaseObject::_rectangle_convert_to_top_left({ 0.f, 0.f, this->_pos_info.w, this->_pos_info.h });
-  this->_vertices.get_polygons()[1] = BaseObject::_rectangle_convert_to_top_right({ 0.f, 0.f, this->_pos_info.w, this->_pos_info.h });
-  this->_vertices.get_polygons()[2] = BaseObject::_rectangle_convert_to_bottom_right({ 0.f, 0.f, this->_pos_info.w, this->_pos_info.h });
-  this->_vertices.get_polygons()[3] = BaseObject::_rectangle_convert_to_bottom_left({ 0.f, 0.f, this->_pos_info.w, this->_pos_info.h });
-
-  // we copy plain polygon.
-  this->_angle_generated_vertices.get_polygon_resource() = this->_vertices;
-
-  // don't rotate if rotation is same or nearly equal to 0.
-  if(!f32_nearly_equals(this->get_rotation_by_radian_degrees(), 0.f)) {
-    this->_angle_generated_vertices.set_rotation_by_radian_degrees(this->_rotation_degrees);
-  }
-
-  this->_angle_generated_vertices.get_color_resource() = this->get_color_resource();
-  this->_angle_generated_vertices.get_raw_position_info() = this->get_raw_position_info();
-  this->_angle_generated_vertices.get_polygon_resource().get_is_filled() = this->_is_filled;
-
-  // we store current version of rotated polygon; guarantee to not change it later.
-  this->_angle_generated_vertices_first = this->_angle_generated_vertices;
 }
 
-void RectangleObject::sync(bool is_sync_with_camera) noexcept {
+void RectangleObject::sync() noexcept {
   CHECK_DISABLED()
   this->_code.interpret_update();
-  this->sync_pos_with_camera(is_sync_with_camera);
-  if(this->_visible) {
-    SDL_SetRenderDrawColor(Engine::get_instance()->get_window()->get_renderer(),
-                           this->get_color_resource().get_red(),
-                           this->get_color_resource().get_green(),
-                           this->get_color_resource().get_blue(),
-                           this->get_color_resource().get_alpha());
-    if(f32_nearly_equals(this->get_rotation_by_radian_degrees(), 0.f)) {
-      this->_render_pos_info = BaseObject::_center_to_top_left_pivot(this->_render_pos_info);
-      if(this->get_is_filled()) {
-        SDL_RenderFillRectF(Engine::get_instance()->get_window()->get_renderer(),
-                            &this->_render_pos_info);
-      } else {
-        SDL_RenderDrawRectF(Engine::get_instance()->get_window()->get_renderer(),
-                            &this->_render_pos_info);
-      }
-    } else {
-      this->_angle_generated_vertices.get_raw_position_info() = this->get_raw_position_info();
-      this->_angle_generated_vertices._render_pos_info = this->_render_pos_info;
-      this->_angle_generated_vertices._draw_polygon();
-    }
+  if(!fre2d::detail::nearly_equals(this->get_delta_x(), 0.f) || !fre2d::detail::nearly_equals(this->get_delta_y(), 0.f)) {
+    this->_rectangle.set_position({this->get_x(), this->get_y()});
   }
-  APPLY_DELTAS()
+  if(!fre2d::detail::nearly_equals(this->get_delta_rot(), 0.f)) {
+    this->_rectangle.set_rotation(this->get_rotation());
+  }
+  if(!fre2d::detail::nearly_equals(this->get_delta_w(), 0.f) || !fre2d::detail::nearly_equals(this->get_delta_h(), 0.f)) {
+    this->_rectangle.set_scale({this->get_w(), this->get_h(), 1.f});
+  }
+  if(this->_visible) {
+    this->_rectangle.draw(
+      this->_shader,
+      FreshInstance->get_camera()->get_camera()
+    );
+  }
+  this->apply_changes();
 }
 
 void RectangleObject::set(const fescript::Token& name, fescript::Object value) {
   SET_BASE_OBJECT_PROPERTIES()
   else {
-    std::cout << "Engine [language] error: RectangleObject has no field named as '" << name.lexeme << "'.\n";
+    std::cout
+        << "Engine [language] error: RectangleObject has no field named as '"
+        << name.lexeme << "'.\n";
     std::exit(1);
   }
 }
 
-__idk_nodiscard
-ColorResource& RectangleObject::get_color_resource() noexcept {
+void RectangleObject::init_signal() noexcept {
+  // TODO: check if Window and Framebuffer initialized correctly.
+  //if(!this->_initialized) {
+    this->_rectangle.initialize_rectangle(
+        this->_pos_info.get_w(),
+        this->_pos_info.get_h(),
+        glm::vec2{this->_pos_info.get_x(), this->_pos_info.get_y()},
+        glm::vec4 {
+          this->_color.get_red(),
+          this->_color.get_green(),
+          this->_color.get_blue(),
+          this->_color.get_alpha()
+        });
+    if(this->_shader.get_program_id() == 0) {
+      this->_shader.initialize(
+        fre2d::detail::shader::default_vertex,
+        fre2d::detail::shader::default_fragment
+      );
+    }
+    this->_initialized = true;
+  //}
+}
+
+__idk_nodiscard ColorResource& RectangleObject::get_color_resource() noexcept {
   return this->_color;
 }
 
@@ -85,14 +76,9 @@ bool& RectangleObject::get_is_filled() noexcept {
   return this->_is_filled;
 }
 
-void RectangleObject::set_rotation_by_radian_degrees(idk::f32 rad_degrees) noexcept {
-  const auto rad_mod = std::fmodf(rad_degrees, mul_2_pi_v<idk::f32>);
-  if(f32_nearly_equals(this->_rotation_degrees, rad_mod))
-    return;
-  this->_angle_generated_vertices.get_polygon_resource().get_polygons() = this->_angle_generated_vertices_first.get_polygon_resource().get_polygons();
+void RectangleObject::set_rotation(idk::f32 rad_degrees) noexcept {
+  this->_rectangle.set_rotation(rad_degrees);
   this->_last_rotation_degrees = this->_rotation_degrees;
-  this->_rotation_degrees = rad_mod;
-  this->_angle_generated_vertices.set_rotation_by_radian_degrees(this->_rotation_degrees);
-  this->_angle_generated_vertices.get_polygon_resource().get_is_filled() = this->get_is_filled();
+  this->_rotation_degrees = rad_degrees;
 }
 } // namespace fresh

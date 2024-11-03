@@ -12,13 +12,12 @@ AnimationPlayerObject::AnimationPlayerObject(bool replay) noexcept
 AnimationPlayerObject::~AnimationPlayerObject() {
 }
 
-void AnimationPlayerObject::sync(bool is_sync_with_camera) noexcept {
+void AnimationPlayerObject::sync() noexcept {
   CHECK_DISABLED()
   this->_code.interpret_update();
-  this->sync_pos_with_camera(is_sync_with_camera);
-  if(!this->_start)
+    if(!this->_start)
     return;
-  if(this->_timer.is_paused())
+  if(this->_timer.paused())
     return;
   if(!this->is_started()) {
     if(this->_replay || this->_is_first) {
@@ -33,7 +32,7 @@ void AnimationPlayerObject::sync(bool is_sync_with_camera) noexcept {
   this->_process_current_frame();
   if(this->_current_index == this->_frames.size())
     this->_timer.stop();
-  APPLY_DELTAS()
+  this->apply_changes();
 }
 
 void AnimationPlayerObject::set(const fescript::Token& name, fescript::Object value) {
@@ -49,8 +48,9 @@ void AnimationPlayerObject::push_frame(const fresh::AnimationFrameObject& frame)
 }
 
 void AnimationPlayerObject::run_animation() noexcept {
-  if(this->_timer.is_paused())
-    this->_timer.unpause();
+  if(this->_timer.paused()) {
+    this->_timer.resume();
+  }
   this->_start = true;
 }
 
@@ -74,29 +74,29 @@ void AnimationPlayerObject::set_replay_status(bool replay) noexcept {
 }
 
 bool AnimationPlayerObject::is_started() noexcept {
-  return this->_timer.is_started();
+  return this->_timer.started();
 }
 
 void AnimationPlayerObject::_process_current_frame() noexcept {
   auto& current_frame = this->_frames[this->_current_index];
   if(current_frame._property == "pos_x") {
     MUST_BE_DECIMAL(current_frame._replace_value)
-    current_frame._obj->get_position_info().x = std::get<LongDoubleIndex>(current_frame._replace_value);
+    current_frame._obj->set_x(std::get<LongDoubleIndex>(current_frame._replace_value));
   } else if(current_frame._property == "pos_y") {
     MUST_BE_DECIMAL(current_frame._replace_value)
-    current_frame._obj->get_position_info().y = std::get<LongDoubleIndex>(current_frame._replace_value);
+    current_frame._obj->set_y(std::get<LongDoubleIndex>(current_frame._replace_value));
   } else if(current_frame._property == "width") {
     MUST_BE_DECIMAL(current_frame._replace_value)
-    current_frame._obj->get_position_info().w = std::get<LongDoubleIndex>(current_frame._replace_value);
+    current_frame._obj->set_w(std::get<LongDoubleIndex>(current_frame._replace_value));
   } else if(current_frame._property == "height") {
     MUST_BE_DECIMAL(current_frame._replace_value)
-    current_frame._obj->get_position_info().h = std::get<LongDoubleIndex>(current_frame._replace_value);
+    current_frame._obj->set_h(std::get<LongDoubleIndex>(current_frame._replace_value));
   } else if(current_frame._property == "visible") {
     MUST_BE_BOOL(current_frame._replace_value)
-    current_frame._obj->get_is_visible() = std::get<BoolIndex>(current_frame._replace_value);
+    current_frame._obj->set_visible(std::get<BoolIndex>(current_frame._replace_value));
   } else if(current_frame._property == "disabled") {
     MUST_BE_BOOL(current_frame._replace_value)
-    current_frame._obj->get_is_disabled() = std::get<BoolIndex>(current_frame._replace_value);
+    current_frame._obj->set_disabled(std::get<BoolIndex>(current_frame._replace_value));
   } else if(current_frame._property == "sprite_resource") {
     MUST_BE_STRING(current_frame._replace_value)
     if(auto sprite_ptr = std::dynamic_pointer_cast<fresh::SpriteObject>(current_frame._obj);

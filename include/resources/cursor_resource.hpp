@@ -1,6 +1,9 @@
 #pragma once
 
+#include "bbox_resource.hpp"
 #include "sprite_resource.hpp"
+#define GLFW_INCLUDE_NONE
+#include <GLFW/glfw3.h>
 
 // cursorresource is not an object,
 // it maybe seems much better to use SpriteObject instead of SpriteResource with SDL_Rect but
@@ -8,42 +11,59 @@
 namespace fresh {
 class CursorResource {
 public:
-  CursorResource();
-  CursorResource(const SpriteResource& cursor_sprite);
-  CursorResource(SpriteResource&& cursor_sprite);
+  enum class CursorMode {
+    Disabled,
+    Hidden,
+    Normal
+  };
+  CursorResource() noexcept;
+  ~CursorResource() noexcept;
 
-  ~CursorResource();
+  /// CursorResource::get_position() returns current local position of cursor.
+  /// ----
+  /// note: it's currently lose precision due double to float cast.
+  [[nodiscard]] const PointResource& get_position() noexcept;
 
-  virtual void
-  init_cursor() noexcept; // you can override init_cursor() to change show_cursor from false to true,
-                          // or just for other things.
+  /// CursorResource::get_w() returns current width of cursor.
+  /// returns -1 if no cursor attached.
+  [[nodiscard]] const idk::i32& get_w() const noexcept;
 
-  __idk_nodiscard
-  SpriteResource&
-  get_cursor_sprite() noexcept;
+  /// CursorResource::get_w() returns current width of cursor.
+  /// returns -1 if no cursor attached.
+  [[nodiscard]] const idk::i32& get_h() const noexcept;
 
-  __idk_nodiscard
-  SDL_Rect&
-  get_position_info() noexcept;
+  /// CursorResource::get_mode() returns current mode of cursor.
+  /// it can be Disabled, Hidden or Normal.
+  [[nodiscard]] const CursorMode& get_mode() const noexcept;
 
-  void
-  sync_position() noexcept;
+  /// CursorResource::set_position(BBoxResource) is write-only access
+  /// to _pos_info property.
+  void set_position(const PointResource& pos) noexcept;
 
-  void
-  sync_sprite() noexcept;
+  /// CursorResource::load_sprite(std::string) loads image from specified file path;
+  /// then creates a cursor.
+  void load_sprite(const std::string& sprite_path, idk::i32 w = -1, idk::i32 h = -1) noexcept;
 
-  void
-  show_cursor(bool show) noexcept;
+  /// CursorResource::sync_position() calls related glfw functions
+  /// to get current cursor position. it's called directly when
+  /// get_position() called.
+  void sync_position() noexcept;
 
-  __idk_nodiscard
-  CursorResource&
-  operator=(const CursorResource& right) noexcept;
+  /// CursorResource::sync_mode() calls related glfw functions to
+  /// get current cursor mode. it does not been called directly when
+  /// get_mode() being called.
+  void sync_mode() noexcept;
 
-  __idk_nodiscard
-  CursorResource&
-  operator=(CursorResource&& right) noexcept;
+  /// CursorResource::set_mode(CursorMode) is write-only access to _mode property.
+  /// it can be Disabled, Hidden or Normal.
+  void set_mode(CursorMode mode) noexcept;
+
+  [[nodiscard]] glm::vec2 get_ndc() noexcept;
+  [[nodiscard]] glm::vec2 get_world_space_position() noexcept;
 private:
-  SpriteResource _cursor_sprite;
-  SDL_Rect _pos_info;
+  GLFWimage _sprite;
+  GLFWcursor* _cursor;
+  PointResource _pos;
+  CursorMode _mode;
 };
 } // namespace fresh

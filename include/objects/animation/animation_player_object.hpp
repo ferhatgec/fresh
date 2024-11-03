@@ -1,3 +1,8 @@
+// MIT License
+//
+// Copyright (c) 2024 Ferhat Geçdoğan All Rights Reserved.
+// Distributed under the terms of the MIT License.
+//
 #pragma once
 
 #include "animation_frame_object.hpp"
@@ -45,9 +50,9 @@ public:
   AnimationPlayerObject(bool replay = false) noexcept;
   ~AnimationPlayerObject();
 
-  void sync(bool is_sync_with_camera = false) noexcept override;
+  void sync() noexcept override;
 
-  [[nodiscard]] std::string to_string() {
+  [[nodiscard]] constexpr const char* to_string() noexcept override {
     return "animationplayerobject";
   }
 

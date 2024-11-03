@@ -8,8 +8,7 @@ get_property(INCLUDE_PATHS GLOBAL PROPERTY "FRESH_INCLUDE_PATHS")
 add_executable(fresh_example example_lib.cpp)
 target_include_directories(fresh_example PRIVATE ${INCLUDE_PATHS})
 target_link_libraries(fresh_example PRIVATE fresh_lib)
-Fresh_CopyRequiredDLLs(fresh_example)
 
 add_custom_command(TARGET fresh_example POST_BUILD
-  COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_CURRENT_SOURCE_DIR}/box2d_example ${CMAKE_CURRENT_BINARY_DIR}/$<CONFIG>/
+  COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_CURRENT_SOURCE_DIR}/box2d_example ${CMAKE_CURRENT_BINARY_DIR}/
 )

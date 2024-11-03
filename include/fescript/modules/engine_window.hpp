@@ -1,18 +1,22 @@
+// MIT License
+//
+// Copyright (c) 2024 Ferhat Geçdoğan All Rights Reserved.
+// Distributed under the terms of the MIT License.
+//
 #pragma once
 
 #include "module_helpers.hpp"
-#include <SDL_video.h>
 #include <fescript/fescript_class.hpp>
 #include <fescript/fescript_callable.hpp>
 #include <types/predefined.hpp>
-
+#include <application/window.hpp>
 
 #define ENGINEWINDOW_GLOBAL_CONSTANT(name, value) this->globals->define(name, static_cast<idk::f80>(value));
 #define ENGINEWINDOW_MODULE(name, arg_count) DEFINE_MODULE_CLASS(name, EngineWindow, arg_count)
 #define ENGINEWINDOW_GLOBAL_CONSTANTS() \
-ENGINEWINDOW_GLOBAL_CONSTANT("EngineWindow_Fullscreen", SDL_WINDOW_FULLSCREEN) \
-ENGINEWINDOW_GLOBAL_CONSTANT("EngineWindow_FullscreenWindowed", SDL_WINDOW_FULLSCREEN_DESKTOP) \
-ENGINEWINDOW_GLOBAL_CONSTANT("EngineWindow_Windowed", 0)
+  ENGINEWINDOW_GLOBAL_CONSTANT("EngineWindow_Fullscreen", Fullscreen) \
+  ENGINEWINDOW_GLOBAL_CONSTANT("EngineWindow_FullscreenWindowed", FullscreenWindowed) \
+  ENGINEWINDOW_GLOBAL_CONSTANT("EngineWindow_Windowed", Windowed)
 
 namespace fescript {
 ENGINEWINDOW_MODULE(GetCurrentWindowSize, 0)

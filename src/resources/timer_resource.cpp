@@ -1,76 +1,75 @@
 #include <resources/timer_resource.hpp>
-#include <SDL.h>
 #include <iostream>
+#include <chrono>
+#define GLFW_INCLUDE_NONE
+#include "../../libs/glfw/include/GLFW/glfw3.h"
+#include "log/log.hpp"
 
 namespace fresh {
-TimerResource::TimerResource() {
-}
+TimerResource::TimerResource() noexcept
+  : _start_tick{0}, _pause_tick{0}, _started{false}, _paused{false} {}
 
-TimerResource::~TimerResource() {
-}
-
-__idk_nodiscard
-idk::u64 // in milliseconds
-TimerResource::get_ticks() noexcept {
-  if(!this->is_started())
-    return 0_u64;
-
-  if(this->is_paused()) {
+[[nodiscard]] idk::u64 // in milliseconds
+TimerResource::get_ticks() const noexcept {
+  if(!this->started()) {
+    return 0;
+  }
+  if(this->paused()) {
     return this->_pause_tick;
   }
-
-  return SDL_GetTicks64() - this->_start_tick;
+  return TimerResource::get_universal_tick() - this->_start_tick;
 }
 
 void TimerResource::start() noexcept {
   this->_started = true;
   this->_paused = false;
-  this->_start_tick = SDL_GetTicks64(); // in milliseconds
+  this->_start_tick = TimerResource::get_universal_tick(); // in milliseconds
 }
 
 void TimerResource::pause() noexcept {
-  if(this->_paused) {
-    this->unpause();
+  if(this->paused()) {
+    log_info(src(), "already paused; calling pause() multiple times won't effect.");
     return;
   }
-
   if(this->_started) {
     this->_paused = true;
-    this->_pause_tick = SDL_GetTicks64() - this->_start_tick;
-    this->_start_tick = 0_u64;
-  } else {
-    std::cout << "Engine info: TimerResource is not even started, yet trying to pause it is bad idea.\n";
-  }
-}
-
-void TimerResource::unpause() noexcept {
-  if(!this->_paused) {
-    std::cout << "Engine info: TimerResource is not paused before, trying to unpause it does nothing.\n";
+    this->_pause_tick = TimerResource::get_universal_tick() - this->_start_tick;
+    this->_start_tick = 0;
     return;
   }
+  log_info(src(), "already not started; yet trying to pause is not possible.");
+}
 
+void TimerResource::resume() noexcept {
+  if(!this->_paused) {
+    log_info(src(), "already not paused; calling resume() won't effect.");
+    return;
+  }
   if(this->_started) {
     this->_paused = false;
-    this->_start_tick = SDL_GetTicks64() - this->_pause_tick;
-    this->_pause_tick = 0_u64;
-  } else {
-    std::cout << "Engine info: TimerResource is not even started, yet trying to unpause it is bad idea.\n";
+    this->_start_tick = TimerResource::get_universal_tick() - this->_pause_tick;
+    this->_pause_tick = 0;
+    return;
   }
+  log_info(src(), "already not started; yet trying to resume it not possible.");
 }
 
 void TimerResource::stop() noexcept {
-  this->_started = false;
-  this->_paused = false;
-  this->_start_tick = this->_pause_tick = 0_u64;
+  this->_started = this->_paused = false;
+  this->_start_tick = this->_pause_tick = 0;
 }
 
-__idk_nodiscard bool
-TimerResource::is_started() noexcept {
+[[nodiscard]] const bool&
+TimerResource::started() const noexcept {
   return this->_started;
 }
 
-__idk_nodiscard bool
-TimerResource::is_paused() noexcept {
+[[nodiscard]] const bool& TimerResource::paused() const noexcept {
   return this->_paused;
 }
-}// namespace fresh
+
+[[nodiscard]] idk::u64 TimerResource::get_universal_tick() noexcept {
+  const auto& duration = std::chrono::steady_clock::now().time_since_epoch();
+  return std::chrono::duration_cast<std::chrono::milliseconds>(duration).count();
+}
+}  // namespace fresh

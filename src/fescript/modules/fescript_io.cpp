@@ -8,51 +8,58 @@
 #include <filesystem>
 
 namespace fescript {
-__idk_nodiscard Object FescriptIOPrint::call([[maybe_unused]] Interpreter& interpreter, const std::vector<Object>& arguments) {
-  for(auto& argument: arguments)
+[[nodiscard]] Object FescriptIOPrint::call([[maybe_unused]] Interpreter& interpreter, const std::vector<Object>& arguments) {
+  for(const auto& argument: arguments) {
     std::cout << Interpreter::stringify(argument);
+  }
   return true;
 }
 
-__idk_nodiscard Object FescriptIOPrintln::call([[maybe_unused]] Interpreter& interpreter, const std::vector<Object>& arguments) {
-  for(auto& argument: arguments)
+[[nodiscard]] Object FescriptIOPrintln::call([[maybe_unused]] Interpreter& interpreter, const std::vector<Object>& arguments) {
+  for(const auto& argument: arguments) {
     std::cout << Interpreter::stringify(argument) << '\n';
+  }
   return true;
 }
 
-__idk_nodiscard Object FescriptIOReadFile::call([[maybe_unused]] Interpreter& interpreter, const std::vector<Object>& arguments) {
+[[nodiscard]] Object FescriptIOReadFile::call([[maybe_unused]] Interpreter& interpreter, const std::vector<Object>& arguments) {
   ERR_CHECK_STRING("IO_read_file()", 1)
-  std::ifstream stream(std::get<StringIndex>(arguments.front()));
-  if(!stream)
-    return false;
   std::string content;
-  for(std::string temp; std::getline(stream, temp); content.append(temp + "\n"))
-    ;
-  stream.close();
+  {
+    std::ifstream stream(std::get<StringIndex>(arguments.front()));
+    if(!stream) {
+      return false;
+    }
+    for(std::string temp; std::getline(stream, temp); content.append(temp + "\n"))
+      ;
+  }
   return content;
 }
 
-__idk_nodiscard Object FescriptIOWriteFile::call([[maybe_unused]] Interpreter& interpreter, const std::vector<Object>& arguments) {
+[[nodiscard]] Object FescriptIOWriteFile::call([[maybe_unused]] Interpreter& interpreter, const std::vector<Object>& arguments) {
   ERR_CHECK_STRING("IO_write_file()", 2)
   std::ofstream stream(std::get<StringIndex>(arguments[0]), std::ios::app);
-  if(!stream)
+  if(!stream) {
     return false;
+  }
   stream << std::get<StringIndex>(arguments[1]);
   stream.close();
   return true;
 }
 
-__idk_nodiscard Object FescriptIOInput::call([[maybe_unused]] Interpreter& interpreter, const std::vector<Object>& arguments) {
-  if(!arguments.empty())
+[[nodiscard]] Object FescriptIOInput::call([[maybe_unused]] Interpreter& interpreter, const std::vector<Object>& arguments) {
+  if(!arguments.empty()) {
     std::cout << Interpreter::stringify(arguments.front());
+  }
   std::string input_str;
   std::cin >> input_str;
   return input_str;
 }
 
-__idk_nodiscard Object FescriptIOCharInput::call([[maybe_unused]] Interpreter& interpreter, const std::vector<Object>& arguments) {
-  if(!arguments.empty())
+[[nodiscard]] Object FescriptIOCharInput::call([[maybe_unused]] Interpreter& interpreter, const std::vector<Object>& arguments) {
+  if(!arguments.empty()) {
     std::cout << Interpreter::stringify(arguments.front());
+  }
   idk::u8 ch = getchar();
   return std::string(1, ch);
 }

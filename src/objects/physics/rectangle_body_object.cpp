@@ -4,25 +4,25 @@
 #include <fescript/wrappers/fescript_base_object.hpp>
 #include <fescript/fescript_array.hpp>
 #include <numbers>
+#include <format>
 
 namespace fresh {
-RectangleBodyObject::RectangleBodyObject(const b2WorldId& world_id, SDL_FRect pos, bool is_static_body) {
+RectangleBodyObject::RectangleBodyObject(const b2WorldId& world_id, BBoxResource pos, bool is_static_body) {
   this->_world_id = world_id;
   this->_is_static_body = is_static_body;
   this->_pos_info = pos;
-  this->_object_def = "rectanglebodyobject";
   this->_create_body();
+  this->reset_delta();
 }
 
-void RectangleBodyObject::sync(bool is_sync_with_camera) noexcept {
+void RectangleBodyObject::sync() noexcept {
   CHECK_DISABLED()
   this->_code.interpret_update();
-  this->sync_pos_with_camera(is_sync_with_camera);
   auto position = b2Body_GetPosition(this->_body_id);
   auto rotation = BaseObject::counter_clockwise_to_clockwise(b2Rot_GetAngle(b2Body_GetRotation(this->_body_id))); // TODO: we don't have rotation for BaseObject (update: we may have now).
-  this->get_position_info() = to_sdl(position, to_renderer(this->_pos_info.w), to_renderer(this->_pos_info.h));
-  this->set_rotation_by_radian_degrees(rotation);
-  APPLY_DELTAS()
+  this->set_position(BBoxResource { to_renderer(position.x), to_renderer(position.y), this->get_w(), this->get_h() });
+  this->set_rotation(rotation);
+  this->apply_changes();
 }
 
 void RectangleBodyObject::set(const fescript::Token& name, fescript::Object value) {
@@ -44,16 +44,19 @@ void RectangleBodyObject::set_is_static_body(bool is_static_body) noexcept {
 
 void RectangleBodyObject::_create_body() noexcept {
   b2BodyDef body_def = b2DefaultBodyDef();
-  body_def.position = to_box2d(this->_pos_info);
+  body_def.position = b2Vec2 { .x = this->_pos_info.get_x() / ptm_ratio, .y = this->_pos_info.get_y() / ptm_ratio };
   body_def.rotation = b2MakeRot(BaseObject::counter_clockwise_to_clockwise(this->_rotation_degrees));
   body_def.type = this->_is_static_body ? b2_staticBody : b2_dynamicBody;
   this->_body_id = b2CreateBody(this->_world_id, &body_def);
-  b2Polygon const rect = b2MakeBox(to_physics(this->_pos_info.w / 2.f), to_physics(this->_pos_info.h / 2.f)); // box2d takes half width; half height so we divide it by 2.
+  b2Polygon const rect = b2MakeBox(
+    to_physics(this->_pos_info.get_w()) / 2.f,
+    to_physics(this->_pos_info.get_h()) / 2.f
+  ); // box2d takes half width; half height so we divide it by 2.
   b2ShapeDef const shape_def = b2DefaultShapeDef();
   b2CreatePolygonShape(this->_body_id, &shape_def, &rect);
 }
 
-void RectangleBodyObject::set_rotation_by_radian_degrees(idk::f32 rad_degrees) noexcept {
+void RectangleBodyObject::set_rotation(idk::f32 rad_degrees) noexcept {
   const auto rad_fresh = std::fmodf(rad_degrees, mul_2_pi_v<idk::f32>);
   if(f32_nearly_equals(this->_rotation_degrees, rad_fresh))
     return;

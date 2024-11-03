@@ -23,7 +23,7 @@ namespace fresh {
 /// object_id.
 [[nodiscard]] const std::shared_ptr<BaseObject>& RenderObjects::get_object(std::size_t object_id) noexcept {
   for(const auto& sptr: RenderObjects::objects_to_render) {
-    if(sptr && sptr->get_object_id() == object_id) {
+    if(sptr && sptr->get_id() == object_id) {
       return sptr;
     }
   }

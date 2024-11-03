@@ -7,7 +7,6 @@
 namespace fresh {
 WorldObject::WorldObject(PointResource gravity, idk::u32 physics_frame, idk::u32 substep_count) noexcept
   : _physics_frame{physics_frame}, _substep_count{substep_count} {
-  this->_object_def = "worldobject";
   b2WorldDef world_def = b2DefaultWorldDef();
   world_def.gravity.x = gravity.get_x();
   world_def.gravity.y = gravity.get_y();
@@ -19,12 +18,11 @@ WorldObject::~WorldObject() {
   b2DestroyWorld(this->_world_id);
 }
 
-void WorldObject::sync(bool is_sync_with_camera) noexcept {
+void WorldObject::sync() noexcept {
   CHECK_DISABLED()
   this->_code.interpret_update();
-  this->sync_pos_with_camera(is_sync_with_camera);
-  b2World_Step(this->_world_id, this->_timestep, this->_substep_count);
-  APPLY_DELTAS()
+    b2World_Step(this->_world_id, this->_timestep, this->_substep_count);
+  this->apply_changes();
 }
 
 void WorldObject::set(const fescript::Token& name, fescript::Object value) {

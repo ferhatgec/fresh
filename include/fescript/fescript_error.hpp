@@ -22,7 +22,7 @@ static void report(int line, std::string_view where, std::string_view message) {
 }
 
 static void error(const Token &token, std::string_view message) {
-  if (token.type == TokenType::EOF_) {
+  if (token.type == TokenType::TOKEN_EOF_) {
     report(token.line, " at end", message);
     return;
   }

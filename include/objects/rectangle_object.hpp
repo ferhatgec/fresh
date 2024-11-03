@@ -1,27 +1,30 @@
 #pragma once
 
-#include "base_object.hpp"
-#include "polygon_object.hpp"
 #include <resources/color_resource.hpp>
 #include <resources/polygon_resource.hpp>
+#include "base_object.hpp"
+#include "polygon_object.hpp"
+
+#include "rectangle.hpp"
 
 namespace fresh {
 class RectangleObject : public BaseObject {
 public:
   friend class FesLoaderResource;
 
-  RectangleObject(bool is_filled = true);
-  RectangleObject(SDL_FRect info, ColorResource color, bool is_filled = true);
-  ~RectangleObject() = default;
+  explicit RectangleObject(bool is_filled = true);
+  RectangleObject(BBoxResource info, ColorResource color, bool is_filled = true);
+  ~RectangleObject() override = default;
 
   void
-  sync(bool is_sync_with_camera = false) noexcept override;
+  sync() noexcept override;
 
-  [[nodiscard]] std::string to_string() {
+  [[nodiscard]] constexpr const char* to_string() noexcept override {
     return "rectangleobject";
   }
 
   void set(const fescript::Token& name, fescript::Object value) override;
+  void init_signal() noexcept override;
 
   // TODO: we need Drawable class that gives get_position_resource(), get_color_resource()
   // and draw() function. so, that will change the definition of BaseObject.
@@ -31,12 +34,11 @@ public:
   __idk_nodiscard
   bool& get_is_filled() noexcept;
 
-  void set_rotation_by_radian_degrees(idk::f32 rad_degrees) noexcept override;
+  void set_rotation(idk::f32 rad_degrees) noexcept override;
 protected:
   bool _is_filled;
-  PolygonResource _vertices;
-  PolygonObject _angle_generated_vertices;
-  PolygonObject _angle_generated_vertices_first;
+  fre2d::Rectangle _rectangle;
+  fre2d::Shader _shader;
   ColorResource _color;
 };
 } // namespace fresh

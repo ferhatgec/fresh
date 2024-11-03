@@ -11,13 +11,5 @@ DEFINE_MEMBER_MODULE_CLASS(GetPhysicsFrame, WorldObjectMember, 0, fresh::WorldOb
 DEFINE_MEMBER_MODULE_CLASS(GetTimestep, WorldObjectMember, 0, fresh::WorldObject)
 DEFINE_MEMBER_MODULE_CLASS(SetSubstepCount, WorldObjectMember, 1, fresh::WorldObject)
 DEFINE_MEMBER_MODULE_CLASS(SetPhysicsFrame, WorldObjectMember, 1, fresh::WorldObject)
-
-class WorldObjectWrapper : public BaseObjectWrapper {
-public:
-  WorldObjectWrapper();
-  virtual ~WorldObjectWrapper();
-  [[nodiscard]] std::string to_string() override;
-  [[nodiscard]] int arity() override { return -1; }
-  [[nodiscard]] Object call([[maybe_unused]] Interpreter& interpreter, const std::vector<Object>& arguments) override;
-};
+DEFINE_MODULE_CLASS_CUSTOM_DERIVED_FROM(Wrapper, WorldObject, -1, FescriptBaseObjectWrapper)
 } // namespace fescript

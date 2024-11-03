@@ -1,117 +1,109 @@
+// MIT License
+//
+// Copyright (c) 2024 Ferhat Geçdoğan All Rights Reserved.
+// Distributed under the terms of the MIT License.
+//
 #pragma once
 
-#include <tuple>
 #include <types/predefined.hpp>
-#include <types/stringview.hpp>
-#include <types/tuple.hpp>
+#include <resources/color_resource.hpp>
+#define GLFW_INCLUDE_NONE
+#include <GLFW/glfw3.h>
+#include <framebuffer.hpp>
 
-#include <SDL.h>
+enum WindowMode : std::uint8_t {
+  Fullscreen,
+  FullscreenWindowed,
+  Windowed
+};
 
 namespace fresh {
+namespace defaults {
+static constexpr ColorResource clear_color { 1.f, 1.f, 1.f, 1.f };
+} // namespace fresh::defaults
+
 class Window {
 public:
-  enum class WindowMode {
-    Fullscreen,
-    FullscreenWindowed,
-    Windowed
-  };
   friend class Engine;
-  friend class Editor;
 
-  Window();
-  Window(idk::StringViewChar&& title,
-         idk::i32&& width,
-         idk::i32&& height,
-         idk::i32&& position_x,
-         idk::i32&& position_y,
-         idk::u32 renderer_flags = SDL_RENDERER_ACCELERATED);
+  Window() noexcept;
 
-  Window(const idk::StringViewChar& title,
-         const idk::i32& width,
-         const idk::i32& height,
-         const idk::i32& position_x,
-         const idk::i32& position_y,
-         const idk::u32& renderer_flags);
+  Window(
+    const std::string& title,
+    idk::i32 width,
+    idk::i32 height,
+    idk::i32 position_x,
+    idk::i32 position_y
+  ) noexcept;
 
-  ~Window();
+  ~Window() noexcept;
 
-  void
-  init_window() noexcept;
+  // delete copy constructors. only one instance of Window is allowed.
+  Window& operator=(const Window& wnd) noexcept = delete;
+  Window& operator=(Window&& wnd) noexcept = delete;
+  Window(const Window& wnd) noexcept = delete;
+  Window(Window&& wnd) noexcept = delete;
 
-  __idk_nodiscard
-  SDL_Renderer*&
-  get_renderer() noexcept;
+  void init_window() noexcept;
 
-  __idk_nodiscard
-  SDL_Window*&
-  get_raw_window() noexcept;
+  [[nodiscard]] GLFWwindow*& get_raw_window() noexcept;
 
-  __idk_nodiscard
-  idk::u32&
-  get_renderer_flags() noexcept;
+  void set_icon(const std::string& icon_path) noexcept;
+  void set_title(const std::string& title) noexcept;
 
-  __idk_nodiscard
-  bool
-  set_icon(const idk::StringViewChar& icon_path) noexcept;
+  void set_vsync_on(bool vsync_on) noexcept;
+  [[nodiscard]] const bool& is_vsync_on() const noexcept;
 
-  __idk_nodiscard
-  bool
-  set_icon(idk::StringViewChar&& icon_path) noexcept;
+  [[nodiscard]] const std::string& get_title() const noexcept;
 
-  __idk_nodiscard
-  bool
-  set_title(const idk::StringViewChar& title) noexcept;
+  void set_size(idk::i32 width, idk::i32 height) noexcept;
 
-  __idk_nodiscard
-  bool
-  set_title(idk::StringViewChar&& title) noexcept;
+  [[nodiscard]] const ColorResource& get_clear_color() const noexcept;
+  void set_clear_color(const ColorResource& colorres) noexcept;
 
-  __idk_nodiscard
-  idk::StringViewChar
-  get_title() noexcept;
+  [[nodiscard]] std::pair<idk::i32, idk::i32> get_window_size() noexcept;
+  [[nodiscard]] std::pair<idk::i32, idk::i32> get_window_position() noexcept;
 
-  void
-  set_window_size(idk::i32 width, idk::i32 height) noexcept;
+  void fullscreen() noexcept;
+  void fullscreen_windowed() noexcept;
+  void windowed() noexcept;
 
-  __idk_nodiscard
-  SDL_Color&
-  get_default_clear_color() noexcept;
+  [[nodiscard]] bool is_fullscreen() const noexcept;
+  [[nodiscard]] bool is_fullscreen_windowed() const noexcept;
+  [[nodiscard]] bool is_windowed() const noexcept;
+  [[nodiscard]] const WindowMode& get_window_mode() const noexcept;
 
-  __idk_nodiscard
-  std::tuple<idk::i32, idk::i32>
-  get_window_size() noexcept;
-
-  __idk_nodiscard
-  std::tuple<idk::i32, idk::i32>
-  get_window_position() noexcept;
-
-  __idk_nodiscard
-  bool
-  set_window_mode(WindowMode window_mode) noexcept;
-
-  __idk_nodiscard bool maximize() noexcept;
-  __idk_nodiscard bool minimize() noexcept;
+  void maximize() noexcept;
+  void minimize() noexcept;
   void restore() noexcept;
 
-  __idk_nodiscard bool is_maximized() noexcept;
-  __idk_nodiscard bool is_minimized() noexcept;
+  [[nodiscard]] bool maximized() const noexcept;
+  [[nodiscard]] bool minimized() const noexcept;
+  [[nodiscard]] bool initialized() const noexcept;
 
-  __idk_nodiscard bool set_opacity(idk::f32 opacity) noexcept;
-  __idk_nodiscard idk::f32 get_opacity() noexcept;
+  void set_opacity(idk::f32 opacity) noexcept;
+
+  [[nodiscard]] idk::f32 get_opacity() noexcept;
+
+  [[nodiscard]] fre2d::Framebuffer& get_framebuffer() noexcept;
+
+  [[nodiscard]] const idk::i32& get_width() const noexcept;
+  [[nodiscard]] const idk::i32& get_height() const noexcept;
+
+  [[nodiscard]] const idk::i32& get_x() const noexcept;
+  [[nodiscard]] const idk::i32& get_y() const noexcept;
 private:
-  idk::i32 _width { 800_i32 };
-  idk::i32 _height { 600_i32 };
-
-  idk::i32 _position_x { 0_i32 },
-           _position_y { 0_i32 };
-
-  idk::u32 _renderer_flags { SDL_RENDERER_ACCELERATED };
-  idk::StringViewChar _title = "freshEngine Application";
-
-  SDL_Renderer* _renderer = nullptr;
-  SDL_Window* _window = nullptr;
-  SDL_Color _default_clear_color {
-      255, 255, 255, 255
-  };
+  static void framebuffer_resize_cb(GLFWwindow* window, idk::i32 width, idk::i32 height) noexcept;
+  static void window_close_cb(GLFWwindow* window) noexcept;
+  static void window_resize_cb(GLFWwindow* window, idk::i32 width, idk::i32 height) noexcept;
+  static void window_pos_cb(GLFWwindow* window, idk::i32 x, idk::i32 y) noexcept;
+  idk::i32 _width, _height;
+  idk::i32 _position_x, _position_y;
+  std::string _title;
+  fre2d::Framebuffer _fb;
+  GLFWwindow* _window;
+  ColorResource _clear_color;
+  WindowMode _window_mode;
+  bool _vsync_status;
 };
 } // namespace fresh

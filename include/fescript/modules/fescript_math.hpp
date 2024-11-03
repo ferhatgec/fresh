@@ -1,3 +1,8 @@
+// MIT License
+//
+// Copyright (c) 2024 Ferhat Geçdoğan All Rights Reserved.
+// Distributed under the terms of the MIT License.
+//
 #pragma once
 
 #include "module_helpers.hpp"
@@ -9,41 +14,41 @@
 #define MATH_GLOBAL_FUNCTION(name, def_type) this->globals->define(name, std::make_shared<##def_type>());
 #define MATH_MODULE(name, arg_count) DEFINE_MODULE_CLASS(name, Math, arg_count)
 #define MATH_GLOBAL_CONSTANTS() \
-MATH_GLOBAL_CONSTANT("Math_Pi", __idk_pi) \
-MATH_GLOBAL_CONSTANT("Math_E", __idk_e)   \
-MATH_GLOBAL_CONSTANT("Math_Phi", __idk_phi) \
-MATH_GLOBAL_CONSTANT("Math_Tau", __idk_tau)
+  MATH_GLOBAL_CONSTANT("Math_Pi", __idk_pi) \
+  MATH_GLOBAL_CONSTANT("Math_E", __idk_e)   \
+  MATH_GLOBAL_CONSTANT("Math_Phi", __idk_phi) \
+  MATH_GLOBAL_CONSTANT("Math_Tau", __idk_tau)
 
 #define MATH_GLOBAL_FUNCTIONS() \
-MATH_GLOBAL_FUNCTION("Math_abs", FescriptMathAbs) \
-MATH_GLOBAL_FUNCTION("Math_max", FescriptMathMax) \
-MATH_GLOBAL_FUNCTION("Math_min", FescriptMathMin) \
-MATH_GLOBAL_FUNCTION("Math_exp", FescriptMathExp) \
-MATH_GLOBAL_FUNCTION("Math_log", FescriptMathLog) \
-MATH_GLOBAL_FUNCTION("Math_pow", FescriptMathPow) \
-MATH_GLOBAL_FUNCTION("Math_sqrt", FescriptMathSqrt) \
-MATH_GLOBAL_FUNCTION("Math_cbrt", FescriptMathCbrt) \
-MATH_GLOBAL_FUNCTION("Math_sin", FescriptMathSin) \
-MATH_GLOBAL_FUNCTION("Math_cos", FescriptMathCos) \
-MATH_GLOBAL_FUNCTION("Math_tan", FescriptMathTan) \
-MATH_GLOBAL_FUNCTION("Math_asin", FescriptMathAsin) \
-MATH_GLOBAL_FUNCTION("Math_acos", FescriptMathAcos) \
-MATH_GLOBAL_FUNCTION("Math_atan", FescriptMathAtan) \
-MATH_GLOBAL_FUNCTION("Math_sinh", FescriptMathSinh) \
-MATH_GLOBAL_FUNCTION("Math_cosh", FescriptMathCosh) \
-MATH_GLOBAL_FUNCTION("Math_tanh", FescriptMathTanh) \
-MATH_GLOBAL_FUNCTION("Math_asinh", FescriptMathAsinh) \
-MATH_GLOBAL_FUNCTION("Math_acosh", FescriptMathAcosh) \
-MATH_GLOBAL_FUNCTION("Math_atanh", FescriptMathAtanh) \
-MATH_GLOBAL_FUNCTION("Math_erf", FescriptMathErf) \
-MATH_GLOBAL_FUNCTION("Math_gamma", FescriptMathGamma) \
-MATH_GLOBAL_FUNCTION("Math_ceil", FescriptMathCeil) \
-MATH_GLOBAL_FUNCTION("Math_floor", FescriptMathFloor) \
-MATH_GLOBAL_FUNCTION("Math_trunc", FescriptMathTrunc) \
-MATH_GLOBAL_FUNCTION("Math_round", FescriptMathRound) \
-MATH_GLOBAL_FUNCTION("Math_sgn", FescriptMathSgn) \
-MATH_GLOBAL_FUNCTION("Math_degs_to_rads", FescriptMathDegreesToRadians) \
-MATH_GLOBAL_FUNCTION("Math_rads_to_degs", FescriptMathRadiansToDegrees)
+  MATH_GLOBAL_FUNCTION("Math_abs", FescriptMathAbs) \
+  MATH_GLOBAL_FUNCTION("Math_max", FescriptMathMax) \
+  MATH_GLOBAL_FUNCTION("Math_min", FescriptMathMin) \
+  MATH_GLOBAL_FUNCTION("Math_exp", FescriptMathExp) \
+  MATH_GLOBAL_FUNCTION("Math_log", FescriptMathLog) \
+  MATH_GLOBAL_FUNCTION("Math_pow", FescriptMathPow) \
+  MATH_GLOBAL_FUNCTION("Math_sqrt", FescriptMathSqrt) \
+  MATH_GLOBAL_FUNCTION("Math_cbrt", FescriptMathCbrt) \
+  MATH_GLOBAL_FUNCTION("Math_sin", FescriptMathSin) \
+  MATH_GLOBAL_FUNCTION("Math_cos", FescriptMathCos) \
+  MATH_GLOBAL_FUNCTION("Math_tan", FescriptMathTan) \
+  MATH_GLOBAL_FUNCTION("Math_asin", FescriptMathAsin) \
+  MATH_GLOBAL_FUNCTION("Math_acos", FescriptMathAcos) \
+  MATH_GLOBAL_FUNCTION("Math_atan", FescriptMathAtan) \
+  MATH_GLOBAL_FUNCTION("Math_sinh", FescriptMathSinh) \
+  MATH_GLOBAL_FUNCTION("Math_cosh", FescriptMathCosh) \
+  MATH_GLOBAL_FUNCTION("Math_tanh", FescriptMathTanh) \
+  MATH_GLOBAL_FUNCTION("Math_asinh", FescriptMathAsinh) \
+  MATH_GLOBAL_FUNCTION("Math_acosh", FescriptMathAcosh) \
+  MATH_GLOBAL_FUNCTION("Math_atanh", FescriptMathAtanh) \
+  MATH_GLOBAL_FUNCTION("Math_erf", FescriptMathErf) \
+  MATH_GLOBAL_FUNCTION("Math_gamma", FescriptMathGamma) \
+  MATH_GLOBAL_FUNCTION("Math_ceil", FescriptMathCeil) \
+  MATH_GLOBAL_FUNCTION("Math_floor", FescriptMathFloor) \
+  MATH_GLOBAL_FUNCTION("Math_trunc", FescriptMathTrunc) \
+  MATH_GLOBAL_FUNCTION("Math_round", FescriptMathRound) \
+  MATH_GLOBAL_FUNCTION("Math_sgn", FescriptMathSgn) \
+  MATH_GLOBAL_FUNCTION("Math_degs_to_rads", FescriptMathDegreesToRadians) \
+  MATH_GLOBAL_FUNCTION("Math_rads_to_degs", FescriptMathRadiansToDegrees)
 
 namespace fescript {
 static inline constexpr idk::f80 pi_180 = __idk_pi / 180.0;

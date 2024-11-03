@@ -7,6 +7,7 @@
 #pragma once
 
 #include "fescript_callable.hpp"
+#include "fescript_stmt.hpp"
 
 namespace fescript {
 class Environment;
@@ -19,7 +20,9 @@ public:
               std::shared_ptr<Environment> closure, bool is_initializer);
   [[nodiscard]] int arity() override;
   [[nodiscard]] Object call([[maybe_unused]] Interpreter& interpreter, const std::vector<Object>& arguments) override;
-  [[nodiscard]] std::string to_string() override;
+  [[nodiscard]] constexpr const char* to_string() const noexcept override {
+    return this->declaration->name.lexeme.c_str();
+  }
   [[nodiscard]] std::shared_ptr<FescriptFunction> bind(std::shared_ptr<FescriptInstance> instance);
 
 private:

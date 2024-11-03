@@ -1,85 +1,68 @@
 #pragma once
 
 #include <types/stringview.hpp>
-#include <SDL_mixer.h>
+#include "../../libs/miniaudio/miniaudio.h"
+
 
 namespace fresh {
 class AudioResource {
 public:
-  AudioResource();
-  AudioResource(const idk::StringViewChar& audio_file_path,
-                idk::i32 frequency = 44100, // cd quality
-                idk::u16 format = AUDIO_S16SYS,
-                idk::i32 channel = 2, // stereo
-                idk::i32 buffer_size = 512 // i think it's large enough. otherwise it would be laggy so much.
-                                           // in the end we use stacks which made play state slower.
-                                           // use MusicResource if your *audio file* large enough.
-  ) noexcept;
+  AudioResource() noexcept;
+  explicit AudioResource(const std::string& audio_file_path, idk::u32 frequency = 44100) noexcept;
+  ~AudioResource() noexcept;
 
-  AudioResource(idk::StringViewChar&& audio_file_path,
-                idk::i32 frequency = 44100,
-                idk::u16 format = AUDIO_S16SYS,
-                idk::i32 channel = 2,
-                idk::i32 buffer_size = 512) noexcept;
+  /// AudioResource::load_audio_source(std::string, unsigned) loads given
+  /// file using miniaudio library.
+  void load_audio_source(const std::string& audio_file_path, idk::u32 frequency = 44100) noexcept;
 
-  __idk_nodiscard
-  Mix_Chunk*&
-  get_audio_source() noexcept;
+  /// AudioResource::get_audio_volume() is read-only access to _audio_volume property.
+  [[nodiscard]] const idk::f32& get_audio_volume() const noexcept;
 
-  void
-  load_audio_source(const idk::StringViewChar& audio_file_path,
-                    idk::i32 frequency = 44100,
-                    idk::u16 format = AUDIO_S16SYS,
-                    idk::i32 channel = 2,
-                    idk::i32 buffer_size = 512) noexcept;
+  /// AudioResource::get_audio_frequency() is read-only access to _frequency property.
+  [[nodiscard]] const idk::u32& get_audio_frequency() const noexcept;
 
-  void
-  load_audio_source(idk::StringViewChar&& audio_file_path,
-                    idk::i32 frequency = 44100,
-                    idk::u16 format = AUDIO_S16SYS,
-                    idk::i32 channel = 2,
-                    idk::i32 buffer_size = 512) noexcept;
+  /// AudioResource::get_paused() is read-only access to _paused property.
+  [[nodiscard]] const bool& get_paused() const noexcept;
 
-  __idk_nodiscard
-  idk::i32&
-  get_audio_volume() noexcept;
+  /// AudioResource::get_loop() is read-only access to _loop property.
+  [[nodiscard]] const bool& get_loop() const noexcept;
 
-  void
-  sync_audio_volume() noexcept;
+  /// AudioResource::get_initialized() is read-only access to _initialized property.
+  /// only true when load_audio_source(std::string, unsigned) is called.
+  [[nodiscard]] const bool& get_initialized() const noexcept;
 
-  void
-  pause_audio() noexcept;
+  /// AudioResource::set_audio_volume(float) is write-only access to _audio_volume property.
+  /// takes value between 0 and 1.
+  void set_audio_volume(idk::f32 volume) noexcept;
 
-  void
-  pause_all_audio() noexcept;
+  /// AudioResource::pause_audio() pauses current audio.
+  void pause_audio() noexcept;
 
-  void
-  resume_audio() noexcept;
+  /// AudioResource::resume_audio() resumes current audio.
+  void resume_audio() noexcept;
 
-  void
-  resume_all_audio() noexcept;
+  /// AudioResource::stop_audio() stops current audio.
+  void stop_audio() noexcept;
 
-  void
-  play_audio(bool loop = false) noexcept;
+  /// AudioResource::play_audio(bool) plays current audio.
+  void play_audio(bool loop = false) noexcept;
 
-  void
-  play_fade_in_audio(bool loop = false, idk::i32 ms = 10_i32) noexcept;
+  /// AudioResource::fade_in_audio(bool, float) plays current audio with
+  /// fade in effect.
+  /// note: this function might need some changes since it might end
+  /// earlier than given function parameter seconds.
+  void fade_in_audio(bool loop = false, idk::f32 seconds = 1.f) noexcept;
 
-  void
-  stop_audio() noexcept;
-
-  void
-  stop_fade_out_audio(bool loop = false, idk::i32 ms = 10_i32) noexcept;
-
-  void
-  stop_all_audio() noexcept;
-
-  ~AudioResource();
+  /// AudioResource::fade_out_audio(bool, float) plays current audio with
+  /// fade out effect.
+  /// note: this function might need some changes since it might end
+  /// earlier than given function parameter seconds.
+  void fade_out_audio(bool loop = false, idk::f32 seconds = 1.f) noexcept;
 private:
-  Mix_Chunk* _audio_source = nullptr;
-  idk::i32 _audio_volume { MIX_MAX_VOLUME };
-  idk::i32 _audio_channel;
-
-  static idk::u16 _channel;
+  ma_engine _engine;
+  ma_sound _sound;
+  idk::f32 _audio_volume, _fade_duration, _fade_step;
+  idk::u32 _frequency;
+  bool _paused, _loop, _initialized;
 };
 } // namespace fresh

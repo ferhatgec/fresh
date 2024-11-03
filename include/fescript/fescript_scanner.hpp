@@ -49,23 +49,23 @@ private:
 
   static inline const char null_char = '\0';
   static inline const std::map<std::string, TokenType> keywords{
-    {"and", TokenType::AND},
-    {"class", TokenType::CLASS},
-    {"else", TokenType::ELSE},
-    {"elif", TokenType::ELIF},
-    {"false", TokenType::FALSE},
-    {"for", TokenType::FOR},
-    {"fn", TokenType::FUN},
-    {"if", TokenType::IF},
-    {"nil", TokenType::NIL},
-    {"or", TokenType::OR},
-    {"return", TokenType::RETURN},
-    {"super", TokenType::SUPER},
-    {"this", TokenType::THIS},
-    {"true", TokenType::TRUE},
-    {"def", TokenType::VAR},
-    {"while", TokenType::WHILE},
-    {"not", TokenType::BANG}
+    {"and", TokenType::TOKEN_AND},
+    {"class", TokenType::TOKEN_CLASS},
+    {"else", TokenType::TOKEN_ELSE},
+    {"elif", TokenType::TOKEN_ELIF},
+    {"false", TokenType::TOKEN_FALSE},
+    {"for", TokenType::TOKEN_FOR},
+    {"fn", TokenType::TOKEN_FUN},
+    {"if", TokenType::TOKEN_IF},
+    {"nil", TokenType::TOKEN_NIL},
+    {"or", TokenType::TOKEN_OR},
+    {"return", TokenType::TOKEN_RETURN},
+    {"super", TokenType::TOKEN_SUPER},
+    {"this", TokenType::TOKEN_THIS},
+    {"true", TokenType::TOKEN_TRUE},
+    {"def", TokenType::TOKEN_VAR},
+    {"while", TokenType::TOKEN_WHILE},
+    {"not", TokenType::TOKEN_BANG}
   };
 };
 }// namespace fescript

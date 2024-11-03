@@ -15,13 +15,5 @@ DEFINE_MEMBER_MODULE_CLASS(StopAnimation, AnimationPlayerObjectMember, 0, fresh:
 DEFINE_MEMBER_MODULE_CLASS(SetReplayStatus, AnimationPlayerObjectMember, 1, fresh::AnimationPlayerObject)
 DEFINE_MEMBER_MODULE_CLASS(IsStarted, AnimationPlayerObjectMember, 0, fresh::AnimationPlayerObject)
 DEFINE_MEMBER_MODULE_CLASS(SynchronizeFrames, AnimationPlayerObjectMember, 0, fresh::AnimationPlayerObject)
-
-class AnimationPlayerObjectWrapper : public BaseObjectWrapper, public std::enable_shared_from_this<AnimationPlayerObjectWrapper> {
-public:
-  AnimationPlayerObjectWrapper();
-  ~AnimationPlayerObjectWrapper();
-  [[nodiscard]] std::string to_string() override;
-  [[nodiscard]] int arity() override { return -1; }
-  [[nodiscard]] Object call([[maybe_unused]] Interpreter& interpreter, const std::vector<Object>& arguments) override;
-};
+DEFINE_MODULE_CLASS_CUSTOM_DERIVED_FROM(Wrapper, AnimationPlayerObject, -1, FescriptBaseObjectWrapper)
 } // namespace fescript

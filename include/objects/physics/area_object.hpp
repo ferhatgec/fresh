@@ -1,8 +1,15 @@
+// MIT License
+//
+// Copyright (c) 2024 Ferhat Geçdoğan All Rights Reserved.
+// Distributed under the terms of the MIT License.
+//
 #pragma once
 
 #include <objects/base_object.hpp>
 #include <resources/color_resource.hpp>
 #include <resources/point_resource.hpp>
+
+#include "resources/bbox_resource.hpp"
 
 // AreaObject is a base class for detecting collisions.
 namespace fresh {
@@ -15,12 +22,12 @@ public:
   friend class FesLoaderResource;
 
   AreaObject();
-  explicit AreaObject(SDL_FRect pos_info);
+  explicit AreaObject(BBoxResource pos_info);
   explicit AreaObject(std::shared_ptr<BaseObject> base_object);
   ~AreaObject() override = default;
 
   void
-  sync(bool is_sync_with_camera = false) noexcept override;
+  sync() noexcept override;
 
   __idk_nodiscard
   virtual bool
@@ -38,7 +45,7 @@ public:
   virtual bool
   is_colliding_with(std::shared_ptr<PolygonAreaObject> object) noexcept;
 
-  [[nodiscard]] std::string to_string() {
+  [[nodiscard]] constexpr const char* to_string() noexcept override {
     return "areaobject";
   }
 

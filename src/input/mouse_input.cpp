@@ -1,63 +1,55 @@
 #include <freshengine.hpp>
 
 namespace fresh {
-MouseInput::MouseInput() {}
-MouseInput::~MouseInput() {}
-
-__idk_nodiscard bool
-MouseInput::is_button_pressed(idk::u8 button) noexcept {
-  if(!(button >= 1 && button <= 5))
-    return false;
-
-  if(Engine::get_event_instance().type == SDL_POLLSENTINEL) {// SDL_PollEvent is returns false while mouse
-                                                             // held down with no any event performed (moving mouse, clicking keys).
-                                                             // so, we check for SDL_POLLSENTINEL, which is gives us the information of
-                                                             // there's no actually any event waiting to pull. so, we use our _button_infos
-                                                             // table to give last frame change.
-    return this->_button_infos.at_without_check_reference(button - 1)._first;
+void MouseInput::init() noexcept {
+  if(!FreshInstance->get_window()->initialized()) {
+    log_error(src(), "cannot initialize MouseInput since Window is not initialized.");
+    return;
   }
+  glfwSetMouseButtonCallback(FreshInstance->get_window()->get_raw_window(), MouseInput::button_state_cb);
+}
 
-  switch(Engine::get_event_instance().type) {
-  case SDL_MOUSEBUTTONDOWN: {
-    if(Engine::get_event_instance().button.button == button) {
-      this->_button_infos.at_without_check_reference(button - 1)._first = true;
-      return true;
+void MouseInput::reset_states() noexcept {
+  std::ranges::for_each(MouseInput::buttons, [](auto& state) noexcept {
+    state.just_pressed = state.released = false;
+  });
+}
+
+[[nodiscard]] const bool&
+MouseInput::is_button_pressed(idk::i8 button) noexcept {
+  return MouseInput::buttons[button].pressed;
+}
+
+[[nodiscard]] const bool& MouseInput::is_button_just_pressed(
+    idk::i8 button) noexcept {
+  return MouseInput::buttons[button].just_pressed;
+}
+
+[[nodiscard]] const bool& MouseInput::is_button_released(idk::i8 button) noexcept {
+  return MouseInput::buttons[button].released;
+}
+
+void MouseInput::button_state_cb(
+  GLFWwindow* window,
+  idk::i32 button,
+  idk::i32 action,
+  idk::i32 mods
+) {
+  if(button < 0 || button >= MouseInput::buttons.size()) {
+    return;
+  }
+  switch(action) {
+    case GLFW_PRESS: {
+      if(!buttons[button].pressed) {
+        buttons[button].just_pressed = true;
+      }
+      buttons[button].pressed = true;
+      break;
     }
-    break;
-  }
-
-  case SDL_MOUSEBUTTONUP: {
-    if(Engine::get_event_instance().button.button == button) {
-      this->_button_infos.at_without_check_reference(button - 1)._first = false;
-      return true;
+    case GLFW_RELEASE: {
+      buttons[button].pressed = false;
+      buttons[button].released = true;
     }
-    break;
   }
-  }
-
-  return false;
 }
-
-__idk_nodiscard bool
-MouseInput::is_button_just_pressed(idk::u8 button) noexcept {
-  switch(Engine::get_event_instance().type) {
-  case SDL_MOUSEBUTTONUP: {
-    this->_button_infos.at_without_check_reference(button - 1)._first = false;
-    return Engine::get_event_instance().button.button == button;
-  }
-  }
-
-  return false;
-}
-
-void MouseInput::sync_current_coordinates() noexcept {
-  SDL_GetMouseState(&this->_coords._first, &this->_coords._second);
-}
-
-__idk_nodiscard
-idk::Pair<idk::i32, idk::i32>&
-MouseInput::get_current_coordinates() noexcept {
-  this->sync_current_coordinates();
-  return this->_coords;
-}
-}// namespace fresh
+}  // namespace fresh

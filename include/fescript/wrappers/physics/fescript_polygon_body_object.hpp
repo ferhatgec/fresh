@@ -8,13 +8,5 @@
 namespace fescript {
 DEFINE_MEMBER_MODULE_CLASS(SetIsStaticBody, PolygonBodyObjectMember, 1, fresh::PolygonBodyObject)
 DEFINE_MEMBER_MODULE_CLASS(GetIsStaticBody, PolygonBodyObjectMember, 0, fresh::PolygonBodyObject)
-
-class PolygonBodyObjectWrapper : public BodyObjectWrapper {
-public:
-  PolygonBodyObjectWrapper();
-  ~PolygonBodyObjectWrapper();
-  [[nodiscard]] std::string to_string() override;
-  [[nodiscard]] int arity() override { return -1; }
-  [[nodiscard]] Object call([[maybe_unused]] Interpreter& interpreter, const std::vector<Object>& arguments) override;
-};
+DEFINE_MODULE_CLASS_CUSTOM_DERIVED_FROM(Wrapper, PolygonBodyObject, -1, FescriptBodyObjectWrapper)
 } // namespace fescript

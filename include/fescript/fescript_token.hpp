@@ -13,7 +13,7 @@
 
 #include "fescript_token_type.hpp"
 
-enum : std::uint8_t {
+enum : std::int8_t {
   StringIndex,
   LongDoubleIndex,
   BoolIndex,
@@ -31,7 +31,6 @@ enum : std::uint8_t {
   FescriptCameraObjectIndex,
   FescriptAnimationPlayerObjectIndex,
   FescriptAnimationFrameObjectIndex,
-  FescriptMusicPlayerObjectIndex,
   FescriptAudioPlayerObjectIndex,
   FescriptCircleObjectIndex,
   FescriptPolygonObjectIndex,
@@ -55,7 +54,6 @@ class AreaObject;
 class CameraObject;
 class AnimationPlayerObject;
 class AnimationFrameObject;
-class MusicPlayerObject;
 class AudioPlayerObject;
 class CircleObject;
 class PolygonObject;
@@ -77,7 +75,7 @@ class FescriptInstance;
 class FescriptArray;
 class FescriptDict;
 class FescriptCallable;
-class BaseObjectWrapper;
+class FescriptBaseObjectWrapper;
 
 using Object =
   std::variant<std::string,
@@ -97,7 +95,6 @@ using Object =
                std::shared_ptr<fresh::CameraObject>,
                std::shared_ptr<fresh::AnimationPlayerObject>,
                std::shared_ptr<fresh::AnimationFrameObject>,
-               std::shared_ptr<fresh::MusicPlayerObject>,
                std::shared_ptr<fresh::AudioPlayerObject>,
                std::shared_ptr<fresh::CircleObject>,
                std::shared_ptr<fresh::PolygonObject>,
@@ -126,10 +123,10 @@ template<typename ObjectType>
 concept BaseObjectType = std::derived_from<std::decay_t<RemoveSmartPtrType<std::decay_t<ObjectType>>>, fresh::BaseObject>;
 
 template<typename ObjectWrapperType>
-concept BaseObjectWrapperType = std::derived_from<std::decay_t<RemoveSmartPtrType<std::decay_t<ObjectWrapperType>>>, BaseObjectWrapper>;
+concept FescriptBaseObjectWrapperType = std::derived_from<std::decay_t<RemoveSmartPtrType<std::decay_t<ObjectWrapperType>>>, FescriptBaseObjectWrapper>;
 
 template<typename Type> struct IsBaseObjectType : std::bool_constant<BaseObjectType<Type>> {};
-template<typename Type> struct IsBaseObjectWrapperType : std::bool_constant<BaseObjectWrapperType<Type>> {};
+template<typename Type> struct IsFescriptBaseObjectWrapperType : std::bool_constant<FescriptBaseObjectWrapperType<Type>> {};
 
 class Token {
 public:

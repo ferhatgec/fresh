@@ -2,7 +2,7 @@
 #include <objects/physics/rectangle_area_object.hpp>
 
 namespace fescript {
-__idk_nodiscard Object FescriptRectangleAreaObjectMemberIsCollidingWith::call([[maybe_unused]] Interpreter& interpreter, const std::vector<Object>& arguments) {
+[[nodiscard]] Object FescriptRectangleAreaObjectMemberIsCollidingWith::call([[maybe_unused]] Interpreter& interpreter, const std::vector<Object>& arguments) {
   if(!this->_self) {
     std::cout << "Engine error: RectangleAreaObject is not initialized, yet using RectangleAreaObject.is_colliding_with() is not possible.\n";
     std::exit(1);
@@ -21,21 +21,9 @@ __idk_nodiscard Object FescriptRectangleAreaObjectMemberIsCollidingWith::call([[
   return false;
 }
 
-RectangleAreaObjectWrapper::RectangleAreaObjectWrapper() {
-  this->_object_def = "rectangleareaobject";
-}
-
-RectangleAreaObjectWrapper::~RectangleAreaObjectWrapper() {
-}
-
-// TODO: just return _object_def. do not override to_string from BaseObjectWrapper, remove virtual.
-[[nodiscard]] std::string RectangleAreaObjectWrapper::to_string() {
-  return "rectangleareaobject";
-}
-
-[[nodiscard]] Object RectangleAreaObjectWrapper::call([[maybe_unused]] Interpreter& interpreter, const std::vector<Object>& arguments) {
+[[nodiscard]] Object FescriptRectangleAreaObjectWrapper::call([[maybe_unused]] Interpreter& interpreter, const std::vector<Object>& arguments) {
   auto rectangle_area_object = std::make_shared<fresh::RectangleAreaObject>();
-  this->_object_id = rectangle_area_object->get_object_id();
+  this->_object_id = rectangle_area_object->get_id();
   return std::move(rectangle_area_object);
 }
 } // namespace fescript

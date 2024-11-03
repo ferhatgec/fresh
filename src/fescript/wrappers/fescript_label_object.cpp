@@ -2,7 +2,7 @@
 #include <objects/label_object.hpp>
 
 namespace fescript {
-__idk_nodiscard Object FescriptLabelObjectMemberInitFont::call([[maybe_unused]] Interpreter& interpreter, const std::vector<Object>& arguments) {
+[[nodiscard]] Object FescriptLabelObjectMemberInitFont::call([[maybe_unused]] Interpreter& interpreter, const std::vector<Object>& arguments) {
   if(!this->_self) {
     std::cout << "Engine error: LabelObject is not initialized, yet using LabelObject.init_font() is not possible.\n";
     std::exit(1);
@@ -15,7 +15,7 @@ __idk_nodiscard Object FescriptLabelObjectMemberInitFont::call([[maybe_unused]] 
   return nullptr;
 }
 
-__idk_nodiscard Object FescriptLabelObjectMemberInitText::call([[maybe_unused]] Interpreter& interpreter, const std::vector<Object>& arguments) {
+[[nodiscard]] Object FescriptLabelObjectMemberInitText::call([[maybe_unused]] Interpreter& interpreter, const std::vector<Object>& arguments) {
   if(!this->_self) {
     std::cout << "Engine error: LabelObject is not initialized, yet using LabelObject.init_font() is not possible.\n";
     std::exit(1);
@@ -26,24 +26,13 @@ __idk_nodiscard Object FescriptLabelObjectMemberInitText::call([[maybe_unused]] 
   }
   this->_self->initialize_text(this->_self->get_label_text(),
                                this->_self->get_foreground_color(),
-                               this->_self->get_background_color(),
-                               fresh::LabelRenderType::Blended);
+                               this->_self->get_background_color());
   return nullptr;
 }
 
-LabelObjectWrapper::LabelObjectWrapper() {
-  this->_object_def = "labelobject";
-}
-
-LabelObjectWrapper::~LabelObjectWrapper() {}
-
-[[nodiscard]] std::string LabelObjectWrapper::to_string() {
-  return "labelobject";
-}
-
-[[nodiscard]] Object LabelObjectWrapper::call([[maybe_unused]] Interpreter& interpreter, const std::vector<Object>& arguments) {
+[[nodiscard]] Object FescriptLabelObjectWrapper::call([[maybe_unused]] Interpreter& interpreter, const std::vector<Object>& arguments) {
   auto label_object = std::make_shared<fresh::LabelObject>();
-  this->_object_id = label_object->get_object_id();
+  this->_object_id = label_object->get_id();
   return std::move(label_object);
 }
 } // namespace fescript

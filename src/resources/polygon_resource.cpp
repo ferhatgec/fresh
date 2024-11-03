@@ -1,14 +1,21 @@
-#include <resources/polygon_resource.hpp>
 #include <algorithm>
 #include <iostream>
+#include <resources/polygon_resource.hpp>
+
+#include "log/log.hpp"
 
 namespace fresh {
 PolygonResource::PolygonResource(bool is_filled) noexcept
-  : _is_filled{is_filled} {
+    : _is_filled{is_filled} {}
+
+PolygonResource::PolygonResource(const std::vector<PointResource>& vertices,
+                                 bool is_filled) noexcept {
+  this->_polygons = vertices;
+  this->_is_filled = is_filled;
 }
 
-void PolygonResource::push_polygon(PointResource&& polygon) noexcept {
-  this->_polygons.push_back(std::move(polygon));
+void PolygonResource::push_polygon(const PointResource& polygon) noexcept {
+  this->_polygons.push_back(polygon);
 }
 
 void PolygonResource::push_polygon(idk::f32 x, idk::f32 y) noexcept {
@@ -25,80 +32,68 @@ void PolygonResource::delete_all_polygons() noexcept {
   this->_polygons.clear();
 }
 
-__idk_nodiscard
-std::vector<PointResource>& PolygonResource::get_polygons() noexcept {
+[[nodiscard]] std::vector<PointResource>& PolygonResource::get_polygons() noexcept {
   return this->_polygons;
 }
 
-__idk_nodiscard
-bool& PolygonResource::get_is_filled() noexcept {
+[[nodiscard]] const bool& PolygonResource::get_filled() const noexcept {
   return this->_is_filled;
 }
 
-__idk_nodiscard
-bool PolygonResource::is_point_in_polygon(const PointResource& point) const noexcept {
+[[nodiscard]] bool PolygonResource::point_in_polygon(const PointResource& point) const noexcept {
   return PolygonResource::_is_point_in_polygon(point._x, point._y);
 }
 
-__idk_nodiscard
-bool PolygonResource::is_point_in_polygon(const SDL_FRect& point) const noexcept {
-  return PolygonResource::_is_point_in_polygon(point.x, point.y);
+[[nodiscard]] bool PolygonResource::point_in_polygon(const BBoxResource& point) const noexcept {
+  return PolygonResource::_is_point_in_polygon(point.get_x(), point.get_y());
 }
 
-__idk_nodiscard
-idk::f32 PolygonResource::project(const PointResource& axis) const noexcept {
+[[nodiscard]] idk::f32 PolygonResource::project(const PointResource& axis) const noexcept {
   if(this->_polygons.empty()) {
-    std::cout << "Engine error: Polygon projection is failed due no polygon is available!\n";
-    std::exit(1);
+    log_warning(src(), "polygon projection is not possible since no vertex is assigned to it.");
+    return 0.f;
   }
-
-  auto projection = this->project_min_max(axis);
+  const auto& projection = this->project_min_max(axis);
   return std::get<ProjectionMax>(projection) - std::get<ProjectionMin>(projection);
 }
 
-__idk_nodiscard
-std::tuple<idk::f32, idk::f32> PolygonResource::project_min_max(const PointResource& axis) const noexcept {
+[[nodiscard]] std::tuple<idk::f32, idk::f32> PolygonResource::project_min_max(const PointResource& axis) const noexcept {
   idk::f32 min = std::numeric_limits<idk::f32>::max();
   idk::f32 max = std::numeric_limits<idk::f32>::min();
-
-  for(std::size_t i = 0; i < this->_polygons.size(); ++i) {
-    const auto& vert = this->_polygons[i];
-    idk::f32 proj = vert.dot(axis);
-
-    if(proj < min)
+  for(const auto& vert : this->_polygons) {
+    const auto& proj = vert.dot(axis);
+    if(proj < min) {
       min = proj;
-    if(proj > max)
+    }
+    if(proj > max) {
       max = proj;
+    }
   }
   return std::make_tuple(min, max);
 }
 
-__idk_nodiscard
-PointResource PolygonResource::center() const noexcept {
+[[nodiscard]] PointResource PolygonResource::center() const noexcept {
   PointResource center(0.f, 0.f);
-  if(this->_polygons.empty())
+  if(this->_polygons.empty()) {
     return center;
+  }
   for(const auto& v: this->_polygons) {
     center = center + v;
   }
-  return center * (1.f / this->_polygons.size());
+  return center * (1.f / static_cast<idk::f32>(this->_polygons.size()));
 }
 
-__idk_nodiscard
-PolygonResource PolygonResource::rotate(idk::f32 rad_degrees) const noexcept {
-  PolygonResource vertices;
-  vertices.get_polygons() = this->_polygons;
-  auto center_point = vertices.center();
-
+[[nodiscard]] PolygonResource PolygonResource::rotate(idk::f32 rad_degrees) const noexcept {
+  PolygonResource vertices(this->_polygons);
+  const auto& center_point = vertices.center();
   for(auto& vert: vertices.get_polygons()) {
-    vert = vert.rotate_by_radians_with_pivot(center_point, rad_degrees);
+    vert = vert.rotate_with_pivot_clockwise(center_point, rad_degrees);
   }
   return vertices;
 }
 
 // Shoelace formula
-__idk_nodiscard
-idk::f32 PolygonResource::area() const noexcept {
+[[nodiscard]] idk::f32 PolygonResource::area() const noexcept {
   const auto& size = this->_polygons.size();
   idk::f32 area { 0.f };
   for(std::size_t i = 0; i < size; ++i) {
@@ -109,11 +104,11 @@ idk::f32 PolygonResource::area() const noexcept {
   return fabsf(area) / 2.f;
 }
 
-__idk_nodiscard
-bool PolygonResource::is_separating_axis_with(const PolygonResource& poly, const PointResource& axis) const noexcept {
-  idk::f32 min_a = std::numeric_limits<idk::f32>::max(), max_a = std::numeric_limits<idk::f32>::lowest();
-  idk::f32 min_b = std::numeric_limits<idk::f32>::max(), max_b = std::numeric_limits<idk::f32>::lowest();
-
+[[nodiscard]] bool PolygonResource::separating_axis_with(const PolygonResource& poly, const PointResource& axis) const noexcept {
+  auto min_a = std::numeric_limits<idk::f32>::max();
+  auto max_a = std::numeric_limits<idk::f32>::lowest();
+  auto min_b = std::numeric_limits<idk::f32>::max();
+  auto max_b = std::numeric_limits<idk::f32>::lowest();
   for(const auto& point : this->_polygons) {
     const idk::f32 projection = point.dot(axis);
     min_a = std::min(min_a, projection);
@@ -127,9 +122,8 @@ bool PolygonResource::is_separating_axis_with(const PolygonResource& poly, const
   return max_a < min_b || max_b < min_a;
 }
 
-// this uses even odd rule algorithm to find if given point is inside of the polygon (including corners)
-__idk_nodiscard
-bool PolygonResource::_is_point_in_polygon(const idk::f32& point_x, const idk::f32& point_y) const noexcept {
+// this uses even odd rule algorithm to find if given point is inside the polygon (including corners)
+[[nodiscard]] bool PolygonResource::_is_point_in_polygon(const idk::f32& point_x, const idk::f32& point_y) const noexcept {
   bool inside { false };
   const auto polygon_size = this->_polygons.size();
 

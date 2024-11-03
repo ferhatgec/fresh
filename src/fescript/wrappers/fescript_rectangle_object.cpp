@@ -4,19 +4,8 @@
 #include <resources/color_resource.hpp>
 
 namespace fescript {
-RectangleObjectWrapper::RectangleObjectWrapper() {
-  this->_object_def = "rectangleobject";
-}
-
-RectangleObjectWrapper::~RectangleObjectWrapper() noexcept {
-}
-
-[[nodiscard]] std::string RectangleObjectWrapper::to_string() {
-  return "rectangleobject";
-}
-
 /// RectangleObject([x, y, w, h], [r, g, b, a], is_filled: bool)
-[[nodiscard]] Object RectangleObjectWrapper::call([[maybe_unused]] Interpreter& interpreter, const std::vector<Object>& arguments) {
+[[nodiscard]] Object FescriptRectangleObjectWrapper::call([[maybe_unused]] Interpreter& interpreter, const std::vector<Object>& arguments) {
   // TODO: we've removed zero argument RectangleObject initialization; it's because we generate polygon table at initialization;
   // it would be great to add it again, should be not hard to implement (easy with get_position_info and set_position_info).
   ERR_CHECK_TYPE_AT("RectangleObject()", 0, "array", FescriptArrayIndex)
@@ -45,21 +34,22 @@ RectangleObjectWrapper::~RectangleObjectWrapper() noexcept {
     std::exit(1);
   }
   auto rectangle_object = std::make_shared<fresh::RectangleObject>(
-    SDL_FRect {
-      static_cast<idk::f32>(std::get<LongDoubleIndex>(pos_arr->get(fresh::PosXIndex))),
-      static_cast<idk::f32>(std::get<LongDoubleIndex>(pos_arr->get(fresh::PosYIndex))),
-      static_cast<idk::f32>(std::get<LongDoubleIndex>(pos_arr->get(fresh::WidthIndex))),
-      static_cast<idk::f32>(std::get<LongDoubleIndex>(pos_arr->get(fresh::HeightIndex)))
+    fresh::BBoxResource {
+      static_cast<idk::f32>(std::get<LongDoubleIndex>(pos_arr->get_value(fresh::PosXIndex))),
+      static_cast<idk::f32>(std::get<LongDoubleIndex>(pos_arr->get_value(fresh::PosYIndex))),
+      static_cast<idk::f32>(std::get<LongDoubleIndex>(pos_arr->get_value(fresh::WidthIndex))),
+      static_cast<idk::f32>(std::get<LongDoubleIndex>(pos_arr->get_value(fresh::HeightIndex)))
     },
     fresh::ColorResource(
-      color_min(std::get<LongDoubleIndex>(color_arr->get(fresh::RedIndex))),
-      color_min(std::get<LongDoubleIndex>(color_arr->get(fresh::GreenIndex))),
-      color_min(std::get<LongDoubleIndex>(color_arr->get(fresh::BlueIndex))),
-      color_min(std::get<LongDoubleIndex>(color_arr->get(fresh::AlphaIndex)))
+      color_min(std::get<LongDoubleIndex>(color_arr->get_value(fresh::RedIndex))),
+      color_min(std::get<LongDoubleIndex>(color_arr->get_value(fresh::GreenIndex))),
+      color_min(std::get<LongDoubleIndex>(color_arr->get_value(fresh::BlueIndex))),
+      color_min(std::get<LongDoubleIndex>(color_arr->get_value(fresh::AlphaIndex)))
     ),
     std::get<BoolIndex>(arguments[2])
   );
-  this->_object_id = rectangle_object->get_object_id();
+  this->_object_id = rectangle_object->get_id();
+  rectangle_object->init_signal();
   return std::move(rectangle_object);
 }
 } // namespace fescript

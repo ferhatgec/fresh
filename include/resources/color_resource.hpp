@@ -1,6 +1,10 @@
 #pragma once
 
+#include <cmath>
 #include <types/predefined.hpp>
+
+#include "edge_resource.hpp"
+#include <format>
 
 namespace fresh {
 enum : idk::u8 {
@@ -12,23 +16,50 @@ enum : idk::u8 {
 
 class ColorResource {
 public:
-  ColorResource(idk::u8 r = 0, idk::u8 g = 0, idk::u8 b = 0, idk::u8 a = 255) noexcept;
-  ~ColorResource() = default;
+  constexpr explicit ColorResource(
+    idk::f32 r = 0.f, idk::f32 g = 0.f, idk::f32 b = 0.f, idk::f32 a = 1.f
+  ) noexcept : _r{r}, _g{g}, _b{b}, _a{a} {}
 
-  // FIXME: we must get rid of these functions. (not the priority but should be easy to do, just a bit duplicated code)
-  // _r can get any value as it is not checked after any value assign operation performed.
-  __idk_nodiscard
-  idk::u8& get_red() noexcept;
+  ~ColorResource() noexcept = default;
 
-  __idk_nodiscard
-  idk::u8& get_green() noexcept;
+  [[nodiscard]] constexpr const idk::f32& get_red() const noexcept {
+    return this->_r;
+  }
 
-  __idk_nodiscard
-  idk::u8& get_blue() noexcept;
+  [[nodiscard]] constexpr const idk::f32& get_green() const noexcept {
+    return this->_g;
+  }
 
-  __idk_nodiscard
-  idk::u8& get_alpha() noexcept;
+  [[nodiscard]] constexpr const idk::f32& get_blue() const noexcept {
+    return this->_b;
+  }
+
+  [[nodiscard]] constexpr const idk::f32& get_alpha() const noexcept {
+    return this->_a;
+  }
+
+  constexpr void set_red(idk::f32 red) noexcept {
+    this->_r = fp_min(fp_abs(red), 1.f);
+  }
+
+  constexpr void set_green(idk::f32 green) noexcept {
+    this->_g = fp_min(fp_abs(green), 1.f);
+  }
+
+  constexpr void set_blue(idk::f32 blue) noexcept {
+    this->_b = fp_min(fp_abs(blue), 1.f);
+  }
+
+  constexpr void set_alpha(idk::f32 alpha) noexcept {
+    this->_a = fp_min(fp_abs(alpha), 1.f);
+  }
+
+  friend std::ostream& operator<<(std::ostream& ostr, const ColorResource& color) noexcept {
+    ostr << std::format("r, g, b, a = {}, {}, {}, {}", color.get_red(), color.get_green(), color.get_blue(), color.get_alpha());
+    return ostr;
+  }
 protected:
-  idk::u8 _r, _g, _b, _a;
+  friend class LabelObject;
+  idk::f32 _r, _g, _b, _a;
 };
 } // namespace fresh

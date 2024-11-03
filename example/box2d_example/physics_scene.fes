@@ -1,11 +1,19 @@
-{
- [BaseObject,
+[BaseObject,
   name = "Box2D_Physics_Test",
   group_id = auto,
   width = 800,
   height = 600,
   script_resource = "physics_scene.fe",
   sub_groups = {
+   [SpriteObject,
+    name = "Text_WASD",
+    group_id = auto,
+    width = 150,
+    height = 150,
+    position_x = -100,
+    position_y = -200,
+    sprite_resource = "C:\\Users\\ferhatgec\\Downloads\\fresh\\example\\box2d_example\\gechland.icon.png";
+   ],
    [LabelObject,
     name = "Text_WASD",
     group_id = auto,
@@ -27,6 +35,7 @@
    ],
    [LabelObject,
     group_id = auto,
+    name = "Test123",
     width = 150,
     height = 25,
     position_x = 85,
@@ -45,6 +54,7 @@
    ],
    [LabelObject,
     group_id = auto,
+    name = "test",
     width = 150,
     height = 25,
     position_x = 85,
@@ -70,4 +80,3 @@
    ];
   };
  ];
-};

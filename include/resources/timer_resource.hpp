@@ -5,36 +5,38 @@
 namespace fresh {
 class TimerResource {
 public:
-  TimerResource();
-  ~TimerResource();
+  TimerResource() noexcept;
+  ~TimerResource() noexcept = default;
 
-  __idk_nodiscard
-  idk::u64
-  get_ticks() noexcept;
+  /// TimerResource::get_ticks() returns current tick as milliseconds.
+  [[nodiscard]] idk::u64 get_ticks() const noexcept;
 
-  void
-  start() noexcept;
+  /// TimerResource::start() saves current tick; starts the timer.
+  void start() noexcept;
 
-  void
-  pause() noexcept;
+  /// TimerResource::pause() pauses the timer.
+  void pause() noexcept;
 
-  void
-  unpause() noexcept;
+  /// TimerResource::resume() resumes the timer if it's already been paused.
+  void resume() noexcept;
 
-  void
-  stop() noexcept;
+  /// TimerResource::stop() resets the timer.
+  void stop() noexcept;
 
-  __idk_nodiscard
-  bool
-  is_started() noexcept;
+  /// TimerResource::started() is read-only access to _started property.
+  [[nodiscard]] const bool& started() const noexcept;
 
-  __idk_nodiscard
-  bool
-  is_paused() noexcept;
+  /// TimerResource::paused() is read-only access to _paused property.
+  /// pause() and paused() are seem to be easily confused functions;
+  /// that's where [[nodiscard]] attribute will make sense; unless discarding
+  /// it using (void) or using the value; compiler will warn you.
+  [[nodiscard]] const bool& paused() const noexcept;
+
+  [[nodiscard]] static idk::u64 get_universal_tick() noexcept;
 private:
-  idk::u64 _start_tick { 0_u64 };
-  idk::u64 _pause_tick { 0_u64 };
-  bool _started { false };
-  bool _paused { false };
+  idk::u64 _start_tick;
+  idk::u64 _pause_tick;
+  bool _started;
+  bool _paused;
 };
 } // namespace fresh

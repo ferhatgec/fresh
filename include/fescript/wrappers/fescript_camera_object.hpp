@@ -6,13 +6,5 @@
 namespace fescript {
 DEFINE_MEMBER_MODULE_CLASS(IsVisibleOnCamera, CameraObjectMember, 1, fresh::CameraObject)
 DEFINE_MEMBER_MODULE_CLASS(Move, CameraObjectMember, 2, fresh::CameraObject)
-
-class CameraObjectWrapper : public BaseObjectWrapper, public std::enable_shared_from_this<CameraObjectWrapper> {
-public:
-  CameraObjectWrapper();
-  ~CameraObjectWrapper();
-  [[nodiscard]] std::string to_string() override;
-  [[nodiscard]] int arity() override { return -1; }
-  [[nodiscard]] Object call([[maybe_unused]] Interpreter& interpreter, const std::vector<Object>& arguments) override;
-};
+DEFINE_MODULE_CLASS_CUSTOM_DERIVED_FROM(Wrapper, CameraObject, -1, FescriptBaseObjectWrapper)
 } // namespace fescript

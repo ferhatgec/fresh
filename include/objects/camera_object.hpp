@@ -1,5 +1,6 @@
 #pragma once
 
+#include <include/camera.hpp>
 #include "base_object.hpp"
 
 namespace fresh {
@@ -9,34 +10,38 @@ public:
   friend class Engine;
 
   CameraObject();
-  ~CameraObject();
+  CameraObject(idk::f32 width, idk::f32 height);
+  ~CameraObject() override = default;
 
-  __idk_nodiscard
-  bool
-  is_visible_on_camera(std::shared_ptr<BaseObject> object) noexcept;
+  void sync() noexcept override;
 
-  void
-  sync(bool is_sync_with_camera = false) noexcept override;
-
-  [[nodiscard]] std::string to_string() {
+  [[nodiscard]] constexpr const char* to_string() noexcept override {
     return "cameraobject";
   }
 
+  /// CameraObject::set_camera_position(PointResource) sets given point as exact camera
+  /// position.
+  /// note:
+  /// ----
+  /// do not use CameraObject::get_camera() to set properties;
+  /// they are just implementation of camera without synchronizing position and other
+  /// properties; just renders them to screen.
+  void set_camera_position(const PointResource& pt) noexcept;
+  /// CameraObject::move_camera(PointResource) moves current camera position
+  /// with given point.
+  /// note:
+  /// ----
+  /// do not use CameraObject::get_camera() to set properties;
+  /// they are just implementation of camera without synchronizing position and
+  /// other properties; just renders them to screen.
+  void move_camera(const PointResource& pt) noexcept;
+
+  void resize_camera(idk::f32 w, idk::f32 h) noexcept;
+
+  [[nodiscard]] const std::unique_ptr<fre2d::Camera>& get_camera() const noexcept;
+
   void set(const fescript::Token& name, fescript::Object value) override;
-
-  SDL_FRect get_viewport() noexcept {
-    return {
-      this->_pos_info.x - this->_pos_info.w / (2 * this->_zoom_level),
-      this->_pos_info.y - this->_pos_info.h / (2 * this->_zoom_level),
-      this->_pos_info.w / this->_zoom_level,
-      this->_pos_info.h / this->_zoom_level
-    };
-  }
-
-  void apply(const std::shared_ptr<BaseObject>& obj) const noexcept;
-  void set_zoom(idk::f32 new_zoom) noexcept;
-  void move(idk::f32 dx, idk::f32 dy) noexcept;
 protected:
-  idk::f32 _zoom_level, _scale_ratio_w, _scale_ratio_h;
+  std::unique_ptr<fre2d::Camera> _camera;
 };
 } // namespace fresh

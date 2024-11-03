@@ -7,12 +7,12 @@ namespace fresh {
 class CircleAreaObject : public AreaObject, public std::enable_shared_from_this<CircleAreaObject>  {
 public:
   CircleAreaObject();
-  explicit CircleAreaObject(SDL_FRect pos_info);
+  explicit CircleAreaObject(BBoxResource pos_info);
   explicit CircleAreaObject(std::shared_ptr<BaseObject> object);
   ~CircleAreaObject() override = default;
 
   void
-  sync(bool is_sync_with_camera = false) noexcept override;
+  sync() noexcept override;
 
   __idk_nodiscard
   bool is_colliding_with(std::shared_ptr<BaseObject> object) noexcept override;
@@ -26,7 +26,7 @@ public:
   __idk_nodiscard
   bool is_colliding_with(std::shared_ptr<PolygonAreaObject> object) noexcept override;
 
-  [[nodiscard]] std::string to_string() {
+  [[nodiscard]] constexpr const char* to_string() noexcept override {
     return "circleareaobject";
   }
 

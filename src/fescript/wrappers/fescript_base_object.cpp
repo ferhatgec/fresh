@@ -11,31 +11,24 @@ namespace fescript {
     fresh::log_error(fresh::src(), "BaseObject().push_sub_object() argument must be derived from BaseObject; got: {}", Token::to_string(arguments[0]));
     return nullptr;
   }
-  this->_self->push_to_sub_objects(std::move(Interpreter::fescript_object_to_baseobject(arguments[0])));
+  this->_self->push_object(std::move(Interpreter::fescript_object_to_baseobject(arguments[0])));
+  // TODO: make init_signal as a fescript member function. so users can call it whenever they want explicitly.
+  this->_self->get_childs().back()->init_signal();
   return nullptr;
 }
 
 [[nodiscard]] Object FescriptBaseObjectMemberSetRotationByRadianDegrees::call(Interpreter& interpreter, const std::vector<Object>& arguments) {
-  ERR_CHECK_DECIMAL("BaseObject().set_rotation_by_radian_degrees()", 1)
-  this->_self->set_rotation_by_radian_degrees(static_cast<idk::f32>(std::get<LongDoubleIndex>(arguments[0])));
+  ERR_CHECK_DECIMAL("BaseObject().set_rotation()", 1)
+  this->_self->set_rotation(static_cast<idk::f32>(std::get<LongDoubleIndex>(arguments[0])));
   return nullptr;
 }
 
-BaseObjectWrapper::BaseObjectWrapper()
-  : _object_def("baseobject") {}
+FescriptBaseObjectWrapper::FescriptBaseObjectWrapper(
+  idk::u32 object_id,
+  const std::vector <std::shared_ptr<FescriptBaseObjectWrapper>>& sub_objects
+) : _object_id{object_id}, _sub_objects{sub_objects} {}
 
-BaseObjectWrapper::BaseObjectWrapper(const idk::StringViewChar& object_def,
-                                     idk::u32 object_id,
-                                     const std::vector <std::shared_ptr<BaseObjectWrapper>>& sub_objects)
-  : _object_def{object_def}, _object_id{object_id}, _sub_objects{sub_objects} {}
-
-BaseObjectWrapper::~BaseObjectWrapper() {}
-
-[[nodiscard]] std::string BaseObjectWrapper::to_string() {
-  return "baseobject";
-}
-
-[[nodiscard]] Object BaseObjectWrapper::call([[maybe_unused]] Interpreter& interpreter, const std::vector<Object>& arguments) {
+[[nodiscard]] Object FescriptBaseObjectWrapper::call([[maybe_unused]] Interpreter& interpreter, const std::vector<Object>& arguments) {
   return std::make_shared<fresh::BaseObject>();
 }
 } // namespace fescript

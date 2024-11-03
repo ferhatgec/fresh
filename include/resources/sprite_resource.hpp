@@ -4,7 +4,7 @@
 // visibility etc. parameters.
 
 #include <types/stringview.hpp>
-#include <SDL.h>
+#include "../../libs/fre2d/include/texture.hpp"
 
 namespace fresh {
 enum class SpriteBlendMode {
@@ -15,40 +15,31 @@ enum class SpriteBlendMode {
   Multiply
 };
 
+// TODO: sprite batching? (should be done within fre2d)
 class SpriteResource {
 public:
-  SpriteResource();
-  SpriteResource(const idk::StringViewChar& sprite_file);
-  SpriteResource(idk::StringViewChar&& sprite_file);
-  SpriteResource(const SpriteResource& sprite_resource);
-  SpriteResource(SpriteResource&& sprite_resource);
-  ~SpriteResource();
+  SpriteResource() noexcept = default;
+  explicit SpriteResource(const std::string& sprite_file) noexcept;
+  ~SpriteResource() noexcept = default;
 
-  __idk_nodiscard
-  SDL_Texture*&
-  get_texture() noexcept;
+  /// SpriteResource::get_texture() returns fre2d::Texture reference.
+  [[nodiscard]] fre2d::Texture& get_texture() noexcept;
 
-  __idk_nodiscard
-  SpriteBlendMode&
-  get_blend_mode() noexcept;
+  /// SpriteResource::load_resource(std::string) loads texture by given
+  /// sprite file path.
+  void load_resource(const std::string& sprite_file) noexcept;
 
-  void
-  load_resource(const idk::StringViewChar& sprite_file) noexcept;
+  /// SpriteResource::load_resource() loads texture using previously given
+  /// _texture_path via set_path(std::string). no effect if _texture_path is empty.
+  void load_resource() noexcept;
 
-  void
-  load_resource(idk::StringViewChar&& sprite_file) noexcept;
+  /// SpriteResource::get_path() returns file path that being used for loading
+  /// the texture. it will return empty string if no texture had loaded.
+  [[nodiscard]] const std::string& get_path() const noexcept;
 
-  __idk_nodiscard
-  SpriteResource&
-  operator=(const SpriteResource& right) noexcept;
-
-  __idk_nodiscard
-  SpriteResource&
-  operator=(SpriteResource&& right) noexcept;
-  idk::StringViewChar _texture_path;
+  void set_path(const std::string& sprite_file) noexcept;
 private:
-  // we store resource as SDL_Texture, then free it using RAII techniques.
-  SDL_Texture* _sprite_texture = nullptr;
-  SpriteBlendMode _sprite_blend_mode { SpriteBlendMode::Alpha };
+  std::string _texture_path;
+  fre2d::Texture _texture;
 };
 } // namespace fresh

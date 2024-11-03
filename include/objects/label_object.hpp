@@ -1,84 +1,53 @@
 #pragma once
 
-#include "base_object.hpp"
 #include <resources/font_resource.hpp>
 #include <resources/sprite_resource.hpp>
+#include "base_object.hpp"
+
+#include "label.hpp"
 
 namespace fresh {
-enum class LabelRenderType {
-  LCD,
-  Solid,
-  Shaded,
-  Blended
-};
-
 class LabelObject : public BaseObject {
 public:
   friend class FesLoaderResource;
 
-  LabelObject();
-  LabelObject(LabelObject* label_object);
-  LabelObject(const FontResource& label_font_resource, const BaseObject& metadata);
-  LabelObject(FontResource&& label_font_resource, BaseObject&& metadata);
+  LabelObject() noexcept = default;
+  ~LabelObject() override = default;
 
-  ~LabelObject();
+  void initialize_text(
+    const std::string& label_text,
+    ColorResource fg,
+    ColorResource bg
+  ) noexcept;
 
-  void
-  initialize_text(const idk::StringViewChar& label_text,
-                  SDL_Color fg,
-                  SDL_Color bg,
-                  LabelRenderType label_render_type) noexcept;
+  void sync() noexcept override;
 
-  void
-  initialize_text(idk::StringViewChar&& label_text,
-                  SDL_Color fg,
-                  SDL_Color bg,
-                  LabelRenderType label_render_type) noexcept;
+  [[nodiscard]] const std::string& get_label_text() const noexcept;
+  void set_label_text(const std::string& text) noexcept;
 
-  void
-  sync(bool is_sync_with_camera = false) noexcept override;
+  [[nodiscard]] FontResource& get_label_font_resource() noexcept;
 
-  __idk_nodiscard
-  idk::StringViewChar& get_label_text() noexcept;
-
-  __idk_nodiscard
-  FontResource& get_label_font_resource() noexcept;
-
-  __idk_nodiscard
-  FontResource copy_get_label_font_resource() const noexcept {
-    return this->_label_font_resource;
-  }
-
-  __idk_nodiscard
-  SpriteResource& get_label_font_texture() noexcept;
-
-  void initialize_label_font_surface() noexcept;
-
-  [[nodiscard]] std::string to_string() {
+  [[nodiscard]] constexpr const char* to_string() noexcept override {
     return "labelobject";
   }
 
   void set(const fescript::Token& name, fescript::Object value) override;
-  void set_rotation_by_radian_degrees(idk::f32 rad_degrees) noexcept override;
+  void init_signal() noexcept override;
 
-  [[nodiscard]] SDL_Color& get_background_color() noexcept {
+  void set_rotation(idk::f32 rad_degrees) noexcept override;
+
+  [[nodiscard]] ColorResource& get_background_color() noexcept {
     return this->_bg;
   }
 
-  [[nodiscard]] SDL_Color& get_foreground_color() noexcept {
+  [[nodiscard]] ColorResource& get_foreground_color() noexcept {
     return this->_fg;
   }
 protected:
-  SDL_Color _bg;
-  SDL_Color _fg;
-
-  LabelRenderType _label_render_type;
-
-  idk::StringViewChar _label_text;
-
-  SpriteResource _label_font_texture;
+  ColorResource _bg, _fg;
+  std::string _label_text;
   FontResource _label_font_resource;
-
-  idk::f32 _cache_degrees;
+  fre2d::Shader _shader;
+  fre2d::Label _label;
 };
 } // namespace fresh

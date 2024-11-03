@@ -34,7 +34,7 @@ namespace fescript {
     );
 }
 
-__idk_nodiscard Object FescriptEngineRenderObjectsPush::call([[maybe_unused]] Interpreter& interpreter, const std::vector<Object>& arguments) {
+[[nodiscard]] Object FescriptEngineRenderObjectsPush::call([[maybe_unused]] Interpreter& interpreter, const std::vector<Object>& arguments) {
   if(arguments.empty())
     return false;
   for(const auto& argument: arguments) {
@@ -43,19 +43,23 @@ __idk_nodiscard Object FescriptEngineRenderObjectsPush::call([[maybe_unused]] In
       fresh::log_error(fresh::src(), "argument is invalid.\n");
       return nullptr;
     }
+    // TODO: wrap init_signal to fescript BaseObject member function.
+    if(!ptr->get_initialized()) {
+      ptr->init_signal();
+    }
     fresh::RenderObjects::push_object(std::move(ptr));
   }
   return nullptr;
 }
 
-__idk_nodiscard Object FescriptEngineLoadFes::call([[maybe_unused]] Interpreter& interpreter, const std::vector<Object>& arguments) {
+[[nodiscard]] Object FescriptEngineLoadFes::call([[maybe_unused]] Interpreter& interpreter, const std::vector<Object>& arguments) {
   ERR_CHECK_STRING("Engine_load_fes()", 1)
   fresh::FesLoaderResource fes_loader;
-  fes_loader.load_fes(std::get<StringIndex>(arguments.front()).data());
-  return std::move(fes_loader.return_generated_objects());
+  fes_loader.load_fes(std::get<StringIndex>(arguments.front()));
+  return std::move(fes_loader.generate());
 }
 
-__idk_nodiscard Object FescriptEngineLinkCamera::call([[maybe_unused]] Interpreter& interpreter, const std::vector<Object>& arguments) {
+[[nodiscard]] Object FescriptEngineLinkCamera::call([[maybe_unused]] Interpreter& interpreter, const std::vector<Object>& arguments) {
   if(arguments.empty()) {
     std::cout << "Engine [language] error: Engine_link_camera() cannot be empty.\n";
     std::exit(1);
@@ -64,7 +68,7 @@ __idk_nodiscard Object FescriptEngineLinkCamera::call([[maybe_unused]] Interpret
     std::cout << "Engine [language] error: Cannot link object which is not CameraObject.";
     std::exit(1);
   }
-  fresh::Engine::get_instance()->link_camera(std::get<FescriptCameraObjectIndex>(arguments.front()));
+  FreshInstance->link_camera(std::get<FescriptCameraObjectIndex>(arguments.front()));
   return nullptr;
 }
 } // namespace fescript

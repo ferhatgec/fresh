@@ -19,11 +19,10 @@ AnimationFrameObject::AnimationFrameObject(idk::f64 start_ms,
 AnimationFrameObject::~AnimationFrameObject() {
 }
 
-void AnimationFrameObject::sync(bool is_sync_with_camera) noexcept {
+void AnimationFrameObject::sync() noexcept {
   CHECK_DISABLED()
   this->_code.interpret_update();
-  this->sync_pos_with_camera(is_sync_with_camera);
-  APPLY_DELTAS()
+    this->apply_changes();
 }
 
 void AnimationFrameObject::set(const fescript::Token& name, fescript::Object value) {

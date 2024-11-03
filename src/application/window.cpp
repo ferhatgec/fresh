@@ -1,272 +1,322 @@
+#include <stb_image.h>
+
 #include <application/window.hpp>
-#include <iostream>
-#include <SDL_image.h>
+#include <helper_funcs.hpp>
+#include <log/log.hpp>
+
+#include "freshengine.hpp"
+
+#define CHECK_WINDOW() \
+  if(!this->_window) { \
+   fresh::log_error(src(), "window has not been initialized."); \
+   return; \
+  }
+
+#define CHECK_WINDOW(ret_val) \
+  if(!this->_window) { \
+    fresh::log_error(src(), "window has not been initialized."); \
+    return ret_val; \
+  }
 
 namespace fresh {
-Window::Window() {}
-
-Window::Window(idk::StringViewChar&& title,
-               idk::i32&& width,
-               idk::i32&& height,
-               idk::i32&& position_x,
-               idk::i32&& position_y,
-               idk::u32 renderer_flags) : _title(idk::move(title)),
-                                          _width(idk::move(width)),
-                                          _height(idk::move(height)),
-                                          _position_x(idk::move(position_x)),
-                                          _position_y(idk::move(position_y)),
-                                          _renderer_flags(renderer_flags) {
+Window::Window() noexcept
+  : _width{800},
+    _height{600},
+    _position_x{0},
+    _position_y{0},
+    _title("freshEngine Project"),
+    _window{nullptr},
+    _clear_color{defaults::clear_color},
+    _window_mode{WindowMode::Windowed},
+    _vsync_status{true} {
 }
 
-Window::Window(const idk::StringViewChar& title,
-               const idk::i32& width,
-               const idk::i32& height,
-               const idk::i32& position_x,
-               const idk::i32& position_y,
-               const idk::u32& renderer_flags) : _title(title),
-                                                 _width(width),
-                                                 _height(height),
-                                                 _position_x(position_x),
-                                                 _position_y(position_y),
-                                                 _renderer_flags(renderer_flags) {
+Window::Window(
+  const std::string& title,
+  idk::i32 width,
+  idk::i32 height,
+  idk::i32 position_x,
+  idk::i32 position_y
+) noexcept
+  : _width{width},
+    _height{height},
+    _position_x{position_x},
+    _position_y{position_y},
+    _title{title},
+    _window{nullptr},
+    _clear_color{defaults::clear_color},
+    _window_mode{WindowMode::Windowed},
+    _vsync_status{true} {
 }
 
 Window::~Window() {
-  if(this->_renderer) {
-    SDL_DestroyRenderer(this->_renderer);
-  }
-
   if(this->_window) {
-    SDL_DestroyWindow(this->_window);
+    glfwTerminate();
   }
-
-  SDL_Quit(); // goodbye SDL!
 }
 
 void Window::init_window() noexcept {
-  if(SDL_Init(SDL_INIT_EVERYTHING) < 0) {
-    std::cout << "Engine error: SDL initialization is failed!\n";
-    // SDL_getError, initialization of window is failed.
-    return;
-  }
+  glfwInit();
+  glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
+  glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 5);
+  glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
-  this->_window = SDL_CreateWindow(this->_title.data(),
-                                   this->_position_x,
-                                   this->_position_y,
-                                   this->_width,
-                                   this->_height,
-                                   SDL_WINDOW_SHOWN |
-                                   SDL_WINDOW_RESIZABLE |
-                                   SDL_WINDOW_OPENGL); // TODO: flags will be added later.
-                                                       // macOS OpenGL API is deprecated,
-                                                       // we should split them later.
+  this->_window = glfwCreateWindow(
+    this->_width,
+    this->_height,
+    this->_title.data(),
+    nullptr,
+    nullptr
+  );
 
   if(!this->_window) {
-    // window initialization failed!
-    std::cout << "Engine error: Window initialization is failed!\n";
+    log_error(src(), "cannot initialize GLFW window.");
+    return;
+  }
+  glfwMakeContextCurrent(this->_window);
+  this->set_vsync_on(this->is_vsync_on());
+  
+  if(!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) {
+    log_error(src(), "cannot initialize GLAD.");
     return;
   }
 
-  this->_renderer = SDL_CreateRenderer(this->_window, -1, this->_renderer_flags);
+  glEnable(GL_BLEND);
+  glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+  this->_fb.initialize(this->_width, this->_height);
 
-  if(!this->_renderer) {
-    // renderer initialization failed!
-    std::cout << "Engine error: Renderer initialization is failed! Use Window::get_renderer() to retry.\n";
-    return;
-  }
+  glfwSetFramebufferSizeCallback(
+    FreshInstance->get_window()->get_raw_window(),
+    Window::framebuffer_resize_cb
+  );
+  glfwSetWindowCloseCallback(
+    FreshInstance->get_window()->get_raw_window(),
+    Window::window_close_cb
+  );
+  glfwSetWindowSizeCallback(
+    FreshInstance->get_window()->get_raw_window(),
+    Window::window_resize_cb
+  );
+  glfwSetWindowPosCallback(
+    FreshInstance->get_window()->get_raw_window(),
+    Window::window_pos_cb
+  );
 
-  SDL_SetRenderDrawColor(this->_renderer, 255, 255, 255, 255);
+  FreshInstance->get_keyboard_input().init();
+  FreshInstance->get_mouse_input().init();
 }
 
-__idk_nodiscard
-SDL_Renderer*&
-Window::get_renderer() noexcept {
-  if(!this->_window) {// no initialization made up.
-    std::cout << "Engine error: Initialize window first! Then call Window::get_renderer().\n";
-  }
-
-  if(this->_window) {
-    if(!this->_renderer) {// window is initialized somehow, but renderer is not.
-      this->_renderer = SDL_CreateRenderer(this->_window, -1, 0);
-      std::cout << "Engine info: Window is initialized but renderer is not. Use Window::init_window() for sync.\n";
-    }
-  }
-
-  return this->_renderer;
-}
-
-__idk_nodiscard
-SDL_Window*&
-Window::get_raw_window() noexcept {
+[[nodiscard]] GLFWwindow*& Window::get_raw_window() noexcept {
   return this->_window;
 }
 
-__idk_nodiscard
-  idk::u32&
-  Window::get_renderer_flags() noexcept {
-  if(this->_renderer) {
-    std::cout << "Engine warning: Renderer already initialized. Use get_renderer_flags() before init_window().\n";
+void Window::set_icon(const std::string& icon_path) noexcept {
+  CHECK_WINDOW()
+  stbi_set_flip_vertically_on_load(true);
+  idk::i32 width, height, channels;
+  auto* pixels = stbi_load(icon_path.c_str(), &width, &height, &channels, 0);
+  if(!pixels) {
+    log_error(src(), "cannot load icon. file: '{}'", icon_path);
+    return;
   }
-
-  return this->_renderer_flags;
-}
-
-__idk_nodiscard bool
-Window::set_icon(const idk::StringViewChar& icon_path) noexcept {
-  if(this->_window) {
-    SDL_Surface* icon_surface = IMG_Load(icon_path.data());
-    if(icon_surface) {
-      SDL_SetWindowIcon(this->_window, icon_surface);
-      SDL_FreeSurface(icon_surface);
-      return true;
-    } else {
-      std::cout << "Engine error: Window::set_icon() cannot set icon properly, surface cannot be initialized now.\n";
-    }
-  } else {
-    std::cout << "Engine error: Window is not initialized, yet using set_icon makes no sense.\n";
+  if (channels != 4) {
+    log_error(src(),
+              "icon must be rgba, 4 channelled by default.\n"
+              "-- file: '{}', width: '{}', height: '{}', channels: '{}'",
+              icon_path, width, height, channels);
+    stbi_image_free(pixels);
+    return;
   }
-
-  return false;
+  const GLFWimage img[1] {
+    width, height, pixels
+  };
+  glfwSetWindowIcon(this->_window, 1, img);
 }
 
-__idk_nodiscard bool
-Window::set_icon(idk::StringViewChar&& icon_path) noexcept {
-  if(this->_window) {
-    SDL_Surface* icon_surface = IMG_Load(idk::move(icon_path).data());
-    if(icon_surface) {
-      SDL_SetWindowIcon(this->_window, icon_surface);
-      SDL_FreeSurface(icon_surface);
-      return true;
-    } else {
-      std::cout << "Engine error: Window::set_icon() cannot set icon properly, surface cannot be initialized now.\n";
-    }
-  } else {
-    std::cout << "Engine error: Window is not initialized, yet using set_icon makes no sense.\n";
-  }
-
-  return false;
+void Window::set_title(const std::string& title) noexcept {
+  CHECK_WINDOW()
+  glfwSetWindowTitle(this->_window, title.c_str());
+  this->_title = title;
 }
 
-__idk_nodiscard bool
-Window::set_title(const idk::StringViewChar& title) noexcept {
-  if(this->_window) {
-    SDL_SetWindowTitle(this->_window, title.data());
-    return true;
-  } else {
-    std::cout << "Engine error: Window is not initialized, yet using set_title makes no sense.\n";
-  }
-
-  return false;
+void Window::set_vsync_on(bool vsync_on) noexcept {
+  CHECK_WINDOW()
+  glfwSwapInterval(vsync_on ? 1 : 0);
+  this->_vsync_status = vsync_on;
 }
 
-__idk_nodiscard bool
-Window::set_title(idk::StringViewChar&& title) noexcept {
-  if(this->_window) {
-    SDL_SetWindowTitle(this->_window, idk::move(title).data());
-    return true;
-  } else {
-    std::cout << "Engine error: Window is not initialized, yet using set_title makes no sense.\n";
-  }
-
-  return false;
+[[nodiscard]] const bool& Window::is_vsync_on() const noexcept {
+  return this->_vsync_status;
 }
 
-__idk_nodiscard
-idk::StringViewChar Window::get_title() noexcept {
-  return idk::StringViewChar(SDL_GetWindowTitle(this->_window));
+[[nodiscard]] const std::string& Window::get_title() const noexcept {
+  return this->_title;
 }
 
-void
-Window::set_window_size(idk::i32 width, idk::i32 height) noexcept {
-  if(this->_window) {
-    SDL_SetWindowSize(this->_window, width, height);
-  } else {
-    // window is not initialized but changing width and height
-    // will apply on window initialization.
-    this->_width = width;
-    this->_height = height;
-  }
+void Window::set_size(idk::i32 width, idk::i32 height) noexcept {
+  CHECK_WINDOW()
+  glfwSetWindowSize(this->_window, width, height);
+  this->_width = width;
+  this->_height = height;
+  FreshInstance->get_camera()->resize_camera(
+    static_cast<idk::f32>(width),
+    static_cast<idk::f32>(height)
+  );
+  this->get_framebuffer().resize(width, height);
 }
 
-__idk_nodiscard
-  SDL_Color&
-  Window::get_default_clear_color() noexcept {
-  return this->_default_clear_color;
+[[nodiscard]] const ColorResource& Window::get_clear_color() const noexcept {
+  return this->_clear_color;
 }
 
-__idk_nodiscard
-std::tuple<idk::i32, idk::i32>
-Window::get_window_size() noexcept {
-  if(!this->_window) {
-    std::cout << "Engine error: Invalid Window pointer. Initialize Window first.";
-    std::exit(1);
-  }
-  SDL_GetWindowSize(this->_window, &this->_width, &this->_height);
-  return std::make_tuple(this->_width, this->_height);
+void Window::set_clear_color(const ColorResource& colorres) noexcept {
+  this->_clear_color = colorres;
 }
 
-__idk_nodiscard
-std::tuple<idk::i32, idk::i32>
-Window::get_window_position() noexcept {
-  if(!this->_window) {
-    std::cout << "Engine error: Invalid Window pointer. Initialize Window first.";
-    std::exit(1);
-  }
-  SDL_GetWindowPosition(this->_window, &this->_position_x, &this->_position_y);
-  return std::make_tuple(this->_position_x, this->_position_y);
+[[nodiscard]] std::pair<idk::i32, idk::i32> Window::get_window_size() noexcept {
+  return { this->_width, this->_height };
 }
 
-__idk_nodiscard
-bool
-Window::set_window_mode(WindowMode window_mode) noexcept {
-  if(!this->_window) {
-    std::cout << "Engine error: Invalid Window pointer. Initialize Window first.";
-    std::exit(1);
-  }
-  return static_cast<bool>(SDL_SetWindowFullscreen(this->_window, [window_mode]() -> SDL_WindowFlags {
-    switch(window_mode) {
-      case WindowMode::Fullscreen: {
-        return SDL_WINDOW_FULLSCREEN;
-      }
-      case WindowMode::FullscreenWindowed: {
-        return SDL_WINDOW_FULLSCREEN_DESKTOP;
-      }
-      case WindowMode::Windowed: {
-        return static_cast<SDL_WindowFlags>(0);
-      }
-    }
-  }()));
+[[nodiscard]] std::pair<idk::i32, idk::i32> Window::get_window_position() noexcept {
+  glfwGetWindowPos(this->_window, &this->_position_x, &this->_position_y);
+  return {this->_position_x, this->_position_y};
 }
 
-__idk_nodiscard bool Window::maximize() noexcept {
-  SDL_MaximizeWindow(this->_window);
-  return this->is_maximized();
+void Window::fullscreen() noexcept {
+  auto* monitor = glfwGetPrimaryMonitor();
+  const auto* video_mode = glfwGetVideoMode(monitor);
+  glfwSetWindowMonitor(
+    this->_window,
+    monitor,
+    0,
+    0,
+    video_mode->width,
+    video_mode->height,
+    video_mode->refreshRate
+  );
+  this->_position_x = this->_position_y = 0;
+  this->_width = video_mode->width;
+  this->_height = video_mode->height;
+  this->_window_mode = WindowMode::Fullscreen;
 }
 
-__idk_nodiscard bool Window::minimize() noexcept {
-  SDL_MinimizeWindow(this->_window);
-  return this->is_minimized();
+void Window::fullscreen_windowed() noexcept {
+  auto* monitor = glfwGetPrimaryMonitor();
+  const auto* video_mode = glfwGetVideoMode(monitor);
+  glfwSetWindowAttrib(this->_window, GLFW_DECORATED, GLFW_FALSE);
+  glfwSetWindowMonitor(
+    this->_window,
+    nullptr,
+    0,
+    0,
+    video_mode->width,
+    video_mode->height,
+    video_mode->refreshRate
+  );
+  glfwSetWindowPos(this->_window, 0, 0);
+  this->_position_x = this->_position_y = 0;
+  this->_width = video_mode->width;
+  this->_height = video_mode->height;
+  this->_window_mode = WindowMode::FullscreenWindowed;
+}
+
+void Window::windowed() noexcept {
+  const auto& [x, y] = this->get_window_position();
+  glfwSetWindowMonitor(this->_window, nullptr, x, y, this->_width,
+                       this->_height, 0);
+  this->_window_mode = WindowMode::Windowed;
+}
+
+[[nodiscard]] bool Window::is_fullscreen() const noexcept {
+  return this->_window_mode == WindowMode::Fullscreen;
+}
+
+[[nodiscard]] bool Window::is_fullscreen_windowed() const noexcept {
+  return this->_window_mode == WindowMode::FullscreenWindowed;
+}
+
+[[nodiscard]] bool Window::is_windowed() const noexcept {
+  return this->_window_mode == WindowMode::Windowed;
+}
+
+[[nodiscard]] const WindowMode& Window::get_window_mode() const noexcept {
+  return this->_window_mode;
+}
+
+void Window::maximize() noexcept {
+  glfwSetWindowAttrib(this->_window, GLFW_MAXIMIZED, GLFW_TRUE);
+}
+
+void Window::minimize() noexcept {
+  glfwIconifyWindow(this->_window);
 }
 
 void Window::restore() noexcept {
-  SDL_RestoreWindow(this->_window);
+  glfwRestoreWindow(this->_window);
 }
 
-__idk_nodiscard bool Window::is_maximized() noexcept {
-  return SDL_GetWindowFlags(this->_window) & SDL_WINDOW_MAXIMIZED;
+[[nodiscard]] bool Window::maximized() const noexcept {
+  return glfwGetWindowAttrib(this->_window, GLFW_MAXIMIZED) == GLFW_TRUE;
 }
 
-__idk_nodiscard bool Window::is_minimized() noexcept {
-  return SDL_GetWindowFlags(this->_window) & SDL_WINDOW_MINIMIZED;
+[[nodiscard]] bool Window::minimized() const noexcept {
+  return glfwGetWindowAttrib(this->_window, GLFW_ICONIFIED) == GLFW_TRUE;
 }
 
-__idk_nodiscard bool Window::set_opacity(idk::f32 opacity) noexcept {
-  return SDL_SetWindowOpacity(this->_window, opacity) == 0;
+[[nodiscard]] bool Window::initialized() const noexcept {
+  return this->_window && this->_fb.is_complete();
 }
 
-__idk_nodiscard idk::f32 Window::get_opacity() noexcept {
-  idk::f32 opacity;
-  SDL_GetWindowOpacity(this->_window, &opacity);
-  return opacity;
+void Window::set_opacity(idk::f32 opacity) noexcept {
+  glfwSetWindowOpacity(this->_window, opacity);
 }
-}// namespace fresh
+
+idk::f32 Window::get_opacity() noexcept {
+  return glfwGetWindowOpacity(this->_window);
+}
+
+[[nodiscard]] fre2d::Framebuffer& Window::get_framebuffer() noexcept {
+  return this->_fb;
+}
+
+[[nodiscard]] const idk::i32& Window::get_width() const noexcept {
+  return this->_width;
+}
+
+[[nodiscard]] const idk::i32& Window::get_height() const noexcept {
+  return this->_height;
+}
+
+[[nodiscard]] const idk::i32& Window::get_x() const noexcept {
+  return this->_position_x;
+}
+
+[[nodiscard]] const idk::i32& Window::get_y() const noexcept {
+  return this->_position_y;
+}
+
+void Window::framebuffer_resize_cb(
+  [[maybe_unused]] GLFWwindow* window,
+  idk::i32 width,
+  idk::i32 height
+) noexcept {
+  FreshInstance->get_window()->get_framebuffer().resize(width, height);
+  FreshInstance->get_window()->_width = width;
+  FreshInstance->get_window()->_height = height;
+}
+
+void Window::window_close_cb([[maybe_unused]] GLFWwindow* window) noexcept {
+  Engine::get_instance()->set_engine_running(false);
+}
+
+void Window::window_resize_cb([[maybe_unused]] GLFWwindow* window,
+                              idk::i32 width,
+                              idk::i32 height) noexcept {
+ FreshInstance->get_window()->set_size(width, height);
+}
+
+void Window::window_pos_cb([[maybe_unused]] GLFWwindow* window, idk::i32 x, idk::i32 y) noexcept {
+  FreshInstance->get_window()->_position_x = x;
+  FreshInstance->get_window()->_position_y = y;
+}
+}  // namespace fresh

@@ -14,7 +14,7 @@ Scanner::Scanner(std::string_view source) : source{source} {}
     this->start = this->current;
     this->scan_token();
   }
-  this->tokens.emplace_back(TokenType::EOF_, "", nullptr, this->line);
+  this->tokens.emplace_back(TokenType::TOKEN_EOF_, "", nullptr, this->line);
   return this->tokens;
 }
 
@@ -40,28 +40,28 @@ void Scanner::scan_token() {
   case '.': {
     if(this->match('.')) { // ..
       if(this->match('.')) { // ...
-        this->add_token(TokenType::VARIADIC);
+        this->add_token(TokenType::TOKEN_VARIADIC);
         break;
       }
-      this->add_token(TokenType::DOT);
+      this->add_token(TokenType::TOKEN_DOT);
     }
-    this->add_token(TokenType::DOT);
+    this->add_token(TokenType::TOKEN_DOT);
     break;
   }
   case '!': {
-    this->add_token(match('=') ? TokenType::BANG_EQUAL : TokenType::BANG);
+    this->add_token(match('=') ? TokenType::TOKEN_BANG_EQUAL : TokenType::TOKEN_BANG);
     break;
   }
   case '=': {
-    this->add_token(match('=') ? TokenType::EQUAL_EQUAL : TokenType::EQUAL);
+    this->add_token(match('=') ? TokenType::TOKEN_EQUAL_EQUAL : TokenType::TOKEN_EQUAL);
     break;
   }
   case '<': {
-    this->add_token(match('=') ? TokenType::LESS_EQUAL : TokenType::LESS);
+    this->add_token(match('=') ? TokenType::TOKEN_LESS_EQUAL : TokenType::TOKEN_LESS);
     break;
   }
   case '>': {
-    this->add_token(match('=') ? TokenType::GREATER_EQUAL : TokenType::GREATER);
+    this->add_token(match('=') ? TokenType::TOKEN_GREATER_EQUAL : TokenType::TOKEN_GREATER);
     break;
   }
   case '#': {
@@ -70,7 +70,7 @@ void Scanner::scan_token() {
     break;
   }
   case '/': {
-    this->add_token(TokenType::SLASH);
+    this->add_token(TokenType::TOKEN_SLASH);
     break;
   }
   case ' ':
@@ -105,7 +105,7 @@ void Scanner::identifier() {
   std::string text = std::string(source.substr(start, current - start));
   TokenType type;
   if (auto match = this->keywords.find(text); match == this->keywords.end()) {
-    type = TokenType::IDENTIFIER;
+    type = TokenType::TOKEN_IDENTIFIER;
   } else {
     type = match->second;
   }
@@ -120,7 +120,7 @@ void Scanner::number() {
     while (this->is_digit(this->peek()))
       this->advance();
   }
-  this->add_token(TokenType::NUMBER,
+  this->add_token(TokenType::TOKEN_NUMBER,
                   std::stold(std::string(source.substr(start, current - start))));
 }
 
@@ -164,7 +164,7 @@ void Scanner::string() {
     return;
   }
   this->advance();
-  this->add_token(TokenType::STRING, str);
+  this->add_token(TokenType::TOKEN_STRING, str);
 }
 
 [[nodiscard]] bool Scanner::match(const char &expected) {

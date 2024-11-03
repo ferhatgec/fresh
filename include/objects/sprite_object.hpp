@@ -2,47 +2,40 @@
 
 #include "base_object.hpp"
 #include <resources/sprite_resource.hpp>
-#include <objects/gui/gui_base_object.hpp>
+#include "rectangle.hpp"
 
 namespace fresh {
 class SpriteObject : public BaseObject {
 public:
   friend class FesLoaderResource;
 
+  /// SpriteObject::SpriteObject() constructs a new SpriteObject.
   SpriteObject();
-  SpriteObject(SpriteObject* sprite_object);
-  SpriteObject(const SpriteResource& sprite_resource, const BaseObject& metadata);
-  SpriteObject(SpriteResource&& sprite_resource, BaseObject&& metadata);
 
-  ~SpriteObject();
+  /// SpriteObject::~SpriteObject() destroys already exist SpriteObject.
+  ~SpriteObject() override = default;
 
-  void
-  sync(bool is_sync_with_camera = false) noexcept override;
+  /// SpriteObject::sync() handles the draw functionality.
+  void sync() noexcept override;
 
-  __idk_nodiscard
-  SpriteResource& get_sprite_resource() noexcept;
+  [[nodiscard]] SpriteResource& get_sprite_resource() noexcept;
 
   __idk_nodiscard
   SpriteResource copy_get_sprite_resource() const noexcept {
     return this->_sprite_resource;
   }
 
-  [[nodiscard]] std::string to_string() {
+  [[nodiscard]] constexpr const char* to_string() noexcept override {
     return "spriteobject";
   }
 
   void set(const fescript::Token& name, fescript::Object value) override;
-  void set_rotation_by_radian_degrees(idk::f32 rad_degrees) noexcept override;
-private:
-  __idk_nodiscard
-  SDL_BlendMode
-  _convert_blend_mode_enum() noexcept;
+  void init_signal() noexcept override;
+  void set_rotation(idk::f32 rad_degrees) noexcept override;
 protected:
-#ifdef __FRESH_ENABLE_EDITOR
-  std::shared_ptr<GuiBaseObject> _gizmo;
-#endif
-  bool _still_focus { false };
   SpriteResource _sprite_resource;
   idk::f32 _cache_degrees;
+  fre2d::Rectangle _rectangle;
+  fre2d::Shader _shader;
 };
 } // namespace fresh

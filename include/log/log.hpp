@@ -1,16 +1,18 @@
+// MIT License
+//
+// Copyright (c) 2024 Ferhat Geçdoğan All Rights Reserved.
+// Distributed under the terms of the MIT License.
+//
 #pragma once
 
-#include <freshengine.hpp> // this may lead to some issues if we include this into fresh header files.
 #include <colorized.hh>
 #include <chrono>
-#include <format>
 #include <source_location>
 
 // TODO: in the future, we may add write logs to log file synchronously as a feature.
 namespace fresh {
 using namespace std::literals;
 
-class Engine;
 enum class LogType {
   Info,
   Warning,
@@ -61,8 +63,9 @@ static constexpr void log(const std::source_location& location, LogType log_type
     Pack{Style::Bold, error_color, Background::BgDefault, std::cout, "error: "}
       );
     print_cout_reset();
-    Engine::get_instance()->is_engine_running() = false; // better way than forcing to std::exit.
-                                                         // TODO: use custom exception to stop fresh running.
+    std::exit(1);
+    // Engine::get_instance()->set_engine_running(false);  // better way than forcing to std::exit.
+                                                        // TODO: use custom exception to stop fresh running.
     break;
   }
   case LogType::Stdout: {

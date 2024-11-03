@@ -37,7 +37,6 @@
 #include <fescript/wrappers/fescript_camera_object.hpp>
 #include <fescript/wrappers/fescript_circle_object.hpp>
 #include <fescript/wrappers/fescript_label_object.hpp>
-#include <fescript/wrappers/fescript_music_player_object.hpp>
 #include <fescript/wrappers/fescript_polygon_object.hpp>
 #include <fescript/wrappers/fescript_rectangle_object.hpp>
 #include <fescript/wrappers/fescript_sprite_object.hpp>
@@ -46,7 +45,6 @@
 #include <objects/audio_player_object.hpp>
 #include <objects/camera_object.hpp>
 #include <objects/circle_object.hpp>
-#include <objects/music_player_object.hpp>
 #include <objects/polygon_object.hpp>
 #include <objects/rectangle_object.hpp>
 #include <objects/physics/circle_area_object.hpp>
@@ -107,6 +105,7 @@ Interpreter::Interpreter() {
   this->globals->define("EngineIO_is_key_released", std::make_shared<FescriptEngineIOIsKeyReleased>());
   this->globals->define("EngineIO_is_mouse_button_pressed", std::make_shared<FescriptEngineIOIsMouseButtonPressed>());
   this->globals->define("EngineIO_is_mouse_button_just_pressed", std::make_shared<FescriptEngineIOIsMouseButtonJustPressed>());
+  this->globals->define("EngineIO_is_mouse_button_released", std::make_shared<FescriptEngineIOIsMouseButtonReleased>());
 
   ENGINEIO_INIT_CONSTANTS()
 
@@ -133,26 +132,25 @@ Interpreter::Interpreter() {
 
   ENGINEWINDOW_GLOBAL_CONSTANTS()
 
-  this->globals->define("Engine_BaseObject", std::make_shared<BaseObjectWrapper>());
-  this->globals->define("Engine_SpriteObject", std::make_shared<SpriteObjectWrapper>());
-  this->globals->define("Engine_LabelObject", std::make_shared<LabelObjectWrapper>());
-  this->globals->define("Engine_AreaObject", std::make_shared<AreaObjectWrapper>());
-  this->globals->define("Engine_CameraObject", std::make_shared<CameraObjectWrapper>());
-  this->globals->define("Engine_AnimationPlayerObject", std::make_shared<AnimationPlayerObjectWrapper>());
-  this->globals->define("Engine_AnimationFrameObject", std::make_shared<AnimationFrameObjectWrapper>());
-  this->globals->define("Engine_MusicPlayerObject", std::make_shared<MusicPlayerObjectWrapper>());
-  this->globals->define("Engine_AudioPlayerObject", std::make_shared<AudioPlayerObjectWrapper>());
-  this->globals->define("Engine_CircleObject", std::make_shared<CircleObjectWrapper>());
-  this->globals->define("Engine_PolygonObject", std::make_shared<PolygonObjectWrapper>());
-  this->globals->define("Engine_RectangleObject", std::make_shared<RectangleObjectWrapper>());
-  this->globals->define("Engine_RectangleAreaObject", std::make_shared<RectangleAreaObjectWrapper>());
-  this->globals->define("Engine_CircleAreaObject", std::make_shared<CircleAreaObjectWrapper>());
-  this->globals->define("Engine_PolygonAreaObject", std::make_shared<PolygonAreaObjectWrapper>());
-  this->globals->define("Engine_WorldObject", std::make_shared<WorldObjectWrapper>());
-  this->globals->define("Engine_BodyObject", std::make_shared<BodyObjectWrapper>());
-  this->globals->define("Engine_RectangleBodyObject", std::make_shared<RectangleBodyObjectWrapper>());
-  this->globals->define("Engine_PolygonBodyObject", std::make_shared<PolygonBodyObjectWrapper>());
-  this->globals->define("Engine_CircleBodyObject", std::make_shared<CircleBodyObjectWrapper>());
+  this->globals->define("Engine_BaseObject", std::make_shared<FescriptBaseObjectWrapper>());
+  this->globals->define("Engine_SpriteObject", std::make_shared<FescriptSpriteObjectWrapper>());
+  this->globals->define("Engine_LabelObject", std::make_shared<FescriptLabelObjectWrapper>());
+  this->globals->define("Engine_AreaObject", std::make_shared<FescriptAreaObjectWrapper>());
+  this->globals->define("Engine_CameraObject", std::make_shared<FescriptCameraObjectWrapper>());
+  this->globals->define("Engine_AnimationPlayerObject", std::make_shared<FescriptAnimationPlayerObjectWrapper>());
+  this->globals->define("Engine_AnimationFrameObject", std::make_shared<FescriptAnimationFrameObjectWrapper>());
+  this->globals->define("Engine_AudioPlayerObject", std::make_shared<FescriptAudioPlayerObjectWrapper>());
+  this->globals->define("Engine_CircleObject", std::make_shared<FescriptCircleObjectWrapper>());
+  this->globals->define("Engine_PolygonObject", std::make_shared<FescriptPolygonObjectWrapper>());
+  this->globals->define("Engine_RectangleObject", std::make_shared<FescriptRectangleObjectWrapper>());
+  this->globals->define("Engine_RectangleAreaObject", std::make_shared<FescriptRectangleAreaObjectWrapper>());
+  this->globals->define("Engine_CircleAreaObject", std::make_shared<FescriptCircleAreaObjectWrapper>());
+  this->globals->define("Engine_PolygonAreaObject", std::make_shared<FescriptPolygonAreaObjectWrapper>());
+  this->globals->define("Engine_WorldObject", std::make_shared<FescriptWorldObjectWrapper>());
+  this->globals->define("Engine_BodyObject", std::make_shared<FescriptBodyObjectWrapper>());
+  this->globals->define("Engine_RectangleBodyObject", std::make_shared<FescriptRectangleBodyObjectWrapper>());
+  this->globals->define("Engine_PolygonBodyObject", std::make_shared<FescriptPolygonBodyObjectWrapper>());
+  this->globals->define("Engine_CircleBodyObject", std::make_shared<FescriptCircleBodyObjectWrapper>());
 
   this->globals->define("Engine_load_fes", std::make_shared<FescriptEngineLoadFes>());
   this->globals->define("Engine_get_object", std::make_shared<FescriptEngineGetObject>());
@@ -310,7 +308,7 @@ void Interpreter::execute_block(const std::vector<std::shared_ptr<Stmt>> &statem
   if((stmt->name.lexeme == "update" && this->current_state == State::Update) ||
     (stmt->name.lexeme == "init" && this->current_state == State::Init) ||
     (stmt->name.lexeme == "last" && this->current_state == State::Last)) {
-    (void)this->visit(std::make_shared<Call>(std::make_shared<Variable>(Token(TokenType::IDENTIFIER,
+    (void)this->visit(std::make_shared<Call>(std::make_shared<Variable>(Token(TokenType::TOKEN_IDENTIFIER,
                                                                         stmt->name.lexeme,
                                                                         stmt->name.lexeme,
                                                                         -1)),
@@ -374,17 +372,17 @@ void Interpreter::execute_block(const std::vector<std::shared_ptr<Stmt>> &statem
   // we need to type check here. pos_x and pos_y must be int32, so Object.index() must be LongDoubleIndex.
   // also, visible and disabled must be bool, so Object.index() must be BoolIndex.
   if(expr->name.lexeme == "pos_x")
-    fresh::RenderObjects::get_object(this->render_object_id)->get_position_info().x = static_cast<idk::f32>(std::get<LongDoubleIndex>(value));
+    fresh::RenderObjects::get_object(this->render_object_id)->set_x(static_cast<idk::f32>(std::get<LongDoubleIndex>(value)));
   else if(expr->name.lexeme == "pos_y")
-    fresh::RenderObjects::get_object(this->render_object_id)->get_position_info().y = static_cast<idk::f32>(std::get<LongDoubleIndex>(value));
+    fresh::RenderObjects::get_object(this->render_object_id)->set_y(static_cast<idk::f32>(std::get<LongDoubleIndex>(value)));
   else if(expr->name.lexeme == "visible")
-    fresh::RenderObjects::get_object(this->render_object_id)->get_is_visible() = std::get<BoolIndex>(value);
+    fresh::RenderObjects::get_object(this->render_object_id)->set_visible(std::get<BoolIndex>(value));
   else if(expr->name.lexeme == "disabled")
-    fresh::RenderObjects::get_object(this->render_object_id)->get_is_disabled() = std::get<BoolIndex>(value);
+    fresh::RenderObjects::get_object(this->render_object_id)->set_disabled(std::get<BoolIndex>(value));
   else if(expr->name.lexeme == "width")
-    fresh::RenderObjects::get_object(this->render_object_id)->get_position_info().w = static_cast<idk::f32>(fabsl(std::get<LongDoubleIndex>(value)));
+    fresh::RenderObjects::get_object(this->render_object_id)->set_w(static_cast<idk::f32>(fabsl(std::get<LongDoubleIndex>(value))));
   else if(expr->name.lexeme == "height")
-    fresh::RenderObjects::get_object(this->render_object_id)->get_position_info().h = static_cast<idk::f32>(fabsl(std::get<LongDoubleIndex>(value)));
+    fresh::RenderObjects::get_object(this->render_object_id)->set_h(static_cast<idk::f32>(fabsl(std::get<LongDoubleIndex>(value))));
   else {
     if (auto it = this->locals.find(expr); it != this->locals.end())
       this->environment->assign_at(it->second, expr->name, value);
@@ -398,33 +396,33 @@ void Interpreter::execute_block(const std::vector<std::shared_ptr<Stmt>> &statem
   Object left = this->evaluate(expr->left);
   Object right = this->evaluate(expr->right);
   switch (expr->op.type) {
-  case TokenType::BANG_EQUAL: {
+  case TokenType::TOKEN_BANG_EQUAL: {
     return !this->is_equal(left, right);
   }
-  case TokenType::EQUAL_EQUAL: {
+  case TokenType::TOKEN_EQUAL_EQUAL: {
     return this->is_equal(left, right);
   }
-  case TokenType::GREATER: {
+  case TokenType::TOKEN_GREATER: {
     this->check_number_operands(expr->op, left, right);
     return std::get<LongDoubleIndex>(left) > std::get<LongDoubleIndex>(right);
   }
-  case TokenType::GREATER_EQUAL: {
+  case TokenType::TOKEN_GREATER_EQUAL: {
     this->check_number_operands(expr->op, left, right);
     return std::get<LongDoubleIndex>(left) >= std::get<LongDoubleIndex>(right);
   }
-  case TokenType::LESS: {
+  case TokenType::TOKEN_LESS: {
     this->check_number_operands(expr->op, left, right);
     return std::get<LongDoubleIndex>(left) < std::get<LongDoubleIndex>(right);
   }
-  case TokenType::LESS_EQUAL: {
+  case TokenType::TOKEN_LESS_EQUAL: {
     this->check_number_operands(expr->op, left, right);
     return std::get<LongDoubleIndex>(left) <= std::get<LongDoubleIndex>(right);
   }
-  case TokenType::MINUS: {
+  case TokenType::TOKEN_MINUS: {
     this->check_number_operands(expr->op, left, right);
     return std::get<LongDoubleIndex>(left) - std::get<LongDoubleIndex>(right);
   }
-  case TokenType::PLUS: {
+  case TokenType::TOKEN_PLUS: {
     if (left.index() == LongDoubleIndex && right.index() == LongDoubleIndex) {
       return static_cast<idk::f80>(std::get<LongDoubleIndex>(left) + std::get<LongDoubleIndex>(right));
     }
@@ -442,20 +440,23 @@ void Interpreter::execute_block(const std::vector<std::shared_ptr<Stmt>> &statem
         copy_left_array.push_back(right);
       }
       std::shared_ptr<FescriptArray> array = std::make_shared<FescriptArray>();
-      array->get_values() = std::move(copy_left_array);
+      array->set_array(std::move(copy_left_array));
       return std::move(array);
+    }
+    if(left.index() == StringIndex) {
+      return std::get<StringIndex>(left) + stringify(right);
     }
     throw RuntimeError{expr->op, "operands must be two numbers or two strings."};
   }
-  case TokenType::SLASH: {
+  case TokenType::TOKEN_SLASH: {
     this->check_number_operands(expr->op, left, right);
     return std::get<LongDoubleIndex>(left) / std::get<LongDoubleIndex>(right);
   }
-  case TokenType::STAR: {
+  case TokenType::TOKEN_STAR: {
     this->check_number_operands(expr->op, left, right);
     return std::get<LongDoubleIndex>(left) * std::get<LongDoubleIndex>(right);
   }
-  case TokenType::PERCENT: {
+  case TokenType::TOKEN_PERCENT: {
     this->check_number_operands(expr->op, left, right);
     return fmodl(std::get<LongDoubleIndex>(left), std::get<LongDoubleIndex>(right));
   }
@@ -487,7 +488,7 @@ void Interpreter::execute_block(const std::vector<std::shared_ptr<Stmt>> &statem
     }
   }
   if ((arguments.size() != function->arity()) && (function->arity() != -1)) {
-    if (function->is_variadic) {
+    if (function->is_variadic()) {
       if (arguments.size() < function->arity())
         throw RuntimeError{expr->paren,
                            "expected at least " + std::to_string(function->arity()) + " arguments but got " +
@@ -506,13 +507,13 @@ void Interpreter::execute_block(const std::vector<std::shared_ptr<Stmt>> &statem
     }
     case FescriptArrayIndex: {
       if(expr->name.literal.index() == LongDoubleIndex)
-        return std::get<FescriptArrayIndex>(object)->get(static_cast<int>(std::get<LongDoubleIndex>(expr->name.literal)));
+        return std::get<FescriptArrayIndex>(object)->get_value(static_cast<int>(std::get<LongDoubleIndex>(expr->name.literal)));
       if(expr->is_name_an_expr)
         if(auto value = this->evaluate(expr->name_expr); value.index() == LongDoubleIndex)
-          return std::get<FescriptArrayIndex>(object)->get(static_cast<int>(std::get<LongDoubleIndex>(value)));
+          return std::get<FescriptArrayIndex>(object)->get_value(static_cast<int>(std::get<LongDoubleIndex>(value)));
       if(const auto& variable_value = this->look_up_variable(expr->name, expr);
         variable_value.index() == LongDoubleIndex)
-        return std::get<FescriptArrayIndex>(object)->get(static_cast<int>(std::get<LongDoubleIndex>(variable_value)));
+        return std::get<FescriptArrayIndex>(object)->get_value(static_cast<int>(std::get<LongDoubleIndex>(variable_value)));
       throw RuntimeError(expr->name, "array must take an index by integer type.");
     }
     case FescriptDictIndex: {
@@ -527,7 +528,6 @@ void Interpreter::execute_block(const std::vector<std::shared_ptr<Stmt>> &statem
     case FescriptCameraObjectIndex:
     case FescriptAnimationPlayerObjectIndex:
     case FescriptAnimationFrameObjectIndex:
-    case FescriptMusicPlayerObjectIndex:
     case FescriptAudioPlayerObjectIndex:
     case FescriptCircleObjectIndex:
     case FescriptPolygonObjectIndex:
@@ -561,7 +561,7 @@ void Interpreter::execute_block(const std::vector<std::shared_ptr<Stmt>> &statem
 [[nodiscard]] Object Interpreter::visit(std::shared_ptr<Array> expr) {
   std::shared_ptr<FescriptArray> array = std::make_shared<FescriptArray>();
   for(auto& element: expr->values) {
-    array->values.push_back(this->evaluate(element));
+    array->push_value(this->evaluate(element));
   }
   return std::move(array);
 }
@@ -575,7 +575,7 @@ void Interpreter::execute_block(const std::vector<std::shared_ptr<Stmt>> &statem
 }
 
 [[nodiscard]] Object Interpreter::visit(std::shared_ptr<Logical> expr) {
-  if (Object left = this->evaluate(expr->left); expr->op.type == TokenType::OR) {
+  if (Object left = this->evaluate(expr->left); expr->op.type == TokenType::TOKEN_OR) {
     if (this->is_truthy(left))
       return left;
   } else if (!this->is_truthy(left))
@@ -594,7 +594,6 @@ void Interpreter::execute_block(const std::vector<std::shared_ptr<Stmt>> &statem
     SET_VISIT_IMPL_OBJECT(FescriptCameraObjectIndex)
     SET_VISIT_IMPL_OBJECT(FescriptAnimationPlayerObjectIndex)
     SET_VISIT_IMPL_OBJECT(FescriptAnimationFrameObjectIndex)
-    SET_VISIT_IMPL_OBJECT(FescriptMusicPlayerObjectIndex)
     SET_VISIT_IMPL_OBJECT(FescriptAudioPlayerObjectIndex)
     SET_VISIT_IMPL_OBJECT(FescriptCircleObjectIndex)
     SET_VISIT_IMPL_OBJECT(FescriptPolygonObjectIndex)
@@ -631,10 +630,10 @@ void Interpreter::execute_block(const std::vector<std::shared_ptr<Stmt>> &statem
 [[nodiscard]] Object Interpreter::visit(std::shared_ptr<Unary> expr) {
   Object right = this->evaluate(expr->right);
   switch (expr->op.type) {
-  case TokenType::BANG: {
+  case TokenType::TOKEN_BANG: {
     return !this->is_truthy(right);
   }
-  case MINUS: {
+  case TokenType::TOKEN_MINUS: {
     this->check_number_operand(expr->op, right);
     return -std::get<LongDoubleIndex>(right);
   }
@@ -646,13 +645,13 @@ void Interpreter::execute_block(const std::vector<std::shared_ptr<Stmt>> &statem
   // TODO: reserve a keyword that returns object that linked to script. then member variables will be automatically
   //  handled in set, assign and get nodes.
   if(expr->name.lexeme == "pos_x")
-    return static_cast<idk::f80>(fresh::RenderObjects::get_object(this->render_object_id)->get_position_info().x);
+    return static_cast<idk::f80>(fresh::RenderObjects::get_object(this->render_object_id)->get_x());
   if(expr->name.lexeme == "pos_y")
-    return static_cast<idk::f80>(fresh::RenderObjects::get_object(this->render_object_id)->get_position_info().y);
+    return static_cast<idk::f80>(fresh::RenderObjects::get_object(this->render_object_id)->get_y());
   if(expr->name.lexeme == "visible")
-    return fresh::RenderObjects::get_object(this->render_object_id)->get_is_visible();
+    return fresh::RenderObjects::get_object(this->render_object_id)->get_visible();
   if(expr->name.lexeme == "disabled")
-    return fresh::RenderObjects::get_object(this->render_object_id)->get_is_disabled();
+    return fresh::RenderObjects::get_object(this->render_object_id)->get_disabled();
   // TODO: object specific variables.
   return this->look_up_variable(expr->name, expr);
 }
@@ -710,7 +709,6 @@ void Interpreter::check_number_operands(const Token &op, const Object &left,
     IS_INHERITED_BY(CameraObject) return Interpreter::get_object_property(keyword, obj_CameraObject);
     IS_INHERITED_BY(AnimationPlayerObject) return Interpreter::get_object_property(keyword, obj_AnimationPlayerObject);
     IS_INHERITED_BY(AnimationFrameObject) return Interpreter::get_object_property(keyword, obj_AnimationFrameObject);
-    IS_INHERITED_BY(MusicPlayerObject) return Interpreter::get_object_property(keyword, obj_MusicPlayerObject);
     IS_INHERITED_BY(AudioPlayerObject) return Interpreter::get_object_property(keyword, obj_AudioPlayerObject);
     IS_INHERITED_BY(RectangleObject) return Interpreter::get_object_property(keyword, obj_RectangleObject);
     IS_INHERITED_BY(CircleObject) return Interpreter::get_object_property(keyword, obj_CircleObject);
@@ -731,23 +729,23 @@ void Interpreter::check_number_operands(const Token &op, const Object &left,
     }
     case FescriptSpriteObjectIndex: {
       RETURN_BASE_OBJECT_PROPERTIES(FescriptSpriteObjectIndex)
-      else if (keyword.lexeme == "sprite_resource") return std::string(std::get<FescriptSpriteObjectIndex>(value)->get_sprite_resource()._texture_path.data());
+      else if (keyword.lexeme == "sprite_resource") return std::get<FescriptSpriteObjectIndex>(value)->get_sprite_resource().get_path();
       else if (keyword.lexeme == "init_sprite"    ) return std::make_shared<FescriptSpriteObjectMemberInitSprite>(std::get<FescriptSpriteObjectIndex>(value));
       else throw RuntimeError(keyword, "SpriteObject property cannot be found.");
     }
     case FescriptLabelObjectIndex: {
       RETURN_BASE_OBJECT_PROPERTIES(FescriptLabelObjectIndex)
-      else if (keyword.lexeme == "background_red"  ) return static_cast<idk::f80>(std::get<FescriptLabelObjectIndex>(value)->get_background_color().r);
-      else if (keyword.lexeme == "background_green") return static_cast<idk::f80>(std::get<FescriptLabelObjectIndex>(value)->get_background_color().g);
-      else if (keyword.lexeme == "background_blue" ) return static_cast<idk::f80>(std::get<FescriptLabelObjectIndex>(value)->get_background_color().b);
-      else if (keyword.lexeme == "background_alpha") return static_cast<idk::f80>(std::get<FescriptLabelObjectIndex>(value)->get_background_color().a);
-      else if (keyword.lexeme == "foreground_red"  ) return static_cast<idk::f80>(std::get<FescriptLabelObjectIndex>(value)->get_foreground_color().r);
-      else if (keyword.lexeme == "background_blue" ) return static_cast<idk::f80>(std::get<FescriptLabelObjectIndex>(value)->get_background_color().b);
-      else if (keyword.lexeme == "background_alpha") return static_cast<idk::f80>(std::get<FescriptLabelObjectIndex>(value)->get_background_color().a);
-      else if (keyword.lexeme == "foreground_red"  ) return static_cast<idk::f80>(std::get<FescriptLabelObjectIndex>(value)->get_foreground_color().r);
-      else if (keyword.lexeme == "foreground_green") return static_cast<idk::f80>(std::get<FescriptLabelObjectIndex>(value)->get_foreground_color().g);
-      else if (keyword.lexeme == "foreground_blue" ) return static_cast<idk::f80>(std::get<FescriptLabelObjectIndex>(value)->get_foreground_color().b);
-      else if (keyword.lexeme == "foreground_alpha") return static_cast<idk::f80>(std::get<FescriptLabelObjectIndex>(value)->get_foreground_color().a);
+      else if (keyword.lexeme == "background_red"  ) return static_cast<idk::f80>(std::get<FescriptLabelObjectIndex>(value)->get_background_color().get_red());
+      else if (keyword.lexeme == "background_green") return static_cast<idk::f80>(std::get<FescriptLabelObjectIndex>(value)->get_background_color().get_green());
+      else if (keyword.lexeme == "background_blue" ) return static_cast<idk::f80>(std::get<FescriptLabelObjectIndex>(value)->get_background_color().get_blue());
+      else if (keyword.lexeme == "background_alpha") return static_cast<idk::f80>(std::get<FescriptLabelObjectIndex>(value)->get_background_color().get_alpha());
+      else if (keyword.lexeme == "foreground_red"  ) return static_cast<idk::f80>(std::get<FescriptLabelObjectIndex>(value)->get_foreground_color().get_red());
+      else if (keyword.lexeme == "background_blue" ) return static_cast<idk::f80>(std::get<FescriptLabelObjectIndex>(value)->get_background_color().get_blue());
+      else if (keyword.lexeme == "background_alpha") return static_cast<idk::f80>(std::get<FescriptLabelObjectIndex>(value)->get_background_color().get_alpha());
+      else if (keyword.lexeme == "foreground_red"  ) return static_cast<idk::f80>(std::get<FescriptLabelObjectIndex>(value)->get_foreground_color().get_red());
+      else if (keyword.lexeme == "foreground_green") return static_cast<idk::f80>(std::get<FescriptLabelObjectIndex>(value)->get_foreground_color().get_green());
+      else if (keyword.lexeme == "foreground_blue" ) return static_cast<idk::f80>(std::get<FescriptLabelObjectIndex>(value)->get_foreground_color().get_blue());
+      else if (keyword.lexeme == "foreground_alpha") return static_cast<idk::f80>(std::get<FescriptLabelObjectIndex>(value)->get_foreground_color().get_alpha());
       else if (keyword.lexeme == "label_text"      ) return std::string(std::get<FescriptLabelObjectIndex>(value)->get_label_text().data());
       else if (keyword.lexeme == "font_size"       ) return static_cast<idk::f80>(std::get<FescriptLabelObjectIndex>(value)->get_label_font_resource().get_font_size());
       else if (keyword.lexeme == "font_resource"   ) return std::string(std::get<FescriptLabelObjectIndex>(value)->get_label_font_resource().get_font_path().data());
@@ -781,42 +779,23 @@ void Interpreter::check_number_operands(const Token &op, const Object &left,
       RETURN_BASE_OBJECT_PROPERTIES(FescriptAnimationFrameObjectIndex)
       else throw RuntimeError(keyword, "AnimationFrameObject property cannot be found.");
     }
-    case FescriptMusicPlayerObjectIndex: {
-      RETURN_BASE_OBJECT_PROPERTIES(FescriptMusicPlayerObjectIndex)
-      else if(keyword.lexeme == "load_music_source") return std::make_shared<FescriptMusicPlayerObjectMemberLoadMusicSource>(std::get<FescriptMusicPlayerObjectIndex>(value));
-      else if(keyword.lexeme == "get_music_volume") return std::make_shared<FescriptMusicPlayerObjectMemberGetMusicVolume>(std::get<FescriptMusicPlayerObjectIndex>(value));
-      else if(keyword.lexeme == "sync_music_volume") return std::make_shared<FescriptMusicPlayerObjectMemberSyncMusicVolume>(std::get<FescriptMusicPlayerObjectIndex>(value));
-      else if(keyword.lexeme == "pause_music") return std::make_shared<FescriptMusicPlayerObjectMemberPauseMusic>(std::get<FescriptMusicPlayerObjectIndex>(value));
-      else if(keyword.lexeme == "resume_music") return std::make_shared<FescriptMusicPlayerObjectMemberResumeMusic>(std::get<FescriptMusicPlayerObjectIndex>(value));
-      else if(keyword.lexeme == "play_music") return std::make_shared<FescriptMusicPlayerObjectMemberPlayMusic>(std::get<FescriptMusicPlayerObjectIndex>(value));
-      else if(keyword.lexeme == "play_fade_in_music") return std::make_shared<FescriptMusicPlayerObjectMemberPlayFadeInMusic>(std::get<FescriptMusicPlayerObjectIndex>(value));
-      else if(keyword.lexeme == "stop_music") return std::make_shared<FescriptMusicPlayerObjectMemberStopMusic>(std::get<FescriptMusicPlayerObjectIndex>(value));
-      else if(keyword.lexeme == "stop_fade_out_music") return std::make_shared<FescriptMusicPlayerObjectMemberStopFadeOutMusic>(std::get<FescriptMusicPlayerObjectIndex>(value));
-      else throw RuntimeError(keyword, "MusicPlayerObject property cannot be found.");
-    }
     case FescriptAudioPlayerObjectIndex: {
       RETURN_BASE_OBJECT_PROPERTIES(FescriptAudioPlayerObjectIndex)
       else if(keyword.lexeme == "load_audio_source") return std::make_shared<FescriptAudioPlayerObjectMemberLoadAudioSource>(std::get<FescriptAudioPlayerObjectIndex>(value));
       else if(keyword.lexeme == "get_audio_volume") return std::make_shared<FescriptAudioPlayerObjectMemberGetAudioVolume>(std::get<FescriptAudioPlayerObjectIndex>(value));
-      else if(keyword.lexeme == "sync_audio_volume") return std::make_shared<FescriptAudioPlayerObjectMemberSyncAudioVolume>(std::get<FescriptAudioPlayerObjectIndex>(value));
       else if(keyword.lexeme == "pause_audio") return std::make_shared<FescriptAudioPlayerObjectMemberPauseAudio>(std::get<FescriptAudioPlayerObjectIndex>(value));
-      else if(keyword.lexeme == "pause_all_audio") return std::make_shared<FescriptAudioPlayerObjectMemberPauseAllAudio>(std::get<FescriptAudioPlayerObjectIndex>(value));
       else if(keyword.lexeme == "resume_audio") return std::make_shared<FescriptAudioPlayerObjectMemberResumeAudio>(std::get<FescriptAudioPlayerObjectIndex>(value));
-      else if(keyword.lexeme == "resume_all_audio") return std::make_shared<FescriptAudioPlayerObjectMemberResumeAllAudio>(std::get<FescriptAudioPlayerObjectIndex>(value));
       else if(keyword.lexeme == "play_audio") return std::make_shared<FescriptAudioPlayerObjectMemberPlayAudio>(std::get<FescriptAudioPlayerObjectIndex>(value));
       else if(keyword.lexeme == "play_fade_in_audio") return std::make_shared<FescriptAudioPlayerObjectMemberPlayFadeInAudio>(std::get<FescriptAudioPlayerObjectIndex>(value));
       else if(keyword.lexeme == "stop_audio") return std::make_shared<FescriptAudioPlayerObjectMemberStopAudio>(std::get<FescriptAudioPlayerObjectIndex>(value));
-      else if(keyword.lexeme == "stop_all_audio") return std::make_shared<FescriptAudioPlayerObjectMemberStopAllAudio>(std::get<FescriptAudioPlayerObjectIndex>(value));
       else if(keyword.lexeme == "stop_fade_out_audio") return std::make_shared<FescriptAudioPlayerObjectMemberStopFadeOutAudio>(std::get<FescriptAudioPlayerObjectIndex>(value));
       else throw RuntimeError(keyword, "AudioPlayerObject property cannot be found.");
     }
     case FescriptCircleObjectIndex: {
       RETURN_BASE_OBJECT_PROPERTIES(FescriptCircleObjectIndex)
       else if(keyword.lexeme == "get_radius") return std::make_shared<FescriptCircleObjectMemberGetRadius>(std::get<FescriptCircleObjectIndex>(value));
-      else if(keyword.lexeme == "get_segments") return std::make_shared<FescriptCircleObjectMemberGetSegments>(std::get<FescriptCircleObjectIndex>(value));
       else if(keyword.lexeme == "get_is_filled") return std::make_shared<FescriptCircleObjectMemberGetIsFilled>(std::get<FescriptCircleObjectIndex>(value));
-      else if(keyword.lexeme == "set_radius") return std::make_shared<FescriptCircleObjectMemberSetSegments>(std::get<FescriptCircleObjectIndex>(value));
-      else if(keyword.lexeme == "set_segments") return std::make_shared<FescriptCircleObjectMemberSetSegments>(std::get<FescriptCircleObjectIndex>(value));
+      else if(keyword.lexeme == "set_radius") return std::make_shared<FescriptCircleObjectMemberSetRadius>(std::get<FescriptCircleObjectIndex>(value));
       else if(keyword.lexeme == "set_is_filled") return std::make_shared<FescriptCircleObjectMemberSetIsFilled>(std::get<FescriptCircleObjectIndex>(value));
       else throw RuntimeError(keyword, "CircleObject property cannot be found.");
     }
@@ -896,14 +875,13 @@ void Interpreter::check_number_operands(const Token &op, const Object &left,
     log_error(fresh::src(), "Object to BaseObject conversion is not possible");
     return nullptr;
   }
-  const auto& object_def = base_obj->_object_def;
+  const auto& object_def = base_obj->to_string();
   IS_INHERITED_BY(SpriteObject) return obj_SpriteObject;
   IS_INHERITED_BY(LabelObject) return obj_LabelObject;
   IS_INHERITED_BY(AreaObject) return obj_AreaObject;
   IS_INHERITED_BY(CameraObject) return obj_CameraObject;
   IS_INHERITED_BY(AnimationPlayerObject) return obj_AnimationPlayerObject;
   IS_INHERITED_BY(AnimationFrameObject) return obj_AnimationFrameObject;
-  IS_INHERITED_BY(MusicPlayerObject) return obj_MusicPlayerObject;
   IS_INHERITED_BY(AudioPlayerObject) return obj_AudioPlayerObject;
   IS_INHERITED_BY(RectangleObject) return obj_RectangleObject;
   IS_INHERITED_BY(CircleObject) return obj_CircleObject;
@@ -967,7 +945,6 @@ std::string Interpreter::stringify(const Object &object) {
   GET_STRINGIFY_IMPL_OBJECT(FescriptCameraObjectIndex)
   GET_STRINGIFY_IMPL_OBJECT(FescriptAnimationPlayerObjectIndex)
   GET_STRINGIFY_IMPL_OBJECT(FescriptAnimationFrameObjectIndex)
-  GET_STRINGIFY_IMPL_OBJECT(FescriptMusicPlayerObjectIndex)
   GET_STRINGIFY_IMPL_OBJECT(FescriptAudioPlayerObjectIndex)
   GET_STRINGIFY_IMPL_OBJECT(FescriptCircleObjectIndex)
   GET_STRINGIFY_IMPL_OBJECT(FescriptPolygonObjectIndex)

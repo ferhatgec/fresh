@@ -1,11 +1,11 @@
+// MIT License
 //
-// Created by gech on 2/5/2024.
+// Copyright (c) 2024 Ferhat Geçdoğan All Rights Reserved.
+// Distributed under the terms of the MIT License.
 //
-
 #pragma once
 
-namespace fresh {
-namespace fes {
+namespace fresh::fes {
 enum Keywords {
   NodeInit, // [
   NodeEnd, // ]
@@ -15,8 +15,7 @@ enum Keywords {
 
   ListObjectInit, // {
   ListObjectEnd, // }
-                  // =
-  Assign,
+  Assign, // =
 
   BackgroundRed, // background_red
   BackgroundGreen, // background_green
@@ -70,8 +69,6 @@ enum Keywords {
   File, // File
   Import, // Import
 
-  GuiButtonObject, // GuiButtonObject
-  GuiBaseObject, // GuiBaseObject
   AreaObject, // AreaObject
   BaseObject, // BaseObject
   CameraObject, // CameraObject
@@ -88,12 +85,4 @@ enum Keywords {
   Data,
   Undefined
 };
-
-enum class LabelRenderType {
-  LCD,
-  Solid,
-  Shaded,
-  Blended
-};
-}
-}
+} // namespace fresh::fes

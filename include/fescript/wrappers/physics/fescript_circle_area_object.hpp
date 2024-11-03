@@ -9,13 +9,5 @@ namespace fescript {
 DEFINE_MEMBER_MODULE_CLASS(IsCollidingWith, CircleAreaObjectMember, 1, fresh::CircleAreaObject)
 DEFINE_MEMBER_MODULE_CLASS(GetRadius, CircleAreaObjectMember, 0, fresh::CircleAreaObject)
 DEFINE_MEMBER_MODULE_CLASS(SetRadius, CircleAreaObjectMember, 1, fresh::CircleAreaObject)
-
-class CircleAreaObjectWrapper : public AreaObjectWrapper {
-public:
-  CircleAreaObjectWrapper();
-  ~CircleAreaObjectWrapper();
-  [[nodiscard]] std::string to_string() override;
-  [[nodiscard]] int arity() override { return -1; }
-  [[nodiscard]] Object call([[maybe_unused]] Interpreter& interpreter, const std::vector<Object>& arguments) override;
-};
+DEFINE_MODULE_CLASS_CUSTOM_DERIVED_FROM(Wrapper, CircleAreaObject, -1, FescriptAreaObjectWrapper)
 } // namespace fescript

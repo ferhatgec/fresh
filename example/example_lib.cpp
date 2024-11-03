@@ -1,4 +1,3 @@
-#define SDL_MAIN_HANDLED
 #include "../include/fescript/fescript_interpreter.hpp"
 #include "../include/fescript/fescript_parser.hpp"
 #include "../include/fescript/fescript_resolver.hpp"
@@ -19,90 +18,92 @@
 #include <fstream>
 #include <numbers>
 
+#include "objects/audio_player_object.hpp"
+
 class Application : public fresh::Engine {
   fresh::FesLoaderResource _resource;
-  //SharedPtr<fresh::RectangleBodyObject> _rect_body;
-  //SharedPtr<fresh::WorldObject> _world;
 public:
-  Application() {
+  Application() noexcept {
     FreshInstanceInit(); // this is a *must* to initialize every part of engine correct.
     Engine::get_instance()->get_window() = std::make_shared<fresh::Window>("Hello world",
                                                         600,
                                                         600,
-                                                        SDL_WINDOWPOS_CENTERED,
-                                                        SDL_WINDOWPOS_CENTERED);
+                                                        0,
+                                                        0);
     Engine::get_instance()->get_window()->init_window();
-    Engine::get_instance()->set_scaling_mode(fresh::Engine::Scaling::KeepAspectRatio, 600, 600);
+    /*
+     fresh::RenderObjects::push_object(
+      std::make_shared<fresh::RectangleObject>(
+        fresh::BBoxResource {-150.f, -150.f, 200.f, 100.f},
+        fresh::ColorResource {1.f, 0.f, 0.f, 1.f}
+      )
+    );
+
+    auto ptr = std::make_shared<fresh::SpriteObject>();
+    fresh::SpriteResource resource("gechland.icon.png");
+
+    ptr->get_sprite_resource() = resource;
+    ptr->set_position({
+      100.f, 100.f, 50.f, 50.f
+    });
+
+    fresh::RenderObjects::objects_to_render.back()->push_object(
+      ptr
+    );
+
+    fresh::PolygonResource res;
+    res.push_polygons({{-100.f, -100.f}, {150.f, -100.f}, {75.f, 100.f}, {-100.f, 100.f}});
+
+    fresh::RenderObjects::push_object(
+      std::make_shared<fresh::PolygonObject>(res, fresh::ColorResource {1.f, 0.f, 0.f, 1.f})
+      );
+
+    fresh::FontResource font_res;
+    font_res.set_font_size(64);
+    font_res.load_font("Roboto-Regular.ttf");
+
+    fresh::RenderObjects::push_object(
+      std::make_shared<fresh::LabelObject>()
+    );
+
+    const auto& lbl = std::static_pointer_cast<fresh::LabelObject>(
+      fresh::RenderObjects::objects_to_render.back()
+      );
+    lbl->get_label_font_resource() = font_res;
+    lbl->set_position({
+      0.f, 0.f,
+      1.f, 1.f
+    });
+    lbl->initialize_text(
+      "Hello world",
+      fresh::ColorResource {0.f, 0.f, 0.f, 1.f},
+      fresh::ColorResource {0.f, 0.f, 0.f, 1.f}
+    );
+
+    fresh::RenderObjects::push_object(std::make_shared<fresh::AudioPlayerObject>());
+    std::dynamic_pointer_cast<fresh::AudioPlayerObject>(
+      fresh::RenderObjects::objects_to_render.back()
+    )->get_audio_resource().load_audio_source("digits.wav");
+    */
+
     this->_resource.load_fes("physics_scene.fes");
-    this->_resource.generate_objects();
-
-    /*SDL_FRect rect_pos = {
-      400.f, 300.f, 200.f, 60.f
-    }, rect_pos_2 = {
-      400.f, 300.f, 30.f, 30.f
-    };
-
-    this->_world = std::make_shared<fresh::WorldObject>();
-    this->_rect_body = std::make_shared<fresh::RectangleBodyObject>(this->_world->get_world_id(), rect_pos, true);
-    this->_world->get_name() = "ExampleWorldObject";
-    this->_rect_body->get_name() = "ExampleRectangleBody";
-
-    // we attach a circle sprite, so we can actually see what box2d does.
-    this->_rect_body->get_sub_objects().push_back(std::make_shared<fresh::RectangleObject>(rect_pos, fresh::ColorResource(0, 0, 0, 125), false));
-
-    fresh::RenderObjects::push_object(std::move(this->_world));
-    fresh::RenderObjects::push_object(std::move(this->_rect_body));
-
-    this->_world = std::dynamic_pointer_cast<fresh::WorldObject>(fresh::RenderObjects::get_object("ExampleWorldObject"));
-    this->_rect_body = std::dynamic_pointer_cast<fresh::RectangleBodyObject>(fresh::RenderObjects::get_object("ExampleRectangleBody"));*/
+    fresh::RenderObjects::push_object(std::move(this->_resource.generate()));
   }
 
-  ~Application() = default;
+  ~Application() noexcept override = default;
 
-  SDL_FRect conv_from_rect(const SDL_Rect& rect) {
-    return SDL_FRect {
-      static_cast<idk::f32>(rect.x),
-      static_cast<idk::f32>(rect.y),
-      static_cast<idk::f32>(rect.w),
-      static_cast<idk::f32>(rect.h)
-    };
-  }
   void
   update() override {
-    /*if(Engine::get_instance()->get_keyboard_input().is_key_just_pressed(SDL_SCANCODE_U)) {
-      this->_rect_body->set_rotation_by_radian_degrees(this->_rect_body->get_rotation_by_radian_degrees() + std::numbers::pi_v<idk::f32> / 36.f);
+    /*if(FreshInstance->get_keyboard_input().is_key_pressed(GLFW_KEY_W)) {
+      std::cout << "[W] press\n";
+      Engine::get_instance()->get_camera()->get_camera()->set_position(
+        Engine::get_instance()->get_camera()->get_camera()->get_camera_position()
+        +
+        glm::vec3 { 0.f, -0.05f, 0.f }
+      );
     }
-
-    if(Engine::get_instance()->get_keyboard_input().is_key_just_pressed(SDL_SCANCODE_J)) {
-      this->_rect_body->set_rotation_by_radian_degrees(this->_rect_body->get_rotation_by_radian_degrees() - std::numbers::pi_v<idk::f32> / 36.f);
-    }
-
-    if(Engine::get_instance()->get_mouse_input().is_button_just_pressed(SDL_BUTTON_RIGHT)) {
-      auto cursor_pos = Engine::get_instance()->get_mouse_input().get_current_coordinates();
-      SDL_FRect rect = {
-        static_cast<idk::f32>(cursor_pos.first()),
-        static_cast<idk::f32>(cursor_pos.second()),
-          30,
-        30
-      }; // TODO: if any camera linked to engine instance, convert to camera render_pos.
-      std::cout << "Rectangle: " << rect.x << " " << rect.y << " " << rect.w << " " << rect.h << "\n";
-      auto box = std::make_shared<fresh::RectangleBodyObject>(this->_world->get_world_id(), rect, false);
-      box->get_sub_objects().push_back(std::make_shared<fresh::RectangleObject>(rect, fresh::ColorResource(0, 0, 255, 125), false));
-      fresh::RenderObjects::push_object(std::move(box));
-    }
-
-    if(Engine::get_instance()->get_mouse_input().is_button_just_pressed(SDL_BUTTON_LEFT)) {
-      auto cursor_pos = Engine::get_instance()->get_mouse_input().get_current_coordinates();
-      SDL_FRect rect = {
-        static_cast<idk::f32>(cursor_pos.first()),
-        static_cast<idk::f32>(cursor_pos.second()),
-          50,
-        50
-      };
-      std::cout << "Circle: " << rect.x << " " << rect.y << " " << rect.w << " " << rect.h << "\n";
-      auto box = std::make_shared<fresh::CircleBodyObject>(this->_world->get_world_id(), rect, 30.f, false);
-      box->get_sub_objects().push_back(std::make_shared<fresh::CircleObject>(rect, fresh::CircleResource(30.f, 0, false), fresh::ColorResource(0, 0, 255, 125)));
-      fresh::RenderObjects::push_object(std::move(box));
+    if(FreshInstance->get_keyboard_input().is_key_released(GLFW_KEY_W)) {
+      std::cout << "[W] release\n";
     }*/
   }
 
@@ -147,8 +148,6 @@ void run(std::string_view source) noexcept {
 }
 
 int main(int argc, char** argv) {
-  SDL_SetMainReady();
-
   if(argc < 2) {
     std::make_unique<Application>()->run();
   } else {

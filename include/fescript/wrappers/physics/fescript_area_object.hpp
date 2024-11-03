@@ -7,13 +7,5 @@
 
 namespace fescript {
 DEFINE_MEMBER_MODULE_CLASS(IsCollidingWith, AreaObjectMember, 1, fresh::AreaObject)
-
-class AreaObjectWrapper : public BaseObjectWrapper {
-public:
-  AreaObjectWrapper();
-  virtual ~AreaObjectWrapper();
-  [[nodiscard]] std::string to_string() override;
-  [[nodiscard]] int arity() override { return -1; }
-  [[nodiscard]] Object call([[maybe_unused]] Interpreter& interpreter, const std::vector<Object>& arguments) override;
-};
+DEFINE_MODULE_CLASS_CUSTOM_DERIVED_FROM(Wrapper, AreaObject, -1, FescriptBaseObjectWrapper)
 } // namespace fescript
