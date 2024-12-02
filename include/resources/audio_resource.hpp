@@ -1,7 +1,12 @@
+// MIT License
+//
+// Copyright (c) 2024 Ferhat Geçdoğan All Rights Reserved.
+// Distributed under the terms of the MIT License.
+//
 #pragma once
 
 #include <types/stringview.hpp>
-#include "../../libs/miniaudio/miniaudio.h"
+#include <miniaudio.h>
 
 
 namespace fresh {

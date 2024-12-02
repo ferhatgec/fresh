@@ -8,7 +8,6 @@
 
 #include <map>
 #include <utility>
-
 #include "fescript_error.hpp"
 #include "fescript_token.hpp"
 

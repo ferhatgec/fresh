@@ -1,5 +1,10 @@
-#include "fescript/fescript_array.hpp"
-#include "objects/physics/polygon_body_object.hpp"
+// MIT License
+//
+// Copyright (c) 2024 Ferhat Geçdoğan All Rights Reserved.
+// Distributed under the terms of the MIT License.
+//
+#include <fescript/fescript_array.hpp>
+#include <objects/physics/polygon_body_object.hpp>
 
 #include <fescript/wrappers/physics/fescript_circle_body_object.hpp>
 #include <objects/camera_object.hpp>

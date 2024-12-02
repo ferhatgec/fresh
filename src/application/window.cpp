@@ -1,10 +1,13 @@
+// MIT License
+//
+// Copyright (c) 2024 Ferhat Geçdoğan All Rights Reserved.
+// Distributed under the terms of the MIT License.
+//
 #include <stb_image.h>
-
 #include <application/window.hpp>
 #include <helper_funcs.hpp>
 #include <log/log.hpp>
-
-#include "freshengine.hpp"
+#include <freshengine.hpp>
 
 #define CHECK_WINDOW() \
   if(!this->_window) { \

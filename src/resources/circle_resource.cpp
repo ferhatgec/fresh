@@ -1,3 +1,8 @@
+// MIT License
+//
+// Copyright (c) 2024 Ferhat Geçdoğan All Rights Reserved.
+// Distributed under the terms of the MIT License.
+//
 #include <cmath>
 #include <iostream>
 #include <log/log.hpp>
@@ -10,6 +15,7 @@ CircleResource::CircleResource(
   idk::f32 thickness,
   bool is_filled
 ) noexcept {
+  this->set_radius(radius);
   this->set_thickness(thickness);
   this->set_filled(is_filled);
 }

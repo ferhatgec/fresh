@@ -1,3 +1,8 @@
+// MIT License
+//
+// Copyright (c) 2024 Ferhat Geçdoğan All Rights Reserved.
+// Distributed under the terms of the MIT License.
+//
 #include <fescript/wrappers/fescript_base_object.hpp>
 #include <fescript/fescript_array.hpp>
 #include <freshengine.hpp>
@@ -14,6 +19,15 @@ SpriteObject::SpriteObject() : _cache_degrees{0.f} {
 void SpriteObject::sync() noexcept {
   CHECK_DISABLED()
   this->_code.interpret_update();
+  if(!fre2d::detail::nearly_equals(this->get_delta_x(), 0.f) || !fre2d::detail::nearly_equals(this->get_delta_y(), 0.f)) {
+    this->_rectangle.set_position({this->get_x(), this->get_y()});
+  }
+  if(!fre2d::detail::nearly_equals(this->get_delta_rot(), 0.f)) {
+    this->_rectangle.set_rotation(this->get_rotation());
+  }
+  if(!fre2d::detail::nearly_equals(this->get_delta_w(), 0.f) || !fre2d::detail::nearly_equals(this->get_delta_h(), 0.f)) {
+    this->_rectangle.set_scale({this->get_w(), this->get_h(), 1.f});
+  }
   if(this->_visible) {
     this->_rectangle.draw(this->_shader,
       Engine::get_instance()->get_camera()->get_camera()

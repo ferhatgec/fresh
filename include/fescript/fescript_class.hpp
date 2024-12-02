@@ -7,7 +7,6 @@
 #pragma once
 
 #include <map>
-
 #include "fescript_callable.hpp"
 
 namespace fescript {

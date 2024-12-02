@@ -1,3 +1,8 @@
+// MIT License
+//
+// Copyright (c) 2024 Ferhat Geçdoğan All Rights Reserved.
+// Distributed under the terms of the MIT License.
+//
 #pragma once
 
 #include <cmath>
@@ -58,6 +63,9 @@ public:
     ostr << std::format("r, g, b, a = {}, {}, {}, {}", color.get_red(), color.get_green(), color.get_blue(), color.get_alpha());
     return ostr;
   }
+
+  // TODO: compute HSV, CMYK, HSL values of RGBA; implement
+  // seamless conversion between them
 protected:
   friend class LabelObject;
   idk::f32 _r, _g, _b, _a;

@@ -1,10 +1,14 @@
+// MIT License
+//
+// Copyright (c) 2024 Ferhat Geçdoğan All Rights Reserved.
+// Distributed under the terms of the MIT License.
+//
 #pragma once
 
 // resources are objects those are not have any position,
 // visibility etc. parameters.
 
-#include <types/stringview.hpp>
-#include "../../libs/fre2d/include/texture.hpp"
+#include <texture.hpp>
 
 namespace fresh {
 enum class SpriteBlendMode {

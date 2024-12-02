@@ -5,6 +5,16 @@
   height = 600,
   script_resource = "physics_scene.fe",
   sub_groups = {
+   [RectangleObject,
+    name = "RectTest123",
+    disabled = false,
+    group_id = auto,
+    visible = true,
+    position_x = 0,
+    position_y = 0,
+    width = 200,
+    height = 40;
+   ],
    [SpriteObject,
     name = "Text_WASD",
     group_id = auto,
@@ -12,6 +22,21 @@
     height = 150,
     position_x = -100,
     position_y = -200,
+    sub_groups = {
+     [PolygonObject,
+      name = "Test123123",
+      width = 100,
+      height = 200,
+      position_x = 50,
+      position_y = 200,
+      vertices = {
+       [Vertex, position_x = 0, position_y = 50;],
+       [Vertex, position_x = 100, position_y = 50;],
+       [Vertex, position_x = 100, position_y = 100;],
+       [Vertex, position_x = 50, position_y = 100;];
+      };
+     ];
+    },
     sprite_resource = "C:\\Users\\ferhatgec\\Downloads\\fresh\\example\\box2d_example\\gechland.icon.png";
    ],
    [LabelObject,
@@ -21,14 +46,22 @@
     height = 25,
     position_x = 85,
     position_y = 30,
-    background_red = 255,
-    background_green = 255,
-    background_blue = 255,
-    background_alpha = 0,
-    foreground_red = 0,
-    foreground_green = 0,
-    foreground_blue = 0,
-    foreground_alpha = 255,
+    bg_color = {
+     [Color,
+      red = 1.0,
+      green = 1.0,
+      blue = 1.0,
+      alpha = 1.0;
+     ];
+    },
+    fg_color = {
+     [Color,
+      red = 0,
+      green = 0,
+      blue = 0,
+      alpha = 1.0;
+     ];
+    },
     label_text = "WASD to move camera",
     font_size = 32,
     font_resource = "Roboto-Regular.ttf";
@@ -40,14 +73,22 @@
     height = 25,
     position_x = 85,
     position_y = 60,
-    background_red = 255,
-    background_green = 255,
-    background_blue = 255,
-    background_alpha = 0,
-    foreground_red = 0,
-    foreground_green = 0,
-    foreground_blue = 0,
-    foreground_alpha = 255,
+    bg_color = {
+     [Color,
+      red = 1.0,
+      green = 1.0,
+      blue = 1.0,
+      alpha = 1.0;
+     ];
+    },
+    fg_color = {
+     [Color,
+      red = 0,
+      green = 0,
+      blue = 0,
+      alpha = 1.0;
+     ];
+    },
     label_text = "Left click to spawn circle",
     font_size = 32,
     font_resource = "Roboto-Regular.ttf";
@@ -59,24 +100,37 @@
     height = 25,
     position_x = 85,
     position_y = 90,
-    background_red = 255,
-    background_green = 255,
-    background_blue = 255,
-    background_alpha = 0,
-    foreground_red = 0,
-    foreground_green = 0,
-    foreground_blue = 0,
-    foreground_alpha = 255,
+    bg_color = {
+     [Color,
+      red = 1.0,
+      green = 1.0,
+      blue = 1.0,
+      alpha = 1.0;
+     ];
+    },
+    fg_color = {
+     [Color,
+      red = 0,
+      green = 0,
+      blue = 0,
+      alpha = 1.0;
+     ];
+    },
     label_text = "Right click to spawn box",
     font_size = 32,
     font_resource = "Roboto-Regular.ttf";
+   ],
+   [Import,
+    path = "circle.fes";
    ],
    [CameraObject,
     name = "Camera",
     group_id = auto,
     width = 800,
     height = 600,
-    sub_groups = {};
+    sub_groups = {
+    # FIXME: child objects of Camera does not work as expected, which was working smoothly in SDL2 implementation.
+    };
    ];
   };
  ];

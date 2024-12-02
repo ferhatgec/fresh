@@ -1,7 +1,8 @@
-#ifndef FRESHENGINE_RENDER_OBJECTS_CPP// headers guards only stands for including
-#define FRESHENGINE_RENDER_OBJECTS_CPP// this thing twice will regenerate objects_to_render at different place in memory.              \
-                                      // only thing we want is force objects_to_render at a static place, that thing important because \
-                                      // we run objects_to_render every frame to sync.
+// MIT License
+//
+// Copyright (c) 2024 Ferhat Geçdoğan All Rights Reserved.
+// Distributed under the terms of the MIT License.
+//
 #include <render_objects.hpp>
 #include <freshengine.hpp>
 #include <log/log.hpp>
@@ -78,4 +79,3 @@ void RenderObjects::pop_object_delete(std::string_view object_name) noexcept {
   sptr.reset();
 }
 } // namespace fresh
-#endif

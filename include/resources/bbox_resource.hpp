@@ -1,7 +1,13 @@
+// MIT License
+//
+// Copyright (c) 2024 Ferhat Geçdoğan All Rights Reserved.
+// Distributed under the terms of the MIT License.
+//
 #pragma once
 
 #include <format>
 #include <types/predefined.hpp>
+#include <helper_funcs.hpp>
 
 namespace fresh {
 /// BBoxResource stores x, y, w, h values with operator overloading support.
@@ -84,6 +90,14 @@ public:
   }
 
   friend constexpr bool operator!=(const BBoxResource& lhs, const BBoxResource& rhs) noexcept {
+    return !operator==(lhs, rhs);
+  }
+
+  friend constexpr bool operator==(const BBoxResource& lhs, idk::f32 rhs) noexcept {
+    return lhs == BBoxResource{rhs, rhs, rhs, rhs};
+  }
+
+  friend constexpr bool operator!=(const BBoxResource& lhs, idk::f32 rhs) noexcept {
     return !operator==(lhs, rhs);
   }
 

@@ -1,3 +1,8 @@
+// MIT License
+//
+// Copyright (c) 2024 Ferhat Geçdoğan All Rights Reserved.
+// Distributed under the terms of the MIT License.
+//
 #include <fescript/wrappers/fescript_base_object.hpp>
 #include <fescript/fescript_array.hpp>
 #include <freshengine.hpp>
@@ -48,8 +53,7 @@ void CameraObject::resize_camera(idk::f32 w, idk::f32 h) noexcept {
   if(fre2d::detail::nearly_equals(this->get_w(), 0.f) && fre2d::detail::nearly_equals(this->get_h(), 0.f)) {
     return;
   }
-  std::cout << std::format("w, h = {}, {} for camera\n", w, h);
-  this->_camera->resize(static_cast<GLsizei>(w), static_cast<GLsizei>(h));
+  this->_camera->resize(w, h);
   this->set_position({this->get_x(), this->get_y(), w, h});
 }
 

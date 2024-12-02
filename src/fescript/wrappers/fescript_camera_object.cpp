@@ -1,5 +1,9 @@
-#include "log/log.hpp"
-
+// MIT License
+//
+// Copyright (c) 2024 Ferhat Geçdoğan All Rights Reserved.
+// Distributed under the terms of the MIT License.
+//
+#include <log/log.hpp>
 #include <fescript/wrappers/fescript_camera_object.hpp>
 #include <objects/camera_object.hpp>
 

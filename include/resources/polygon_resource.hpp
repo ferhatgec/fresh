@@ -1,3 +1,8 @@
+// MIT License
+//
+// Copyright (c) 2024 Ferhat Geçdoğan All Rights Reserved.
+// Distributed under the terms of the MIT License.
+//
 #pragma once
 
 #include "point_resource.hpp"
@@ -23,6 +28,7 @@ public:
   };
 
   friend class AreaObject;
+  friend class FesLoaderResource;
 
   explicit PolygonResource(bool is_filled = false) noexcept;
   explicit PolygonResource(const std::vector<PointResource>& vertices, bool is_filled = false) noexcept;

@@ -1,3 +1,8 @@
+// MIT License
+//
+// Copyright (c) 2024 Ferhat Geçdoğan All Rights Reserved.
+// Distributed under the terms of the MIT License.
+//
 #include <objects/camera_object.hpp>
 #include <objects/physics/rectangle_body_object.hpp>
 #include <resources/polygon_resource.hpp>

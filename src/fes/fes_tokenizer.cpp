@@ -1,8 +1,12 @@
+// MIT License
+//
+// Copyright (c) 2024 Ferhat Geçdoğan All Rights Reserved.
+// Distributed under the terms of the MIT License.
+//
 #include <fes/fes_tokenizer.hpp>
 #include <fstream>
 #include <string>
-
-#include "log/log.hpp"
+#include <log/log.hpp>
 
 namespace fresh::fes {
 FesTokenizer::FesTokenizer() noexcept
@@ -152,29 +156,39 @@ void FesTokenizer::_check_and_push() noexcept {
     pushe("File", Keywords::File)
     pushe("Project", Keywords::Project)
     pushe("Import", Keywords::Import)
+    pushe("Vertex", Keywords::Vertex)
     pushe("AreaObject", Keywords::AreaObject)
+    pushe("CircleAreaObject", Keywords::CircleAreaObject)
+    pushe("PolygonAreaObject", Keywords::PolygonAreaObject)
+    pushe("RectangleAreaObject", Keywords::RectangleAreaObject)
+    pushe("BodyObject", Keywords::BodyObject)
+    pushe("CircleBodyObject", Keywords::CircleBodyObject)
+    pushe("PolygonBodyObject", Keywords::PolygonBodyObject)
+    pushe("RectangleBodyObject", Keywords::RectangleBodyObject)
+    pushe("WorldObject", Keywords::WorldObject)
+    pushe("AudioPlayerObject", Keywords::AudioPlayerObject)
     pushe("BaseObject", Keywords::BaseObject)
+    pushe("CircleObject", Keywords::CircleObject)
+    pushe("PolygonObject", Keywords::PolygonObject)
+    pushe("RectangleObject", Keywords::RectangleObject)
     pushe("CameraObject", Keywords::CameraObject)
     pushe("LabelObject", Keywords::LabelObject)
     pushe("SpriteObject", Keywords::SpriteObject)
     pushe("sprite_resource", Keywords::SpriteResource)
-    pushe("background_red", Keywords::BackgroundRed)
-    pushe("background_green", Keywords::BackgroundGreen)
-    pushe("background_blue", Keywords::BackgroundBlue)
-    pushe("background_alpha", Keywords::BackgroundAlpha)
-    pushe("foreground_red", Keywords::ForegroundRed)
-    pushe("foreground_green", Keywords::ForegroundGreen)
-    pushe("foreground_blue", Keywords::ForegroundBlue)
-    pushe("foreground_alpha", Keywords::ForegroundAlpha)
     pushe("red", Keywords::Red)
     pushe("green", Keywords::Green)
     pushe("blue", Keywords::Blue)
     pushe("alpha", Keywords::Alpha)
+    pushe("radius", Keywords::Radius)
+    pushe("thickness", Keywords::Thickness)
+    pushe("fg_color", Keywords::FgColor)
+    pushe("bg_color", Keywords::BgColor)
     pushe("project_name", Keywords::ProjectName)
     pushe("default_window_size_w", Keywords::DefaultWindowSizeWidth)
     pushe("default_window_size_h", Keywords::DefaultWindowSizeHeight)
     pushe("default_fes_file", Keywords::DefaultFesFile)
     pushe("preloaded_fes_files", Keywords::PreloadedFesFiles)
+    pushe("vertices", Keywords::Vertices)
     pushe("path", Keywords::Path)
     pushe("default_clear_color", Keywords::DefaultClearColor)
     pushe("label_text", Keywords::LabelText)
@@ -183,10 +197,6 @@ void FesTokenizer::_check_and_push() noexcept {
     pushe("script_resource", Keywords::ScriptResource)
     pushe("label_object", Keywords::LabelObjectProperty)
     pushe("sprite_object", Keywords::SpriteObjectProperty)
-    pushe("on_clicked_sprite_object", Keywords::OnClickedSpriteObjectProperty)
-    pushe("on_clicked_label_object", Keywords::OnClickedLabelObjectProperty)
-    pushe("on_hover_sprite_object", Keywords::OnHoverSpriteObjectProperty)
-    pushe("on_hover_label_object", Keywords::OnHoverLabelObjectProperty)
     pushe("group_id", Keywords::GroupId)
     pushe("disabled", Keywords::Disabled)
     pushe("visible", Keywords::Visible)

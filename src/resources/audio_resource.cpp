@@ -1,8 +1,13 @@
+// MIT License
+//
+// Copyright (c) 2024 Ferhat Geçdoğan All Rights Reserved.
+// Distributed under the terms of the MIT License.
+//
 #include <resources/audio_resource.hpp>
 #include <log/log.hpp>
 #include <thread>
 #define MINIAUDIO_IMPLEMENTATION
-#include "../../libs/miniaudio/miniaudio.h"
+#include <miniaudio.h>
 
 namespace fresh {
 AudioResource::AudioResource() noexcept

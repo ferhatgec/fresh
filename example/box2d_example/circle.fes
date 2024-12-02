@@ -1,0 +1,32 @@
+[BaseObject,
+  name = "Circle",
+  group_id = auto,
+  width = 600,
+  height = 600,
+  fg_color = {
+   [Color,
+    red = 1.0,
+    green = 1.0,
+    blue = 0,
+    alpha = 1.0;
+   ];
+  },
+  sub_groups = {
+   [CircleObject,
+    name = "Circle",
+    width = 100,
+    height = 100,
+    position_x = 200,
+    position_y = 0,
+    fg_color = {
+     [Color,
+      red = 1.0,
+      green = 1.0,
+      blue = 0,
+      alpha = 1.0;
+     ];
+    },
+    radius = 50.0;
+   ];
+  };
+];

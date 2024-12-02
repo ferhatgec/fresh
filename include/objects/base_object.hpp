@@ -1,11 +1,18 @@
+// MIT License
+//
+// Copyright (c) 2024 Ferhat Geçdoğan All Rights Reserved.
+// Distributed under the terms of the MIT License.
+//
 #pragma once
 
-#include <vector>
-#include <types/predefined.hpp>
 #include <fescript/fescript_interpreter.hpp>
 #include <fescript/fescript_token.hpp>
-#include <resources/point_resource.hpp>
 #include <resources/bbox_resource.hpp>
+#include <resources/point_resource.hpp>
+#include <resources/color_resource.hpp>
+#include <source_location>
+#include <types/predefined.hpp>
+#include <vector>
 
 #define CHECK_DISABLED() if(this->_disabled) return;
 
@@ -68,15 +75,23 @@ public:
   [[nodiscard]] const idk::f32& get_w() const noexcept;
   /// BaseObject::get_h() is read-only access to _pos_info._h property.
   [[nodiscard]] const idk::f32& get_h() const noexcept;
+  /// BaseObject::get_color() is read-only access to _color property.
+  [[nodiscard]] const ColorResource& get_color() const noexcept;
+
+  /// BaseObject::is_imported_from_somewhere() checks if imported_from is empty or not.
+  /// if it's empty then given object is not generated from importing other fes file.
+  [[nodiscard]] bool is_imported_from_somewhere() const noexcept;
 
   /// BaseObject::get_x() is write-only access to _pos_info._x property.
-  void set_x(idk::f32 x) noexcept;
+  void set_x(idk::f32 x, const std::source_location& instance = std::source_location::current()) noexcept;
   /// BaseObject::get_y() is write-only access to _pos_info._y property.
   void set_y(idk::f32 y) noexcept;
   /// BaseObject::get_w() is write-only access to _pos_info._w property.
   void set_w(idk::f32 w) noexcept;
   /// BaseObject::get_h() is write-only access to _pos_info._h property.
   void set_h(idk::f32 h) noexcept;
+  /// BaseObject::set_color() is write-only access to _color property.
+  void set_color(const ColorResource& res) noexcept;
 
   /// BaseObject::get_id() is read-only access to _object_id property.
   [[nodiscard]] const idk::u32& get_id() const noexcept;
@@ -179,21 +194,27 @@ protected:
   /// BaseObject::_parent points to parent object; by default it's nullptr.
   std::shared_ptr<BaseObject> _parent = nullptr;
 
-  bool _disabled { false };
-  bool _visible { true };
+  bool _disabled, _visible;
 
-  idk::f32 _rotation_degrees;
-  idk::f32 _last_rotation_degrees;
-
-  BBoxResource _pos_info;
-  BBoxResource _copy_last_pos_info; // it's here to calculate velocity
+  idk::f32 _rotation_degrees, _last_rotation_degrees;
+  BBoxResource _pos_info, _copy_last_pos_info;
+  ColorResource _color;
   idk::u32 _object_id;
 
   std::string _name;
 
+  /// _code property is fescript instance of given fescript code, also one copy
+  /// is stored in this BaseObject.
   fescript::Interpreter _code;
+
+  /// script_file_name property stores fescript code path.
   std::string script_file_name;
+
+  /// script_content property stores fescript code of this BaseObject.
   std::string script_content;
+
+  /// imported_from property stores path of fes scene where this BaseObject
+  /// imported from.
   std::string imported_from;
 
   bool _initialized;

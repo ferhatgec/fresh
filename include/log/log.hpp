@@ -8,6 +8,7 @@
 #include <colorized.hh>
 #include <chrono>
 #include <source_location>
+#include <format>
 
 // TODO: in the future, we may add write logs to log file synchronously as a feature.
 namespace fresh {
@@ -25,6 +26,16 @@ static constexpr std::uint8_t MaxFunctionSize = 10; // to improve readability
 static constexpr auto info_color = colorized::Foreground::FgBrBlack;
 static constexpr auto warning_color = colorized::Foreground::FgYellow;
 static constexpr auto error_color = colorized::Foreground::FgBrRed;
+
+template<typename... Args>
+static void print(std::string_view fmt_str, Args&&... args) noexcept {
+  std::cout << std::vformat(fmt_str, std::make_format_args(std::forward<Args>(args)...));
+}
+
+template<typename... Args>
+static void println(std::string_view fmt_str, Args&&... args) noexcept {
+  std::cout << std::vformat(fmt_str, std::make_format_args(std::forward<Args>(args)...)) << '\n';
+}
 
 template<typename... Args>
 static constexpr void log(const std::source_location& location, LogType log_type, std::string_view ctx, Args&&... format_args) noexcept {

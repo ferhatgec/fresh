@@ -1,9 +1,14 @@
+// MIT License
+//
+// Copyright (c) 2024 Ferhat Geçdoğan All Rights Reserved.
+// Distributed under the terms of the MIT License.
+//
 #include <resources/timer_resource.hpp>
 #include <iostream>
 #include <chrono>
 #define GLFW_INCLUDE_NONE
-#include "../../libs/glfw/include/GLFW/glfw3.h"
-#include "log/log.hpp"
+#include <GLFW/glfw3.h>
+#include <log/log.hpp>
 
 namespace fresh {
 TimerResource::TimerResource() noexcept

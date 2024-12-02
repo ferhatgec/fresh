@@ -1,3 +1,8 @@
+// MIT License
+//
+// Copyright (c) 2024 Ferhat Geçdoğan All Rights Reserved.
+// Distributed under the terms of the MIT License.
+//
 #pragma once
 
 #include <resources/circle_resource.hpp>
@@ -33,7 +38,6 @@ public:
   void init_signal() noexcept override;
 protected:
   CircleResource _resource;
-  ColorResource _color;
   fre2d::Circle _circle;
   fre2d::Shader _shader;
 };

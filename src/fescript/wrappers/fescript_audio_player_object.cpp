@@ -1,3 +1,8 @@
+// MIT License
+//
+// Copyright (c) 2024 Ferhat Geçdoğan All Rights Reserved.
+// Distributed under the terms of the MIT License.
+//
 #include <fescript/wrappers/fescript_audio_player_object.hpp>
 #include <objects/audio_player_object.hpp>
 #include <objects/camera_object.hpp>

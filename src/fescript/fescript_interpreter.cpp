@@ -371,20 +371,16 @@ void Interpreter::execute_block(const std::vector<std::shared_ptr<Stmt>> &statem
   // FIXME: we assume engine reserved variables are assigned with their OWN type.
   // we need to type check here. pos_x and pos_y must be int32, so Object.index() must be LongDoubleIndex.
   // also, visible and disabled must be bool, so Object.index() must be BoolIndex.
-  if(expr->name.lexeme == "pos_x")
-    fresh::RenderObjects::get_object(this->render_object_id)->set_x(static_cast<idk::f32>(std::get<LongDoubleIndex>(value)));
-  else if(expr->name.lexeme == "pos_y")
-    fresh::RenderObjects::get_object(this->render_object_id)->set_y(static_cast<idk::f32>(std::get<LongDoubleIndex>(value)));
-  else if(expr->name.lexeme == "visible")
-    fresh::RenderObjects::get_object(this->render_object_id)->set_visible(std::get<BoolIndex>(value));
-  else if(expr->name.lexeme == "disabled")
-    fresh::RenderObjects::get_object(this->render_object_id)->set_disabled(std::get<BoolIndex>(value));
-  else if(expr->name.lexeme == "width")
-    fresh::RenderObjects::get_object(this->render_object_id)->set_w(static_cast<idk::f32>(fabsl(std::get<LongDoubleIndex>(value))));
-  else if(expr->name.lexeme == "height")
-    fresh::RenderObjects::get_object(this->render_object_id)->set_h(static_cast<idk::f32>(fabsl(std::get<LongDoubleIndex>(value))));
-  else {
-    if (auto it = this->locals.find(expr); it != this->locals.end())
+
+  if(expr->name.lexeme == "pos_x" ||
+    expr->name.lexeme == "pos_y" ||
+    expr->name.lexeme == "visible" ||
+    expr->name.lexeme == "disabled" ||
+    expr->name.lexeme == "width" ||
+    expr->name.lexeme == "height") {
+    fresh::RenderObjects::get_object(this->render_object_id)->set(expr->name, value);
+  } else {
+    if (const auto& it = this->locals.find(expr); it != this->locals.end())
       this->environment->assign_at(it->second, expr->name, value);
     else
       this->globals->assign(expr->name, value);

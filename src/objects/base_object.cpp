@@ -1,3 +1,8 @@
+// MIT License
+//
+// Copyright (c) 2024 Ferhat Geçdoğan All Rights Reserved.
+// Distributed under the terms of the MIT License.
+//
 #include <objects/base_object.hpp>
 #include <objects/camera_object.hpp>
 
@@ -17,7 +22,10 @@
 #include "log/log.hpp"
 
 namespace fresh {
-BaseObject::BaseObject() {
+static inline int i = 0;
+
+BaseObject::BaseObject()
+  : _disabled{false}, _visible{true} {
   this->_pos_info = BBoxResource { 0.f, 0.f, 0.f, 0.f };
   this->_rotation_degrees = this->_last_rotation_degrees = 0.f;
   this->_copy_last_pos_info = this->_pos_info;
@@ -60,8 +68,12 @@ void BaseObject::apply_changes() noexcept {
       log_error(src(), "invalid object.");
       return;
     }
-    object->set_position(object->get_position() + this->get_delta());
-    object->set_rotation(object->get_rotation() + this->get_delta_rot());
+    if(this->get_delta() != 0.f) {
+      object->set_position(object->get_position() + this->get_delta());
+    }
+    if(!fre2d::detail::nearly_equals(this->get_delta_rot(), 0.f)) {
+      object->set_rotation(object->get_rotation() + this->get_delta_rot());
+    }
     object->set_visible(this->get_visible());
     object->set_disabled(this->get_disabled());
     // child objects of 'object' now have delta.
@@ -97,7 +109,15 @@ void BaseObject::set_position(const BBoxResource& pos) noexcept {
   return this->_pos_info.get_h();
 }
 
-void BaseObject::set_x(idk::f32 x) noexcept {
+[[nodiscard]] const ColorResource& BaseObject::get_color() const noexcept {
+  return this->_color;
+}
+
+[[nodiscard]] bool BaseObject::is_imported_from_somewhere() const noexcept {
+  return !this->imported_from.empty();
+}
+
+void BaseObject::set_x(idk::f32 x, const std::source_location& instance) noexcept {
   this->_copy_last_pos_info.set_x(this->_pos_info.get_x());
   this->_pos_info.set_x(x);
 }
@@ -115,6 +135,10 @@ void BaseObject::set_w(idk::f32 w) noexcept {
 void BaseObject::set_h(idk::f32 h) noexcept {
   this->_copy_last_pos_info.set_h(this->_pos_info.get_h());
   this->_pos_info.set_h(h);
+}
+
+void BaseObject::set_color(const ColorResource& res) noexcept {
+  this->_color = res;
 }
 
 [[nodiscard]] const idk::u32& BaseObject::get_id() const noexcept {

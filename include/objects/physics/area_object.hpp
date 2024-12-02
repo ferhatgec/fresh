@@ -80,6 +80,5 @@ private:
                                                   const PointResource& v, const PointResource& w) noexcept;
 protected:
   std::shared_ptr<BaseObject> _collider;
-  ColorResource _color;
 };
 } // namespace fresh

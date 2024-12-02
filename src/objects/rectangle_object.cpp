@@ -1,3 +1,8 @@
+// MIT License
+//
+// Copyright (c) 2024 Ferhat Geçdoğan All Rights Reserved.
+// Distributed under the terms of the MIT License.
+//
 #include <objects/rectangle_object.hpp>
 #include <fescript/wrappers/fescript_base_object.hpp>
 #include <fescript/fescript_array.hpp>
@@ -9,8 +14,9 @@ RectangleObject::RectangleObject(bool is_filled)
   : _is_filled{is_filled} {}
 
 RectangleObject::RectangleObject(BBoxResource info, ColorResource color, bool is_filled)
-  : _color{color}, _is_filled{is_filled} {
+  : _is_filled{is_filled} {
   this->_pos_info = info;
+  this->set_color(color);
 }
 
 void RectangleObject::sync() noexcept {

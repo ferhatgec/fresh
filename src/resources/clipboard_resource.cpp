@@ -1,3 +1,8 @@
+// MIT License
+//
+// Copyright (c) 2024 Ferhat Geçdoğan All Rights Reserved.
+// Distributed under the terms of the MIT License.
+//
 #include <resources/clipboard_resource.hpp>
 #include <freshengine.hpp>
 #define GLFW_INCLUDE_NONE

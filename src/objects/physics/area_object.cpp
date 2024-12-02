@@ -1,3 +1,8 @@
+// MIT License
+//
+// Copyright (c) 2024 Ferhat Geçdoğan All Rights Reserved.
+// Distributed under the terms of the MIT License.
+//
 #include <objects/physics/area_object.hpp>
 #include <objects/physics/circle_area_object.hpp>
 #include <objects/camera_object.hpp>
@@ -14,8 +19,8 @@
 namespace fresh {
 AreaObject::AreaObject() {
   std::cout << "Engine info: Do not use AreaObject directly!\n"
-               " * Use PolygonAreaObject, CircleObject, RectangleObject or whatever that fill your needs.\n"
-               " * But due compability, AreaObject is doing same thing with RectangleObject.\n"
+               " * Use PolygonAreaObject, CircleObject, RectangleObject or whatever that fills your needs.\n"
+               " * But due compatibility, AreaObject is doing same thing with RectangleObject.\n"
                " * AreaObject is only able to detect collision between rectangles.\n";
   this->_color = ColorResource{ 0.f, 1.f, 0.f, 1.f };
 }

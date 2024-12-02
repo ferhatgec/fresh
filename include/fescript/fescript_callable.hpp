@@ -7,7 +7,6 @@
 #pragma once
 
 #include <vector>
-
 #include "fescript_token.hpp"
 
 namespace fescript {

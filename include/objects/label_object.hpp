@@ -1,9 +1,13 @@
+// MIT License
+//
+// Copyright (c) 2024 Ferhat Geçdoğan All Rights Reserved.
+// Distributed under the terms of the MIT License.
+//
 #pragma once
 
 #include <resources/font_resource.hpp>
 #include <resources/sprite_resource.hpp>
 #include "base_object.hpp"
-
 #include "label.hpp"
 
 namespace fresh {

@@ -1,5 +1,10 @@
+// MIT License
+//
+// Copyright (c) 2024 Ferhat Geçdoğan All Rights Reserved.
+// Distributed under the terms of the MIT License.
+//
 #include <fes/fes_parser.hpp>
-#include "log/log.hpp"
+#include <log/log.hpp>
 
 #define accesstok(index) this->get_tokenizer()._tokens[index]
 
@@ -15,142 +20,122 @@ FesParser::FesParser() noexcept {
 // parses only a single object:
 // [ObjectName, Property = Value, XProperty = XValue, ...; ], ...
 void FesParser::parse_variable(std::shared_ptr<FesObjectAST> object_node) noexcept {
-  if(const auto& [kw_str, kw] = accesstok(i); kw != Keywords::Data) {
+  if(const auto& [kw_str, kw] = accesstok(i); kw != Data) {
     ++i;
-    if(accesstok(i).second == Keywords::Assign) {
+    if(accesstok(i).second == Assign) {
       ++i;
       auto [var, var_kw] = accesstok(i);
 
       switch(kw) {
         /// these properties are convertible to floating point
-        case Keywords::GroupId:
-        case Keywords::Width:
-        case Keywords::Height:
-        case Keywords::PositionX:
-        case Keywords::PositionY:
-        case Keywords::Red:
-        case Keywords::Green:
-        case Keywords::Blue:
-        case Keywords::Alpha:
-        case Keywords::BackgroundRed:
-        case Keywords::BackgroundGreen:
-        case Keywords::BackgroundBlue:
-        case Keywords::BackgroundAlpha:
-        case Keywords::ForegroundRed:
-        case Keywords::ForegroundGreen:
-        case Keywords::ForegroundBlue:
-        case Keywords::ForegroundAlpha:
-        case Keywords::DefaultWindowSizeWidth:
-        case Keywords::DefaultWindowSizeHeight:
-        case Keywords::FontSize: {
-          const auto& val = FesParser::_parse_floats<idk::f64>(var);
+        case GroupId:
+        case Width:
+        case Height:
+        case PositionX:
+        case PositionY:
+        case Red:
+        case Green:
+        case Blue:
+        case Alpha:
+        case Radius:
+        case Thickness:
+        case DefaultWindowSizeWidth:
+        case DefaultWindowSizeHeight:
+        case FontSize: {
+          const auto& val = _parse_floats<idk::f64>(var);
           if(val.index() == ConvertibleToFloat) {
             const auto& _value = std::get<ConvertibleToFloat>(val);
             switch(kw) {
-              case Keywords::GroupId: {
+              case GroupId:
                 object_node->_group_id = static_cast<idk::usize>(_value);
                 break;
-              }
-              case Keywords::Width: {
+              case Width:
                 object_node->_size.set_w(static_cast<idk::f32>(_value));
                 break;
-              }
-              case Keywords::Height: {
+              case Height:
                 object_node->_size.set_h(static_cast<idk::f32>(_value));
                 break;
-              }
-              case Keywords::PositionX: {
-                object_node->_pos.set_x(static_cast<idk::f32>(_value));
+              case PositionX: {
+                if(object_node->get_type() == Vertex) {
+                  const auto& vert = std::static_pointer_cast<fes::FesVertexAST>(object_node);
+                  vert->get_resource_mutable().set_x(static_cast<idk::f32>(_value));
+                } else {
+                  object_node->_pos.set_x(static_cast<idk::f32>(_value));
+                }
                 break;
               }
-              case Keywords::PositionY: {
-                object_node->_pos.set_y(static_cast<idk::f32>(_value));
+              case PositionY: {
+                if(object_node->get_type() == Vertex) {
+                  const auto& vert = std::static_pointer_cast<fes::FesVertexAST>(object_node);
+                  vert->get_resource_mutable().set_y(static_cast<idk::f32>(_value));
+                } else {
+                  object_node->_pos.set_y(static_cast<idk::f32>(_value));
+                }
                 break;
               }
-              case Keywords::FontSize: {
-                if(object_node->_object_type == Keywords::SpriteObject)
+              case FontSize:
+                if(object_node->_object_type == SpriteObject)
                   std::static_pointer_cast<FesLabelObjectAST>(object_node)->_font_size = static_cast<idk::u32>(_value);
                 break;
-              }
-              case Keywords::Red:
-              case Keywords::Green:
-              case Keywords::Blue:
-              case Keywords::Alpha: {
-                if(object_node->_object_type == Keywords::Color) {
+              case Red:
+              case Green:
+              case Blue:
+              case Alpha: {
+                if(object_node->_object_type == Color) {
                   const auto& color_object = std::static_pointer_cast<FesColorObjectAST>(object_node);
+                  auto color = color_object->get_color();
                   switch(kw) {
-                    case Keywords::Red: {
-                      color_object->_color.set_red(static_cast<idk::f32>(_value));
+                    case Red:
+                      color.set_red(static_cast<idk::f32>(_value));
                       break;
-                    }
-                    case Keywords::Green: {
-                      color_object->_color.set_green(static_cast<idk::f32>(_value));
+                    case Green:
+                      color.set_green(static_cast<idk::f32>(_value));
                       break;
-                    }
-                    case Keywords::Blue: {
-                      color_object->_color.set_blue(static_cast<idk::f32>(_value));
+                    case Blue:
+                      color.set_blue(static_cast<idk::f32>(_value));
                       break;
-                    }
-                    case Keywords::Alpha: {
-                      color_object->_color.set_alpha(static_cast<idk::f32>(_value));
+                    case Alpha:
+                      color.set_alpha(static_cast<idk::f32>(_value));
                       break;
-                    }
                   }
+                  color_object->set_color(color);
+                } else {
+                  log_warning(
+                    src(),
+                    "use red, green, blue and alpha properties inside a Color object: name is '{}'.",
+                    object_node->get_name()
+                  );
                 }
                 break;
               }
-              case Keywords::BackgroundRed:
-              case Keywords::BackgroundGreen:
-              case Keywords::BackgroundBlue:
-              case Keywords::BackgroundAlpha:
-              case Keywords::ForegroundRed:
-              case Keywords::ForegroundGreen:
-              case Keywords::ForegroundBlue:
-              case Keywords::ForegroundAlpha: {
-                if(object_node->_object_type == Keywords::LabelObject) {
-                  const auto& label_object = std::static_pointer_cast<FesLabelObjectAST>(object_node);
-                  switch(kw) {
-                    case Keywords::BackgroundRed: {
-                      label_object->_bg->_color.set_red(static_cast<idk::f32>(_value));
-                      break;
-                    }
-                    case Keywords::BackgroundGreen: {
-                      label_object->_bg->_color.set_green(static_cast<idk::f32>(_value));
-                      break;
-                    }
-                    case Keywords::BackgroundBlue: {
-                      label_object->_bg->_color.set_blue(static_cast<idk::f32>(_value));
-                      break;
-                    }
-                    case Keywords::BackgroundAlpha: {
-                      label_object->_bg->_color.set_alpha(static_cast<idk::f32>(_value));
-                      break;
-                    }
-                    case Keywords::ForegroundRed: {
-                      label_object->_fg->_color.set_red(static_cast<idk::f32>(_value));
-                      break;
-                    }
-                    case Keywords::ForegroundGreen: {
-                      label_object->_fg->_color.set_green(static_cast<idk::f32>(_value));
-                      break;
-                    }
-                    case Keywords::ForegroundBlue: {
-                      label_object->_fg->_color.set_blue(static_cast<idk::f32>(_value));
-                      break;
-                    }
-                    case Keywords::ForegroundAlpha: {
-                      label_object->_fg->_color.set_alpha(static_cast<idk::f32>(_value));
-                      break;
-                    }
-                  }
+              case Radius: {
+                if(object_node->get_type() == CircleObject) {
+                  const auto& c_obj = std::static_pointer_cast<fes::FesCircleObjectAST>(object_node);
+                  auto res = c_obj->get_resource();
+                  res.set_radius(static_cast<idk::f32>(_value));
+                  c_obj->set_resource(res);
+                } else if(object_node->get_type() == CircleAreaObject) {
+                  const auto& c_obj = std::static_pointer_cast<fes::FesCircleAreaObjectAST>(object_node);
+                  auto res = c_obj->get_resource();
+                  res.set_radius(static_cast<idk::f32>(_value));
+                  c_obj->set_resource(res);
                 }
                 break;
               }
-              case Keywords::DefaultWindowSizeWidth:
-              case Keywords::DefaultWindowSizeHeight: {
-                if(object_node->_object_type == Keywords::Project) {
+              case Thickness: {
+                if(object_node->get_type() == CircleObject) {
+                  const auto& c_obj = std::static_pointer_cast<fes::FesCircleObjectAST>(object_node);
+                  auto res = c_obj->get_resource();
+                  res.set_thickness(static_cast<idk::f32>(_value));
+                  c_obj->set_resource(res);
+                }
+                break;
+              }
+              case DefaultWindowSizeWidth:
+              case DefaultWindowSizeHeight: {
+                if(object_node->_object_type == Project) {
                   const auto& project_object = std::static_pointer_cast<FesProjectObjectAST>(object_node);
-                  if(kw == Keywords::DefaultWindowSizeWidth) {
+                  if(kw == DefaultWindowSizeWidth) {
                     project_object->_default_size.set_w(static_cast<idk::f32>(_value));
                   } else {
                     project_object->_default_size.set_h(static_cast<idk::f32>(_value));
@@ -161,8 +146,8 @@ void FesParser::parse_variable(std::shared_ptr<FesObjectAST> object_node) noexce
             }
           } else {
             switch(kw) {
-              case Keywords::GroupId: {
-                if(var_kw == Keywords::Auto) {
+              case GroupId: {
+                if(var_kw == Auto) {
                   object_node->_group_id = -1;
                 }
                 break;
@@ -175,63 +160,63 @@ void FesParser::parse_variable(std::shared_ptr<FesObjectAST> object_node) noexce
           }
           break;
         }
-        case Keywords::SpriteResource: {
-          if(object_node->_object_type == Keywords::SpriteObject) {
+        case SpriteResource: {
+          if(object_node->_object_type == SpriteObject) {
             std::static_pointer_cast<FesSpriteObjectAST>(object_node)->set_sprite_path(var);
           }
           break;
         }
-        case Keywords::Name: {
+        case Name: {
           object_node->set_name(var);
           break;
         }
-        case Keywords::LabelText: {
-          if(object_node->_object_type == Keywords::LabelObject) {
+        case LabelText: {
+          if(object_node->_object_type == LabelObject) {
             std::static_pointer_cast<FesLabelObjectAST>(object_node)->set_label_text(var);
           }
           break;
         }
-        case Keywords::FontResource: {
-          if(object_node->_object_type == Keywords::LabelObject) {
+        case FontResource: {
+          if(object_node->_object_type == LabelObject) {
             std::static_pointer_cast<FesLabelObjectAST>(object_node)->set_label_path(var);
           }
           break;
         }
-        case Keywords::ScriptResource: {
+        case ScriptResource: {
           object_node->set_fescript_path(var);
           break;
         }
-        case Keywords::Visible:
-        case Keywords::Disabled: {
-          if(kw == Keywords::Visible) {
-            object_node->_visible = var_kw == Keywords::True;
+        case Visible:
+        case Disabled: {
+          if(kw == Visible) {
+            object_node->_visible = var_kw == True;
           } else {
-            object_node->_disabled = var_kw == Keywords::True;
+            object_node->_disabled = var_kw == True;
           }
           break;
         }
-        case Keywords::ProjectName: {
-          if(object_node->_object_type == Keywords::Project) {
+        case ProjectName: {
+          if(object_node->_object_type == Project) {
             std::static_pointer_cast<FesProjectObjectAST>(object_node)->_project_name = var;
           }
           break;
         }
-        case Keywords::DefaultFesFile: {
-          if(object_node->_object_type == Keywords::Project) {
+        case DefaultFesFile: {
+          if(object_node->_object_type == Project) {
             std::static_pointer_cast<FesProjectObjectAST>(object_node)->_default_fes_file = var;
           }
           break;
         }
-        case Keywords::Path: {
-          if(object_node->_object_type == Keywords::File) {
+        case Path: {
+          if(object_node->_object_type == File) {
             std::static_pointer_cast<FesFileObjectAST>(object_node)->set_file_path(var);
-          } else if(object_node->_object_type == Keywords::Import) {
+          } else if(object_node->_object_type == Import) {
             std::static_pointer_cast<FesImportObjectAST>(object_node)->set_import_path(var);
           }
           break;
         }
-        case Keywords::DefaultClearColor: {
-          if(object_node->_object_type == Keywords::Project) {
+        case DefaultClearColor: {
+          if(object_node->_object_type == Project) {
             ++i;
             auto color_object_ptr = std::static_pointer_cast<FesObjectAST>(
               std::static_pointer_cast<FesProjectObjectAST>(object_node)->_default_clear_color);
@@ -246,21 +231,89 @@ void FesParser::parse_variable(std::shared_ptr<FesObjectAST> object_node) noexce
             std::static_pointer_cast<FesProjectObjectAST>(object_node)->_default_clear_color =
               std::static_pointer_cast<FesColorObjectAST>(color_object_ptr->_sub_groups.at(0));
 
-            std::static_pointer_cast<FesProjectObjectAST>(object_node)->_default_clear_color->_object_type = Keywords::Color;
+            std::static_pointer_cast<FesProjectObjectAST>(object_node)->_default_clear_color->_object_type = Color;
           } else {
             log_error(src(), "FesParser cannot handle default_clear_color for this object type.");
             return;
           }
           break;
         }
-        case Keywords::PreloadedFesFiles: {
-          if(object_node->_object_type == Keywords::Project) {
+        case PreloadedFesFiles: {
+          if(object_node->_object_type == Project) {
             ++i;
             this->parse_list(object_node);
           }
           break;
         }
-        case Keywords::SubGroups: {
+        case Vertices: {
+          if(object_node->get_type() == PolygonObject || object_node->get_type() == PolygonAreaObject) {
+            ++i;
+            auto ptr = std::make_shared<fes::FesObjectAST>();
+            this->parse_list(ptr);
+
+            // TODO: remove duplicate code
+            if(object_node->get_type() == PolygonObject) {
+              const auto& poly_ptr = std::static_pointer_cast<fes::FesPolygonObjectAST>(object_node);
+              for(const auto& vert: ptr->get_sub_groups()) {
+                if(vert->get_type() != Vertex) {
+                  log_info(src(), "vertices keyword only takes list of Vertex.");
+                  continue;
+                }
+                auto vert_ptr = std::static_pointer_cast<fes::FesVertexAST>(vert);
+                poly_ptr->get_resource_mutable().push_back(std::move(vert_ptr));
+              }
+            } else if(object_node->get_type() == PolygonAreaObject) {
+              const auto& poly_ptr = std::static_pointer_cast<fes::FesPolygonAreaObjectAST>(object_node);
+              for(const auto& vert: ptr->get_sub_groups()) {
+                if(vert->get_type() != Vertex) {
+                  log_info(src(), "vertices keyword only takes list of Vertex.");
+                  continue;
+                }
+                auto vert_ptr = std::static_pointer_cast<fes::FesVertexAST>(vert);
+                poly_ptr->get_resource_mutable().push_back(std::move(vert_ptr));
+              }
+            }
+          }
+          break;
+        }
+        case FgColor: {
+          ++i;
+          auto ptr = std::make_shared<fes::FesObjectAST>();
+          this->parse_list(ptr);
+          if(ptr->get_sub_groups().size() != 1) {
+            log_warning(src(), "fg_color expects only 1 Color object.");
+            return;
+          }
+          if(ptr->get_sub_groups()[0]->get_type() != Color) {
+            log_error(src(), "fg_color expects Color object in the list.");
+            return;
+          }
+          const auto& color = std::static_pointer_cast<fes::FesColorObjectAST>(ptr->get_sub_groups()[0]);
+          object_node->set_color(color->get_color());
+          break;
+        }
+        case BgColor: {
+          if(object_node->get_type() != LabelObject) {
+            log_error(src(), "bg_color expects to be constructed within LabelObject.");
+            return;
+          }
+          ++i;
+          auto ptr = std::make_shared<fes::FesObjectAST>();
+          this->parse_list(ptr);
+          if(ptr->get_sub_groups().size() != 1) {
+            log_warning(src(), "bg_color expects only 1 Color object.");
+            return;
+          }
+          if(ptr->get_sub_groups()[0]->get_type() != Color) {
+            log_error(src(), "fg_color expects Color object in the list.");
+            return;
+          }
+          const auto& label_obj = std::static_pointer_cast<fes::FesLabelObjectAST>(object_node);
+          auto color = std::static_pointer_cast<fes::FesColorObjectAST>(ptr->get_sub_groups()[0]);
+          label_obj->get_bg_color() = std::move(color);
+          break;
+        }
+        case SubGroups: {
           ++i;
           this->parse_list(object_node);
           break;
@@ -270,99 +323,90 @@ void FesParser::parse_variable(std::shared_ptr<FesObjectAST> object_node) noexce
           break;
         }
       }
-    } else { // accesstok(i).second != Keywords::Assign
+    } else { // accesstok(i).second != Assign
       log_error(src(), "to assign a property to object; use '=' operator, not this: '{}'", accesstok(i).first);
     }
-  } else { // accesstok(i).second == Keywords::Data
+  } else { // accesstok(i).second == Data
     log_error(src(), "invalid property name: '{}'.", kw_str);
   }
 }
 
 void FesParser::parse_list(std::shared_ptr<FesObjectAST> object_node) noexcept {
-  if(accesstok(i).second == Keywords::ListObjectInit) {// {;}
+  if(accesstok(i).second == ListObjectInit) {// {;}
     ++i;
     return;
   }
 
-  while(accesstok(i).second == Keywords::NodeInit) {
+  while(accesstok(i).second == NodeInit) {
     ++i;
-    switch(accesstok(i).second) {
-      case Keywords::Color: {
-        check_project_object(
+    if(object_node->_object_type == Project
+        && accesstok(i).second != File) {
+      check_project_object(
           object_node->_object_type,
-          "cannot use ColorObject in ProjectObject inside a list is not possible."
+          "cannot use other than File property in ProjectObject."
         );
+      return;
+    }
+    switch(accesstok(i).second) {
+      case Color: {
         object_node->_sub_groups.push_back(std::make_shared<FesColorObjectAST>());
         break;
       }
-      case Keywords::File: {
-        if(object_node->_object_type == Keywords::Project) {
+      case File: {
+        if(object_node->_object_type == Project) {
           std::static_pointer_cast<fes::FesProjectObjectAST>(object_node)->_preloaded_fes_files.push_back(std::make_shared<FesFileObjectAST>());
         } else {
           object_node->_sub_groups.push_back(std::make_shared<FesFileObjectAST>());
         }
         break;
       }
-      case Keywords::Project: {
-        check_project_object(
-          object_node->_object_type,
-          "using ProjectObject in ProjectObject inside a list is not possible."
-        );
+      case Project:
         object_node->_sub_groups.push_back(std::make_shared<FesProjectObjectAST>());
         break;
-      }
-      case Keywords::Import: {
-        check_project_object(
-          object_node->_object_type,
-          "using Import in ProjectObject inside a list is not possible."
-        );
+      case Import:
         object_node->_sub_groups.push_back(std::make_shared<FesImportObjectAST>());
         break;
-      }
-      case Keywords::AreaObject: {
-        check_project_object(
-          object_node->_object_type,
-          "using AreaObject in ProjectObject inside a list is not possible."
-        );
+      case Vertex:
+        object_node->_sub_groups.push_back(std::make_shared<FesVertexAST>());
+        break;
+      case AreaObject:
         object_node->_sub_groups.push_back(std::make_shared<FesAreaObjectAST>());
         break;
-      }
-      case Keywords::BaseObject: {
-        check_project_object(
-          object_node->_object_type,
-          "using BaseObject in ProjectObject inside a list is not possible."
-        );
+      case CircleAreaObject:
+        object_node->_sub_groups.push_back(std::make_shared<FesCircleAreaObjectAST>());
+        break;
+      case PolygonAreaObject:
+        object_node->_sub_groups.push_back(std::make_shared<FesPolygonAreaObjectAST>());
+        break;
+      case RectangleAreaObject:
+        object_node->_sub_groups.push_back(std::make_shared<FesRectangleAreaObject>());
+        break;
+      case BaseObject:
         object_node->_sub_groups.push_back(std::make_shared<FesObjectAST>());
         break;
-      }
-      case Keywords::CameraObject: {
-        check_project_object(
-          object_node->_object_type,
-          "using CameraObject in ProjectObject inside a list is not possible."
-        );
+      case CircleObject:
+        object_node->_sub_groups.push_back(std::make_shared<FesCircleObjectAST>());
+        break;
+      case PolygonObject:
+        object_node->_sub_groups.push_back(std::make_shared<FesPolygonObjectAST>());
+        break;
+      case RectangleObject:
+        object_node->_sub_groups.push_back(std::make_shared<FesRectangleObjectAST>());
+        break;
+      case CameraObject:
         object_node->_sub_groups.push_back(std::make_shared<FesCameraObjectAST>());
         break;
-      }
-      case Keywords::LabelObject: {
-        check_project_object(
-          object_node->_object_type,
-          "using LabelObject in ProjectObject inside a list is not possible."
-        );
+      case LabelObject:
         object_node->_sub_groups.push_back(std::make_shared<FesLabelObjectAST>());
         break;
-      }
-      case Keywords::SpriteObject: {
-        check_project_object(
-          object_node->_object_type,
-          "using SpriteObject in ProjectObject inside a list is not possible."
-        );
+      case SpriteObject: {
         object_node->_sub_groups.push_back(std::make_shared<FesSpriteObjectAST>());
         break;
       }
     }
 
-    if(object_node->_object_type == Keywords::Project) {
-      if(auto ptr = std::static_pointer_cast<fes::FesProjectObjectAST>(object_node); !ptr->_preloaded_fes_files.empty()) {
+    if(object_node->_object_type == Project) {
+      if(const auto& ptr = std::static_pointer_cast<fes::FesProjectObjectAST>(object_node); !ptr->_preloaded_fes_files.empty()) {
         this->parse_object(std::static_pointer_cast<fes::FesProjectObjectAST>(object_node)->_preloaded_fes_files.back());
       }
     } else {
@@ -370,31 +414,31 @@ void FesParser::parse_list(std::shared_ptr<FesObjectAST> object_node) noexcept {
     }
 
     ++i;
-    if(accesstok(i).second == Keywords::LastObject) {// {}; <-
+    if(accesstok(i).second == LastObject) {// {}; <-
       return;
     }
   }
 }
 
 void FesParser::parse_object(std::shared_ptr<FesObjectAST> object_node) noexcept {
-  // between Keywords::PositionY and Keywords::Int; we have a range where all
-  // object enumerations are defined.
-  if(accesstok(i).second < Keywords::Int && accesstok(i).second > Keywords::PositionY) {
+  // between Vertices and Int; we have a range where all object enumerations are
+  // defined.
+  if(accesstok(i).second < Int && accesstok(i).second > Vertices) {
     object_node->_object_type = accesstok(i).second;
     ++i;
 
-    if(accesstok(i).second == Keywords::NextObject) {
+    if(accesstok(i).second == NextObject) {
       while(true) {
         ++i;
         this->parse_variable(object_node);
         ++i;
 
-        if(accesstok(i).second == Keywords::LastObject) {
+        if(accesstok(i).second == LastObject) {
           ++i;
           break;
         }
       }
-    } else if(accesstok(i).second == Keywords::NodeEnd) {// [Object]
+    } else if(accesstok(i).second == NodeEnd) {// [Object]
       ++i;
       return;
     }
@@ -412,7 +456,7 @@ void FesParser::parse() noexcept {
 }
 
 void FesParser::check_project_object(const Keywords& kw, std::string_view msg) noexcept {
-  if(kw == Keywords::Project) {
+  if(kw == Project) {
     log_error(src(), msg);
   }
 }

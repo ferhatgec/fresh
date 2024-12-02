@@ -1,3 +1,8 @@
+// MIT License
+//
+// Copyright (c) 2024 Ferhat Geçdoğan All Rights Reserved.
+// Distributed under the terms of the MIT License.
+//
 #include <fescript/wrappers/fescript_base_object.hpp>
 #include <fescript/fescript_array.hpp>
 #include <objects/polygon_object.hpp>
@@ -8,7 +13,9 @@ namespace fresh {
 PolygonObject::PolygonObject() {}
 
 PolygonObject::PolygonObject(PolygonResource resource, ColorResource color)
-    : _resource{std::move(resource)}, _color{std::move(color)} {}
+    : _resource{std::move(resource)} {
+  this->set_color(color);
+}
 
 PolygonObject::~PolygonObject() {
 }
@@ -16,39 +23,19 @@ PolygonObject::~PolygonObject() {
 void PolygonObject::sync() noexcept {
   CHECK_DISABLED()
   this->_code.interpret_update();
+  if(!fre2d::detail::nearly_equals(this->get_delta_x(), 0.f) || !fre2d::detail::nearly_equals(this->get_delta_y(), 0.f)) {
+    this->_polygon.set_position({this->get_x(), this->get_y()});
+  }
+  if(!fre2d::detail::nearly_equals(this->get_delta_rot(), 0.f)) {
+    this->_polygon.set_rotation(this->get_rotation());
+  }
+  if(!fre2d::detail::nearly_equals(this->get_delta_w(), 0.f) || !fre2d::detail::nearly_equals(this->get_delta_h(), 0.f)) {
+    this->_polygon.set_scale({this->get_w(), this->get_h(), 1.f});
+  }
   if(this->_visible) {
-    this->_polygon.draw(this->_shader, Engine::get_instance()->get_camera()->get_camera());
+    this->_polygon.draw(this->_shader, FreshInstance->get_camera()->get_camera());
   }
   this->apply_changes();
-}
-
-void PolygonObject::_draw_polygon() noexcept {
-
-}
-
-// very slow way to draw polygon, we may do some optimizations here, but for now it's okay for prototype.
-// update: SDL2 seems got SDL_RenderGeometry in 2022, we can use it later but we may need to change
-// pointresource a bit.
-void PolygonObject::_draw_filled_polygon() noexcept {
-
-}
-
-void PolygonObject::_draw_unfilled_polygon() noexcept {
-
-}
-
-void PolygonObject::_add_render_objects() noexcept {
-  //const auto& render_pos = this->get_render_position_info();
-  //for(auto& vert: this->get_polygon_resource().get_polygons()) {
-  //  vert += PointResource(render_pos._x, render_pos._y);
-  //}
-}
-
-void PolygonObject::_sub_render_objects() noexcept {
-  //const auto& render_pos = this->get_render_position_info();
-  //for(auto& vert: this->get_polygon_resource().get_polygons()) {
-  //  vert -= PointResource(render_pos._x, render_pos._y);
-  //}
 }
 
 void PolygonObject::set(const fescript::Token& name, fescript::Object value) {
@@ -62,12 +49,15 @@ void PolygonObject::set(const fescript::Token& name, fescript::Object value) {
 }
 
 void PolygonObject::init_signal() noexcept {
-  if(!this->_initialized) {
+  //if(!this->_initialized) {
     // TODO:
     // i am kinda lazy for now but PolygonResource will be based on Vertex2 and Vertex3.
     // so that's unnecessary.
     std::vector<fre2d::Vertex2> convert;
 
+    this->_color.set_red(1.f);
+    this->_color.set_green(0.f);
+    this->_color.set_alpha(1.f);
     for(auto& vert: this->_resource.get_polygons()) {
       convert.emplace_back(
         glm::vec2{ vert.get_x(), vert.get_y() },
@@ -79,12 +69,14 @@ void PolygonObject::init_signal() noexcept {
       convert,
       glm::vec2 { this->_pos_info.get_x(), this->_pos_info.get_y() }
     );
-    this->_shader.initialize(
-      fre2d::detail::shader::default_vertex,
-      fre2d::detail::shader::default_fragment
-    );
+    if(this->_shader.get_program_id() == 0) {
+      this->_shader.initialize(
+        fre2d::detail::shader::default_vertex,
+        fre2d::detail::shader::default_fragment
+      );
+    }
     this->_initialized = true;
-  }
+  //}
 }
 
 __idk_nodiscard PolygonResource& PolygonObject::get_polygon_resource() noexcept {

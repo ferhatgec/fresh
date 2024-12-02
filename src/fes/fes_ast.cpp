@@ -1,5 +1,9 @@
+// MIT License
+//
+// Copyright (c) 2024 Ferhat Geçdoğan All Rights Reserved.
+// Distributed under the terms of the MIT License.
+//
 #include <fes/fes_ast.hpp>
-
 
 namespace fresh::fes {
 FesObjectAST::FesObjectAST() noexcept
@@ -45,6 +49,10 @@ FesObjectAST::FesObjectAST() noexcept
   return this->_fescript_path;
 }
 
+[[nodiscard]] const ColorResource& FesObjectAST::get_color() const noexcept {
+  return this->_color;
+}
+
 void FesObjectAST::set_type(Keywords keyword) noexcept {
   this->_object_type = keyword;
 }
@@ -77,8 +85,62 @@ void FesObjectAST::set_fescript_path(const std::string& path) noexcept {
   this->_fescript_path = path;
 }
 
+void FesObjectAST::set_color(const ColorResource& res) noexcept {
+  this->_color = res;
+}
+
+FesCircleObjectAST::FesCircleObjectAST() noexcept {
+  this->_object_type = CircleObject;
+}
+
+void FesCircleObjectAST::set_resource(const CircleResource& res) noexcept {
+  this->_circle_res = res;
+}
+
+[[nodiscard]] const CircleResource& FesCircleObjectAST::get_resource()
+    const noexcept {
+  return this->_circle_res;
+}
+
+FesPolygonObjectAST::FesPolygonObjectAST() noexcept {
+  this->_object_type = PolygonObject;
+}
+
+[[nodiscard]] std::vector<std::shared_ptr<FesVertexAST>>& FesPolygonObjectAST::get_resource_mutable() noexcept {
+  return this->_pol_res;
+}
+
+FesRectangleObjectAST::FesRectangleObjectAST() noexcept {
+  this->_object_type = RectangleObject;
+}
+
 FesAreaObjectAST::FesAreaObjectAST() noexcept {
-  this->_object_type = Keywords::AreaObject;
+  this->_object_type = AreaObject;
+}
+
+FesCircleAreaObjectAST::FesCircleAreaObjectAST() noexcept {
+  this->_object_type = Keywords::CircleAreaObject;
+}
+
+void FesCircleAreaObjectAST::set_resource(const CircleResource& res) noexcept {
+  this->_circle_res = res;
+}
+
+[[nodiscard]] const CircleResource& FesCircleAreaObjectAST::get_resource()
+    const noexcept {
+  return this->_circle_res;
+}
+
+FesPolygonAreaObjectAST::FesPolygonAreaObjectAST() noexcept {
+  this->_object_type = Keywords::PolygonAreaObject;
+}
+
+[[nodiscard]] std::vector<std::shared_ptr<FesVertexAST>>& FesPolygonAreaObjectAST::get_resource_mutable() noexcept {
+  return this->_pol_res;
+}
+
+FesRectangleAreaObject::FesRectangleAreaObject() noexcept {
+  this->_object_type = Keywords::RectangleAreaObject;
 }
 
 FesCameraObjectAST::FesCameraObjectAST() noexcept {
@@ -89,11 +151,11 @@ FesColorObjectAST::FesColorObjectAST() noexcept {
   this->_object_type = Keywords::Color;
 }
 
-[[nodiscard]] const ColorResource& FesColorObjectAST::get_color() const noexcept {
+[[nodiscard]] const ColorResource& FesColorObjectAST::get_resource() const noexcept {
   return this->_color;
 }
 
-void FesColorObjectAST::set_color(const ColorResource& color) noexcept {
+void FesColorObjectAST::set_resource(const ColorResource& color) noexcept {
   this->_color = color;
 }
 
@@ -206,5 +268,21 @@ FesImportObjectAST::FesImportObjectAST() noexcept {
 
 void FesImportObjectAST::set_import_path(const std::string& imp_path) noexcept {
   this->_import_path = imp_path;
+}
+
+FesVertexAST::FesVertexAST() noexcept {
+  this->_object_type = Vertex;
+}
+
+void FesVertexAST::set_resource(const PointResource& res) noexcept {
+  this->_vertex = res;
+}
+
+[[nodiscard]] const PointResource& FesVertexAST::get_resource() const noexcept {
+  return this->_vertex;
+}
+
+[[nodiscard]] PointResource& FesVertexAST::get_resource_mutable() noexcept {
+  return this->_vertex;
 }
 } // namespace fresh::fes

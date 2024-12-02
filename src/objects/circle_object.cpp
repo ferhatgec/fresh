@@ -1,3 +1,8 @@
+// MIT License
+//
+// Copyright (c) 2024 Ferhat Geçdoğan All Rights Reserved.
+// Distributed under the terms of the MIT License.
+//
 #include <objects/circle_object.hpp>
 #include <fescript/wrappers/fescript_base_object.hpp>
 #include <fescript/fescript_array.hpp>
@@ -5,8 +10,9 @@
 
 namespace fresh {
 CircleObject::CircleObject(BBoxResource info, CircleResource resource, ColorResource color)
-  : _resource{resource}, _color{color} {
+  : _resource{resource} {
   this->_pos_info = info;
+  this->set_color(color);
 }
 
 void CircleObject::sync() noexcept {

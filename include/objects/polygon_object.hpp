@@ -1,10 +1,14 @@
+// MIT License
+//
+// Copyright (c) 2024 Ferhat Geçdoğan All Rights Reserved.
+// Distributed under the terms of the MIT License.
+//
 #pragma once
 
 #include <resources/color_resource.hpp>
 #include <resources/edge_resource.hpp>
 #include <resources/polygon_resource.hpp>
 #include "base_object.hpp"
-
 #include "polygon.hpp"
 
 namespace fresh {
@@ -34,15 +38,8 @@ public:
   ColorResource& get_color_resource() noexcept;
 
   void set_rotation(idk::f32 rad_degrees) noexcept override;
-private:
-  void _draw_polygon() noexcept;
-  void _draw_filled_polygon() noexcept;
-  void _draw_unfilled_polygon() noexcept;
-  void _add_render_objects() noexcept;
-  void _sub_render_objects() noexcept;
 protected:
   PolygonResource _resource;
-  ColorResource _color;
   fre2d::Polygon _polygon;
   fre2d::Shader _shader;
   BBoxResource _cache_pos;

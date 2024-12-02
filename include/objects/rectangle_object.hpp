@@ -1,10 +1,14 @@
+// MIT License
+//
+// Copyright (c) 2024 Ferhat Geçdoğan All Rights Reserved.
+// Distributed under the terms of the MIT License.
+//
 #pragma once
 
 #include <resources/color_resource.hpp>
 #include <resources/polygon_resource.hpp>
 #include "base_object.hpp"
 #include "polygon_object.hpp"
-
 #include "rectangle.hpp"
 
 namespace fresh {
@@ -39,6 +43,5 @@ protected:
   bool _is_filled;
   fre2d::Rectangle _rectangle;
   fre2d::Shader _shader;
-  ColorResource _color;
 };
 } // namespace fresh

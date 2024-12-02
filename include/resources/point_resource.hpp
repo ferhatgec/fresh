@@ -1,3 +1,8 @@
+// MIT License
+//
+// Copyright (c) 2024 Ferhat Geçdoğan All Rights Reserved.
+// Distributed under the terms of the MIT License.
+//
 #pragma once
 
 #include <helper_funcs.hpp>
@@ -267,9 +272,6 @@ class PointResource {
  protected:
   idk::f32 _x, _y;
 };
-
-constexpr void PointResource::check() noexcept {
-}
 
 using Vector2 = PointResource;
 } // namespace fresh

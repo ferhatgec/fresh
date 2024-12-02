@@ -17,19 +17,14 @@ enum Keywords {
   ListObjectEnd, // }
   Assign, // =
 
-  BackgroundRed, // background_red
-  BackgroundGreen, // background_green
-  BackgroundBlue, // background_blue
-  BackgroundAlpha, // background_alpha
-  ForegroundRed, // foreground_red
-  ForegroundGreen, // foreground_green
-  ForegroundBlue, // foreground_blue
-  ForegroundAlpha, // foreground_alpha
-
   Red, // red
   Green, // green
   Blue, // blue
   Alpha, // alpha
+  Radius, // radius
+  Thickness, // thickness
+  FgColor, // fg_color
+  BgColor, // bg_color
 
   ProjectName, // project_name
   DefaultWindowSizeWidth, // default_window_size_w
@@ -48,12 +43,6 @@ enum Keywords {
   LabelObjectProperty, // label_object
   SpriteObjectProperty, // sprite_object
 
-  OnClickedSpriteObjectProperty, // on_clicked_sprite_object
-  OnClickedLabelObjectProperty, // on_clicked_label_object
-
-  OnHoverSpriteObjectProperty, // on_hover_sprite_object
-  OnHoverLabelObjectProperty, // on_hover_label_object
-
   GroupId, // group_id
   Disabled, // disabled
   Visible, // visible,
@@ -63,18 +52,38 @@ enum Keywords {
   Name, // name
   PositionX, // position_x
   PositionY, // position_y
+  Vertices, // vertices
 
+/// start of objects >
   Project, // Project
   Color, // Color
   File, // File
   Import, // Import
+  Vertex, // Vertex
 
   AreaObject, // AreaObject
+  CircleAreaObject, // CircleAreaObject
+  PolygonAreaObject, // PolygonAreaObject
+  RectangleAreaObject, // RectangleAreaObject
+
+  // TODO >
+  BodyObject, // BodyObject
+  CircleBodyObject, // CircleBodyObject
+  PolygonBodyObject, // PolygonBodyObject
+  RectangleBodyObject, // RectangleBodyObject
+  WorldObject, // WorldObject
+  AudioPlayerObject, // AudioPlayerObject
+  // < TODO
+
   BaseObject, // BaseObject
+  CircleObject, // CircleObject
+  PolygonObject, // PolygonObject
+  RectangleObject, // RectangleObject
+
   CameraObject, // CameraObject
   LabelObject, // LabelObject
   SpriteObject, // SpriteObject
-
+/// < end of objects
   Int,
   String,
   Bool,

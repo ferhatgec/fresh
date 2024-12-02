@@ -1,3 +1,8 @@
+// MIT License
+//
+// Copyright (c) 2024 Ferhat Geçdoğan All Rights Reserved.
+// Distributed under the terms of the MIT License.
+//
 #pragma once
 
 // do not forget that this is fontresource not label etc.
@@ -7,7 +12,7 @@
 
 #include <string>
 #include <types/predefined.hpp>
-#include "../../libs/fre2d/include/font.hpp"
+#include <font.hpp>
 
 namespace fresh {
 class FontResource {
