@@ -14,7 +14,7 @@ public:
   PolygonBodyObject(const b2WorldId& world_id, BBoxResource pos, PolygonResource vertices, bool is_static_body = BodyObject::IsStaticBodyDefault);
   ~PolygonBodyObject() override = default;
 
-  void sync() noexcept override;
+  void sync(bool is_member_of_camera = false) noexcept override;
 
   [[nodiscard]] constexpr const char* to_string() noexcept override {
     return "polygonbodyobject";

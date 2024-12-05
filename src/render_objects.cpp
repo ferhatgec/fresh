@@ -12,7 +12,7 @@ namespace fresh {
 /// if it finds; then const reference of shared_ptr will be returned.
 [[nodiscard]] const std::shared_ptr<BaseObject>& RenderObjects::get_object(std::string_view object_name) noexcept {
   for(const auto& sptr: RenderObjects::objects_to_render) {
-    if(sptr && sptr->get_name().data() == object_name) {
+    if(sptr && sptr->get_name() == object_name) {
       return sptr;
     }
   }

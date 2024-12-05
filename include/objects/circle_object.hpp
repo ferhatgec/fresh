@@ -21,7 +21,7 @@ public:
   ~CircleObject() = default;
 
   void
-  sync() noexcept override;
+  sync(bool is_member_of_camera = false) noexcept override;
 
   [[nodiscard]] constexpr const char* to_string() noexcept override {
     return "circleobject";
@@ -36,7 +36,14 @@ public:
   ColorResource& get_color_resource() noexcept;
 
   void init_signal() noexcept override;
+
+  void notify_x() noexcept override;
+  void notify_y() noexcept override;
+  void notify_w() noexcept override;
+  void notify_h() noexcept override;
 protected:
+  void _base_notify_xy() noexcept;
+  void _base_notify_wh() noexcept;
   CircleResource _resource;
   fre2d::Circle _circle;
   fre2d::Shader _shader;

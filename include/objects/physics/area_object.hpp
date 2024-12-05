@@ -27,7 +27,7 @@ public:
   ~AreaObject() override = default;
 
   void
-  sync() noexcept override;
+  sync(bool is_member_of_camera = false) noexcept override;
 
   __idk_nodiscard
   virtual bool

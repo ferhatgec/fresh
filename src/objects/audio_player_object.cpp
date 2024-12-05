@@ -17,7 +17,7 @@ AudioPlayerObject::AudioPlayerObject() noexcept {
   this->_audio_resource = std::make_shared<fresh::AudioResource>();
 }
 
-void AudioPlayerObject::sync() noexcept {
+void AudioPlayerObject::sync(bool is_member_of_camera) noexcept {
   CHECK_DISABLED()
   this->_code.interpret_update();
   this->apply_changes();

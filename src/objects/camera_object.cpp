@@ -18,18 +18,20 @@ CameraObject::CameraObject() {
   this->_camera = std::make_unique<fre2d::Camera>(width, height);
   this->set_position({this->get_x(), this->get_y(), static_cast<idk::f32>(width), static_cast<idk::f32>(height)});
   this->reset_delta();
+  this->_member_of_camera = true;
 }
 
 CameraObject::CameraObject(idk::f32 width, idk::f32 height) {
   this->_camera = std::make_unique<fre2d::Camera>(width, height);
   this->set_position({this->get_x(), this->get_y(), width, height});
   this->reset_delta();
+  this->_member_of_camera = true;
 }
 
-void CameraObject::sync() noexcept {
+void CameraObject::sync(bool is_member_of_camera) noexcept {
   CHECK_DISABLED()
   this->_code.interpret_update();
-  this->apply_changes();
+  this->apply_changes(true);
 }
 
 void CameraObject::set_camera_position(const PointResource& pt) noexcept {
@@ -38,6 +40,10 @@ void CameraObject::set_camera_position(const PointResource& pt) noexcept {
   }
   this->_camera->set_position(glm::vec3{pt.get_x(), pt.get_y(), 1.f});
   this->set_position({ pt.get_x(), pt.get_y(), this->get_w(), this->get_h()});
+  // we apply delta at the time because there might be more than one calls to changing
+  // position of an object; that is because there still at least one delta waits to be
+  // applied into its child objects; in the end of apply_changes; it will reset the delta.
+  //this->apply_changes(true);
 }
 
 void CameraObject::move_camera(const PointResource& pt) noexcept {
@@ -47,6 +53,7 @@ void CameraObject::move_camera(const PointResource& pt) noexcept {
   this->_camera->set_position(
       glm::vec3{this->get_x() + pt.get_x(), this->get_y() + pt.get_y(), 1.f});
   this->set_position({this->get_x() + pt.get_x(), this->get_y() + pt.get_y()});
+  //this->apply_changes(true);
 }
 
 void CameraObject::resize_camera(idk::f32 w, idk::f32 h) noexcept {
@@ -55,6 +62,7 @@ void CameraObject::resize_camera(idk::f32 w, idk::f32 h) noexcept {
   }
   this->_camera->resize(w, h);
   this->set_position({this->get_x(), this->get_y(), w, h});
+  //this->apply_changes(true);
 }
 
 [[nodiscard]] const std::unique_ptr<fre2d::Camera>& CameraObject::get_camera()

@@ -21,7 +21,7 @@ public:
   ~RectangleObject() override = default;
 
   void
-  sync() noexcept override;
+  sync(bool is_member_of_camera = false) noexcept override;
 
   [[nodiscard]] constexpr const char* to_string() noexcept override {
     return "rectangleobject";
@@ -39,7 +39,14 @@ public:
   bool& get_is_filled() noexcept;
 
   void set_rotation(idk::f32 rad_degrees) noexcept override;
+
+  void notify_x() noexcept override;
+  void notify_y() noexcept override;
+  void notify_w() noexcept override;
+  void notify_h() noexcept override;
 protected:
+  void _base_notify_xy() noexcept;
+  void _base_notify_wh() noexcept;
   bool _is_filled;
   fre2d::Rectangle _rectangle;
   fre2d::Shader _shader;

@@ -24,7 +24,7 @@ CircleBodyObject::CircleBodyObject(const b2WorldId& world_id, BBoxResource pos, 
   this->reset_delta();
 }
 
-void CircleBodyObject::sync() noexcept {
+void CircleBodyObject::sync(bool is_member_of_camera) noexcept {
   CHECK_DISABLED()
   this->_code.interpret_update();
   auto position = b2Body_GetPosition(this->_body_id);

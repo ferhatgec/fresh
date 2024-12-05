@@ -56,7 +56,7 @@ void TimerResource::resume() noexcept {
     this->_pause_tick = 0;
     return;
   }
-  log_info(src(), "already not started; yet trying to resume it not possible.");
+  log_info(src(), "already not started; yet trying to resume is not possible.");
 }
 
 void TimerResource::stop() noexcept {

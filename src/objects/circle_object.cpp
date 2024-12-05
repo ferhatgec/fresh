@@ -15,18 +15,14 @@ CircleObject::CircleObject(BBoxResource info, CircleResource resource, ColorReso
   this->set_color(color);
 }
 
-void CircleObject::sync() noexcept {
+void CircleObject::sync(bool is_member_of_camera) noexcept {
   CHECK_DISABLED()
   this->_code.interpret_update();
-  if(!fre2d::detail::nearly_equals(this->get_delta_x(), 0.f) || !fre2d::detail::nearly_equals(this->get_delta_y(), 0.f)) {
-    this->_circle.set_position({this->get_x(), this->get_y()});
-  }
+
   if(!fre2d::detail::nearly_equals(this->get_delta_rot(), 0.f)) {
     this->_circle.set_rotation(this->get_rotation());
   }
-  if(!fre2d::detail::nearly_equals(this->get_delta_w(), 0.f) || !fre2d::detail::nearly_equals(this->get_delta_h(), 0.f)) {
-    this->_circle.set_scale({this->get_w(), this->get_h(), 1.f});
-  }
+
   if(this->_visible) {
     this->_circle.draw(this->_shader, FreshInstance->get_camera()->get_camera());
   }
@@ -52,23 +48,43 @@ __idk_nodiscard ColorResource& CircleObject::get_color_resource() noexcept {
 
 void CircleObject::init_signal() noexcept {
   this->_circle.initialize_circle(
-    this->_resource.get_radius(),
-    this->_resource.get_radius(),
-    glm::vec2{this->get_x(), this->get_y()},
-    glm::vec4{
-      this->_color.get_red(),
-      this->_color.get_green(),
-      this->_color.get_blue(),
-      this->_color.get_alpha()
-    },
-    this->_resource.get_thickness()
-  );
-  if(this->_shader.get_program_id() == 0) {
-    this->_shader.initialize(
-      fre2d::detail::circle::default_vertex,
-      fre2d::detail::circle::default_fragment
-    );
+      this->_resource.get_radius(), this->_resource.get_radius(),
+      glm::vec2{this->get_x(), this->get_y()},
+      glm::vec4{this->_color.get_red(), this->_color.get_green(),
+                this->_color.get_blue(), this->_color.get_alpha()},
+      this->_resource.get_thickness());
+  if (this->_shader.get_program_id() == 0) {
+    this->_shader.initialize(fre2d::detail::circle::default_vertex,
+                             fre2d::detail::circle::default_fragment);
   }
   this->_initialized = true;
+}
+
+void CircleObject::notify_x() noexcept {
+  this->_base_notify_xy();
+}
+
+void CircleObject::notify_y() noexcept {
+  this->_base_notify_xy();
+}
+
+void CircleObject::notify_w() noexcept {
+  this->_base_notify_wh();
+}
+
+void CircleObject::notify_h() noexcept {
+  this->_base_notify_wh();
+}
+
+void CircleObject::_base_notify_xy() noexcept {
+  if(!fre2d::detail::nearly_equals(this->get_delta_x(), 0.f) || !fre2d::detail::nearly_equals(this->get_delta_y(), 0.f)) {
+    this->_circle.set_position({this->get_x(), this->get_y()});
+  }
+}
+
+void CircleObject::_base_notify_wh() noexcept {
+  if(!fre2d::detail::nearly_equals(this->get_delta_w(), 0.f) || !fre2d::detail::nearly_equals(this->get_delta_h(), 0.f)) {
+    this->_circle.set_scale({this->get_w(), this->get_h(), 1.f});
+  }
 }
 } // namespace fresh

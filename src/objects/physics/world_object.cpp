@@ -23,7 +23,7 @@ WorldObject::~WorldObject() {
   b2DestroyWorld(this->_world_id);
 }
 
-void WorldObject::sync() noexcept {
+void WorldObject::sync(bool is_member_of_camera) noexcept {
   CHECK_DISABLED()
   this->_code.interpret_update();
     b2World_Step(this->_world_id, this->_timestep, this->_substep_count);

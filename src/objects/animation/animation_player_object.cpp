@@ -17,7 +17,7 @@ AnimationPlayerObject::AnimationPlayerObject(bool replay) noexcept
 AnimationPlayerObject::~AnimationPlayerObject() {
 }
 
-void AnimationPlayerObject::sync() noexcept {
+void AnimationPlayerObject::sync(bool is_member_of_camera) noexcept {
   CHECK_DISABLED()
   this->_code.interpret_update();
     if(!this->_start)

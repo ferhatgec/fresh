@@ -39,11 +39,11 @@ AreaObject::AreaObject(std::shared_ptr<BaseObject> base_object) {
   this->_color = ColorResource{ 0.f, 1.f, 0.f, 1.f };
 }
 
-void AreaObject::sync() noexcept {
+void AreaObject::sync(bool is_member_of_camera) noexcept {
   CHECK_DISABLED()
   this->_code.interpret_update();
-    for(auto& object : this->_sub_objects) {
-    object->sync();
+  for(const auto& object : this->_sub_objects) {
+    object->sync(is_member_of_camera);
   }
   this->apply_changes();
 }

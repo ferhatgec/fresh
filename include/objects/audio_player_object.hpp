@@ -17,7 +17,7 @@ public:
   AudioPlayerObject() noexcept;
   ~AudioPlayerObject() override = default;
 
-  void sync() noexcept override;
+  void sync(bool is_member_of_camera = false) noexcept override;
   void set(const fescript::Token& name, fescript::Object value) override;
 
   /// AudioPlayerObject::get_audio_resource() returns AudioResource reference.

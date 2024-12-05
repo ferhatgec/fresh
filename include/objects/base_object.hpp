@@ -27,7 +27,7 @@ enum : idk::u8 {
 // BaseObject is must be inherited if any object gonna be rendered with any position
 // visibility etc. data.
 class BaseObject {
-public:
+ public:
   BaseObject();
   virtual ~BaseObject() = default;
 
@@ -37,7 +37,8 @@ public:
   /// BaseObject::get_visible() is read-only access to _visible property.
   [[nodiscard]] const bool& get_visible() const noexcept;
 
-  /// BaseObject::get_initialized() is read-only access to _initialized property.
+  /// BaseObject::get_initialized() is read-only access to _initialized
+  /// property.
   [[nodiscard]] const bool& get_initialized() const noexcept;
 
   /// BaseObject::set_disabled(bool) is write-only access to _disabled property.
@@ -51,7 +52,7 @@ public:
   /// ----
   /// note: no need to call sync() directly;
   ///       instance of Engine class will do it for you automatically.
-  virtual void sync() noexcept;
+  virtual void sync(bool is_member_of_camera = false) noexcept;
 
   /// BaseObject::apply_changes() iterates over child objects and applies
   /// position/rotation/size changes of parent object.
@@ -60,11 +61,12 @@ public:
   /// ----
   /// note: no need to call apply_changes() directly;
   ///       sync() will call it for you automatically.
-  void apply_changes() noexcept;
+  void apply_changes(bool is_member_of_camera = false) noexcept;
 
   /// BaseObject::get_position() is read-only access to _pos_info property.
   [[nodiscard]] const BBoxResource& get_position() const noexcept;
-  /// BaseObject::set_position(BBoxResource) is write-only access to _pos_info property.
+  /// BaseObject::set_position(BBoxResource) is write-only access to _pos_info
+  /// property.
   void set_position(const BBoxResource& pos) noexcept;
 
   /// BaseObject::get_x() is read-only access to _pos_info._x property.
@@ -78,12 +80,15 @@ public:
   /// BaseObject::get_color() is read-only access to _color property.
   [[nodiscard]] const ColorResource& get_color() const noexcept;
 
-  /// BaseObject::is_imported_from_somewhere() checks if imported_from is empty or not.
-  /// if it's empty then given object is not generated from importing other fes file.
+  /// BaseObject::is_imported_from_somewhere() checks if imported_from is empty
+  /// or not. if it's empty then given object is not generated from importing
+  /// other fes file.
   [[nodiscard]] bool is_imported_from_somewhere() const noexcept;
 
   /// BaseObject::get_x() is write-only access to _pos_info._x property.
-  void set_x(idk::f32 x, const std::source_location& instance = std::source_location::current()) noexcept;
+  void set_x(idk::f32 x,
+             const std::source_location& instance =
+                 std::source_location::current()) noexcept;
   /// BaseObject::get_y() is write-only access to _pos_info._y property.
   void set_y(idk::f32 y) noexcept;
   /// BaseObject::get_w() is write-only access to _pos_info._w property.
@@ -92,6 +97,16 @@ public:
   void set_h(idk::f32 h) noexcept;
   /// BaseObject::set_color() is write-only access to _color property.
   void set_color(const ColorResource& res) noexcept;
+
+  void lazy_set_x(idk::f32 x) noexcept;
+  void lazy_set_y(idk::f32 y) noexcept;
+  void lazy_set_w(idk::f32 w) noexcept;
+  void lazy_set_h(idk::f32 h) noexcept;
+
+  virtual void notify_x() noexcept;
+  virtual void notify_y() noexcept;
+  virtual void notify_w() noexcept;
+  virtual void notify_h() noexcept;
 
   /// BaseObject::get_id() is read-only access to _object_id property.
   [[nodiscard]] const idk::u32& get_id() const noexcept;
@@ -150,7 +165,8 @@ public:
   /// are being called.
   /// --------
   /// fun fact: i don't remember what _rt stands for.
-  void load_fescript_rt(const std::string& script, bool is_file = false) noexcept;
+  void load_fescript_rt(const std::string& script,
+                        bool is_file = false) noexcept;
 
   /// BaseObject::get_object_by_path(std::string) splits given path
   /// by '/' or '\' -depends on filesystem- then walks through to the parent
@@ -158,37 +174,41 @@ public:
   /// ----
   /// note: ".."  will let you access to parent object;
   /// meanwhile "." will point to current object.
-  [[nodiscard]] const std::shared_ptr<BaseObject>& get_object_by_path(const std::string& path) noexcept;
+  [[nodiscard]] const std::shared_ptr<BaseObject>& get_object_by_path(
+      const std::string& path) noexcept;
 
-  /// BaseObject::get_rotation() returns current rotation angle by radian degrees.
+  /// BaseObject::get_rotation() returns current rotation angle by radian
+  /// degrees.
   [[nodiscard]] const idk::f32& get_rotation() const noexcept;
 
-  /// BaseObject::set_rotation(float) sets current rotation to given rad_degrees.
-  /// this method is overridable because some classes creates new resources in-place
-  /// upon rotation changes to cache it then use.
+  /// BaseObject::set_rotation(float) sets current rotation to given
+  /// rad_degrees. this method is overridable because some classes creates new
+  /// resources in-place upon rotation changes to cache it then use.
   virtual void set_rotation(idk::f32 rad_degrees) noexcept;
 
-  [[nodiscard]] static idk::f32 counter_clockwise_to_clockwise(idk::f32 rad_degrees) noexcept;
-private:
+  [[nodiscard]] static idk::f32 counter_clockwise_to_clockwise(
+      idk::f32 rad_degrees) noexcept;
+ private:
   /// BaseObject::_give_shared_ptr() mimics std::enable_shared_from_this when
   /// multiple inheritance applied to the class; creates additional shared_ptr
-  /// that constructed only for once from this pointer; then used over and over again.
-  /// normally you don't need this so this is private; since every objects
-  /// should use shared_ptr by default instead of raw pointers. since fresh
-  /// not multithreaded; there should be no problem to change what it points to.
+  /// that constructed only for once from this pointer; then used over and over
+  /// again. normally you don't need this so this is private; since every
+  /// objects should use shared_ptr by default instead of raw pointers. since
+  /// fresh not multithreaded; there should be no problem to change what it
+  /// points to.
   [[nodiscard]] const std::shared_ptr<BaseObject>& _give_shared_ptr() noexcept;
 
   /// BaseObject::_get_object_by_single_path returns an object that takes only
-  /// one name which is extracted using BaseObject::get_object_by_path(std::string).
+  /// one name which is extracted using
+  /// BaseObject::get_object_by_path(std::string).
   /// BaseObject::get_object_by_path(std::string) iterates over every name;
   /// then calls BaseObject::_get_object_by_single_path(std::string).
   [[nodiscard]] const std::shared_ptr<BaseObject>& _get_object_by_single_path(
-    const std::string& path
-  ) noexcept;
+      const std::string& path) noexcept;
 
   /// BaseObject::_shared_ptr_this stores what _give_shared_ptr() returns.
   std::shared_ptr<BaseObject> _shared_ptr_this;
-protected:
+ protected:
   /// BaseObject::_sub_objects stores child objects.
   std::vector<std::shared_ptr<BaseObject>> _sub_objects;
   /// BaseObject::_parent points to parent object; by default it's nullptr.
@@ -217,6 +237,7 @@ protected:
   /// imported from.
   std::string imported_from;
 
+  bool _member_of_camera;
   bool _initialized;
 
   friend class SpriteObject;

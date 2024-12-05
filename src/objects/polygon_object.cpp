@@ -20,7 +20,7 @@ PolygonObject::PolygonObject(PolygonResource resource, ColorResource color)
 PolygonObject::~PolygonObject() {
 }
 
-void PolygonObject::sync() noexcept {
+void PolygonObject::sync(bool is_member_of_camera) noexcept {
   CHECK_DISABLED()
   this->_code.interpret_update();
   if(!fre2d::detail::nearly_equals(this->get_delta_x(), 0.f) || !fre2d::detail::nearly_equals(this->get_delta_y(), 0.f)) {

@@ -27,7 +27,7 @@ CircleAreaObject::CircleAreaObject(std::shared_ptr<BaseObject> object) {
   this->_pos_info = object->get_position();
 }
 
-void CircleAreaObject::sync() noexcept {
+void CircleAreaObject::sync(bool is_member_of_camera) noexcept {
   CHECK_DISABLED()
   this->_code.interpret_update();
 

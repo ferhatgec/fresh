@@ -13,7 +13,7 @@ public:
   CircleBodyObject(const b2WorldId& world_id, BBoxResource pos, idk::f32 radius, bool is_static_body = false);
   ~CircleBodyObject() override = default;
 
-  void sync() noexcept override;
+  void sync(bool is_member_of_camera = false) noexcept override;
 
   [[nodiscard]] constexpr const char* to_string() noexcept override {
     return "circlebodyobject";

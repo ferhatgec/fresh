@@ -20,7 +20,7 @@ RectangleBodyObject::RectangleBodyObject(const b2WorldId& world_id, BBoxResource
   this->reset_delta();
 }
 
-void RectangleBodyObject::sync() noexcept {
+void RectangleBodyObject::sync(bool is_member_of_camera) noexcept {
   CHECK_DISABLED()
   this->_code.interpret_update();
   auto position = b2Body_GetPosition(this->_body_id);

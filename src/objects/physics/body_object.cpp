@@ -11,7 +11,7 @@ namespace fresh {
 BodyObject::BodyObject(bool is_static_body)
   : _is_static_body{is_static_body} {}
 
-void BodyObject::sync() noexcept {
+void BodyObject::sync(bool is_member_of_camera) noexcept {
   CHECK_DISABLED()
   this->_code.interpret_update();
   this->apply_changes();

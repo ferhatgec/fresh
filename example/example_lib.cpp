@@ -26,7 +26,7 @@ public:
   Application() noexcept {
     FreshInstanceInit(); // this is a *must* to initialize every part of engine correct.
     Engine::get_instance()->get_window() = std::make_shared<fresh::Window>("Hello world",
-                                                        600,
+                                                        800,
                                                         600,
                                                         0,
                                                         0);

@@ -24,7 +24,7 @@ public:
     ColorResource bg
   ) noexcept;
 
-  void sync() noexcept override;
+  void sync(bool is_member_of_camera = false) noexcept override;
 
   [[nodiscard]] const std::string& get_label_text() const noexcept;
   void set_label_text(const std::string& text) noexcept;

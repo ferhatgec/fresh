@@ -29,7 +29,7 @@ PolygonAreaObject::PolygonAreaObject(std::shared_ptr<BaseObject> object) {
   this->_pos_info = object->get_position();
 }
 
-void PolygonAreaObject::sync() noexcept {
+void PolygonAreaObject::sync(bool is_member_of_camera) noexcept {
   CHECK_DISABLED()
   this->_code.interpret_update();
 

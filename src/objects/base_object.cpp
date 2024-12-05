@@ -25,7 +25,10 @@ namespace fresh {
 static inline int i = 0;
 
 BaseObject::BaseObject()
-  : _disabled{false}, _visible{true} {
+  : _member_of_camera{false}, _disabled{false}, _visible{true} {
+  if (this->_parent) {
+    this->_member_of_camera = this->_parent->_member_of_camera;
+  }
   this->_pos_info = BBoxResource { 0.f, 0.f, 0.f, 0.f };
   this->_rotation_degrees = this->_last_rotation_degrees = 0.f;
   this->_copy_last_pos_info = this->_pos_info;
@@ -56,20 +59,33 @@ void BaseObject::set_visible(bool visible) noexcept {
   this->_visible = visible;
 }
 
-void BaseObject::sync() noexcept {
+void BaseObject::sync(bool is_member_of_camera) noexcept {
   CHECK_DISABLED()
   this->_code.interpret_update();
-  this->apply_changes();
+  this->apply_changes(is_member_of_camera);
 }
 
-void BaseObject::apply_changes() noexcept {
+void BaseObject::apply_changes(bool is_member_of_camera) noexcept {
+  const bool is_camera_moved = this->_member_of_camera && strcmp(this->to_string(), "cameraobject") == SameCstr;
   for (const auto& object: this->_sub_objects) {
     if(!object) {
       log_error(src(), "invalid object.");
       return;
     }
     if(this->get_delta() != 0.f) {
-      object->set_position(object->get_position() + this->get_delta());
+      if (is_camera_moved) {
+        object->lazy_set_x(object->get_x() + this->get_delta_x());
+        object->lazy_set_y(object->get_y() + this->get_delta_y());
+        // FIXME: there might be unnecessary call to notify_y() since RectangleObject,
+        // CircleObject, SpriteObject etc. are all using same methods for y along with y.
+        // but since model matrix is lazily updated, there is no too much overhead.
+        object->notify_x();
+        object->notify_y();
+        // this way it prevents from calling apply_changes twice.
+        object->apply_changes(object->_member_of_camera);
+      } else {
+        object->set_position(object->get_position() + this->get_delta());
+      }
     }
     if(!fre2d::detail::nearly_equals(this->get_delta_rot(), 0.f)) {
       object->set_rotation(object->get_rotation() + this->get_delta_rot());
@@ -77,7 +93,7 @@ void BaseObject::apply_changes() noexcept {
     object->set_visible(this->get_visible());
     object->set_disabled(this->get_disabled());
     // child objects of 'object' now have delta.
-    object->sync();
+    object->sync(is_member_of_camera);
     // reset delta values since we already applied them.
     object->reset_delta();
   }
@@ -91,6 +107,19 @@ void BaseObject::apply_changes() noexcept {
 void BaseObject::set_position(const BBoxResource& pos) noexcept {
   this->_copy_last_pos_info = this->_pos_info;
   this->_pos_info = pos;
+  if (this->get_delta_x() != 0.f) {
+    this->notify_x();
+  }
+  if (this->get_delta_y() != 0.f) {
+    this->notify_y();
+  }
+  if (this->get_delta_w() != 0.f) {
+    this->notify_w();
+  }
+  if (this->get_delta_h() != 0.f) {
+    this->notify_h();
+  }
+  this->apply_changes(this->_member_of_camera);
 }
 
 [[nodiscard]] const idk::f32& BaseObject::get_x() const noexcept {
@@ -118,23 +147,63 @@ void BaseObject::set_position(const BBoxResource& pos) noexcept {
 }
 
 void BaseObject::set_x(idk::f32 x, const std::source_location& instance) noexcept {
+  this->lazy_set_x(x);
+  this->notify_x();
+  this->apply_changes(this->_member_of_camera);
+}
+
+void BaseObject::set_y(idk::f32 y) noexcept {
+  this->lazy_set_y(y);
+  this->notify_y();
+  this->apply_changes(this->_member_of_camera);
+}
+
+void BaseObject::set_w(idk::f32 w) noexcept {
+  this->lazy_set_w(w);
+  this->notify_w();
+  this->apply_changes(this->_member_of_camera);
+}
+
+void BaseObject::set_h(idk::f32 h) noexcept {
+  this->lazy_set_h(h);
+  this->notify_h();
+  this->apply_changes(this->_member_of_camera);
+}
+
+void BaseObject::lazy_set_x(idk::f32 x) noexcept {
   this->_copy_last_pos_info.set_x(this->_pos_info.get_x());
   this->_pos_info.set_x(x);
 }
 
-void BaseObject::set_y(idk::f32 y) noexcept {
+void BaseObject::lazy_set_y(idk::f32 y) noexcept {
   this->_copy_last_pos_info.set_y(this->_pos_info.get_y());
   this->_pos_info.set_y(y);
 }
 
-void BaseObject::set_w(idk::f32 w) noexcept {
+void BaseObject::lazy_set_w(idk::f32 w) noexcept {
   this->_copy_last_pos_info.set_w(this->_pos_info.get_w());
   this->_pos_info.set_w(w);
 }
 
-void BaseObject::set_h(idk::f32 h) noexcept {
+void BaseObject::lazy_set_h(idk::f32 h) noexcept {
   this->_copy_last_pos_info.set_h(this->_pos_info.get_h());
   this->_pos_info.set_h(h);
+}
+
+void BaseObject::notify_x() noexcept {
+
+}
+
+void BaseObject::notify_y() noexcept {
+
+}
+
+void BaseObject::notify_w() noexcept {
+
+}
+
+void BaseObject::notify_h() noexcept {
+
 }
 
 void BaseObject::set_color(const ColorResource& res) noexcept {
@@ -204,7 +273,6 @@ void BaseObject::set(const fescript::Token& name, fescript::Object value) {
 void BaseObject::sync_init() noexcept {
   this->init_signal();
   for(auto& child: this->_sub_objects) {
-    child->init_signal();
     child->sync_init();
   }
 }
@@ -286,7 +354,8 @@ void BaseObject::set_rotation(idk::f32 rad_degrees) noexcept {
   this->_rotation_degrees = std::fmodf(rad_degrees, mul_2_pi_v<idk::f32>);
 }
 
-[[nodiscard]] idk::f32 BaseObject::counter_clockwise_to_clockwise(idk::f32 rad_degrees) noexcept {
+[[nodiscard]] idk::f32 BaseObject::counter_clockwise_to_clockwise(
+    idk::f32 rad_degrees) noexcept {
   return std::fmodf(rad_degrees + mul_2_pi_v<idk::f32>, mul_2_pi_v<idk::f32>);
 }
 

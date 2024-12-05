@@ -80,9 +80,6 @@ void Engine::run() {
         }
         log_warning(fresh::src(), "iterated object is invalid, index is {}.", i);
       }
-      if(Engine::get_instance()->_camera_object) {
-        Engine::get_instance()->_camera_object->sync();
-      }
     });
     this->_window->_fb.clear_color(1.f, 1.f, 1.f, 1.f);
     this->_window->_fb.render_texture();

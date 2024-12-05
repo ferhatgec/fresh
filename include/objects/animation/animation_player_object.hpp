@@ -50,7 +50,7 @@ public:
   AnimationPlayerObject(bool replay = false) noexcept;
   ~AnimationPlayerObject();
 
-  void sync() noexcept override;
+  void sync(bool is_member_of_camera = false) noexcept override;
 
   [[nodiscard]] constexpr const char* to_string() noexcept override {
     return "animationplayerobject";

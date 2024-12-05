@@ -19,17 +19,11 @@ RectangleObject::RectangleObject(BBoxResource info, ColorResource color, bool is
   this->set_color(color);
 }
 
-void RectangleObject::sync() noexcept {
+void RectangleObject::sync(bool is_member_of_camera) noexcept {
   CHECK_DISABLED()
   this->_code.interpret_update();
-  if(!fre2d::detail::nearly_equals(this->get_delta_x(), 0.f) || !fre2d::detail::nearly_equals(this->get_delta_y(), 0.f)) {
-    this->_rectangle.set_position({this->get_x(), this->get_y()});
-  }
   if(!fre2d::detail::nearly_equals(this->get_delta_rot(), 0.f)) {
     this->_rectangle.set_rotation(this->get_rotation());
-  }
-  if(!fre2d::detail::nearly_equals(this->get_delta_w(), 0.f) || !fre2d::detail::nearly_equals(this->get_delta_h(), 0.f)) {
-    this->_rectangle.set_scale({this->get_w(), this->get_h(), 1.f});
   }
   if(this->_visible) {
     this->_rectangle.draw(
@@ -37,7 +31,7 @@ void RectangleObject::sync() noexcept {
       FreshInstance->get_camera()->get_camera()
     );
   }
-  this->apply_changes();
+  this->apply_changes(this->_member_of_camera);
 }
 
 void RectangleObject::set(const fescript::Token& name, fescript::Object value) {
@@ -83,8 +77,36 @@ bool& RectangleObject::get_is_filled() noexcept {
 }
 
 void RectangleObject::set_rotation(idk::f32 rad_degrees) noexcept {
-  this->_rectangle.set_rotation(rad_degrees);
   this->_last_rotation_degrees = this->_rotation_degrees;
   this->_rotation_degrees = rad_degrees;
+  this->_rectangle.set_rotation(rad_degrees);
+}
+
+void RectangleObject::notify_x() noexcept {
+  this->_base_notify_xy();
+}
+
+void RectangleObject::notify_y() noexcept {
+  this->_base_notify_xy();
+}
+
+void RectangleObject::notify_w() noexcept {
+  this->_base_notify_wh();
+}
+
+void RectangleObject::notify_h() noexcept {
+  this->_base_notify_wh();
+}
+
+void RectangleObject::_base_notify_xy() noexcept {
+  if(!fre2d::detail::nearly_equals(this->get_delta_x(), 0.f) || !fre2d::detail::nearly_equals(this->get_delta_y(), 0.f)) {
+    this->_rectangle.set_position({this->get_x(), this->get_y()});
+  }
+}
+
+void RectangleObject::_base_notify_wh() noexcept {
+  if(!fre2d::detail::nearly_equals(this->get_delta_w(), 0.f) || !fre2d::detail::nearly_equals(this->get_delta_h(), 0.f)) {
+    this->_rectangle.set_scale({this->get_w(), this->get_h(), 1.f});
+  }
 }
 } // namespace fresh

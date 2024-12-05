@@ -18,7 +18,7 @@ void LabelObject::initialize_text(const std::string& label_text,
   this->_bg = bg;
 }
 
-void LabelObject::sync() noexcept {
+void LabelObject::sync(bool is_member_of_camera) noexcept {
   CHECK_DISABLED()
   this->_code.interpret_update();
   if(this->_visible) {

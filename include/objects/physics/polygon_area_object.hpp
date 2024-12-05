@@ -18,7 +18,7 @@ public:
   ~PolygonAreaObject() override = default;
 
   void
-  sync() noexcept override;
+  sync(bool is_member_of_camera = false) noexcept override;
 
   __idk_nodiscard
   bool is_colliding_with(std::shared_ptr<BaseObject> object) noexcept override;
