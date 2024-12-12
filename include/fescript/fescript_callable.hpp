@@ -6,8 +6,14 @@
 
 #pragma once
 
+#include <concepts>
 #include <vector>
 #include "fescript_token.hpp"
+#include <log/log.hpp>
+
+namespace fresh {
+class BaseObject;
+} // namespace fresh
 
 namespace fescript {
 class Interpreter;
@@ -16,11 +22,11 @@ class FescriptCallable {
 public:
   FescriptCallable() : _is_variadic{false} {}
   virtual ~FescriptCallable() = default;
-  [[nodiscard]] virtual int arity() = 0;
-  [[nodiscard]] virtual Object call([[maybe_unused]] Interpreter& interpreter, const std::vector<Object>& arguments) = 0;
+  [[nodiscard]] virtual int arity() { return 0;};
+  [[nodiscard]] virtual Object call([[maybe_unused]] Interpreter& interpreter, const std::vector<Object>& arguments) { return nullptr; };
 
 
-  [[nodiscard]] virtual constexpr const char* to_string() const noexcept = 0;
+  [[nodiscard]] virtual constexpr const char* to_string() const noexcept { return ""; }
 
   [[nodiscard]] const bool& is_variadic() const noexcept {
     return _is_variadic;

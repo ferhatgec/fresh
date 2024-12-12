@@ -21,16 +21,16 @@ def update(delta) =
  if(EngineIO_is_key_pressed(EngineIO_Key_D)) = Engine_get_object("Camera").move(CameraMoveSpeed, 0);;
 
 
- if(EngineIO_is_key_pressed(EngineIO_Key_U)) = ColoredRect.pos_y = ColoredRect.pos_y + 5;;
- if(EngineIO_is_key_pressed(EngineIO_Key_J)) = ColoredRect.pos_y = ColoredRect.pos_y - 5;;
- if(EngineIO_is_key_pressed(EngineIO_Key_H)) = ColoredRect.pos_x = ColoredRect.pos_x - 5;;
- if(EngineIO_is_key_pressed(EngineIO_Key_K)) = ColoredRect.pos_x = ColoredRect.pos_x + 5;;
+ if(EngineIO_is_key_pressed(EngineIO_Key_U)) = ColoredRect.set_y(ColoredRect.get_y() + 5);;
+ if(EngineIO_is_key_pressed(EngineIO_Key_J)) = ColoredRect.set_y(ColoredRect.get_y() - 5);;
+ if(EngineIO_is_key_pressed(EngineIO_Key_H)) = ColoredRect.set_x(ColoredRect.get_x() - 5);;
+ if(EngineIO_is_key_pressed(EngineIO_Key_K)) = ColoredRect.set_x(ColoredRect.get_x() + 5);;
 
- if(EngineIO_is_key_pressed(EngineIO_Key_O)) = ColoredRect.width = ColoredRect.width + 5;;
- if(EngineIO_is_key_pressed(EngineIO_Key_L)) = ColoredRect.width = ColoredRect.width - 5;;
+ if(EngineIO_is_key_pressed(EngineIO_Key_O)) = ColoredRect.set_w(ColoredRect.get_w() + 5);;
+ if(EngineIO_is_key_pressed(EngineIO_Key_L)) = ColoredRect.set_w(ColoredRect.get_w() - 5);;
 
- if(EngineIO_is_key_pressed(EngineIO_Key_N)) = ColoredRect.height = ColoredRect.height + 5;;
- if(EngineIO_is_key_pressed(EngineIO_Key_M)) = ColoredRect.height = ColoredRect.height - 5;;
+ if(EngineIO_is_key_pressed(EngineIO_Key_N)) = ColoredRect.set_h(ColoredRect.get_h() + 5);;
+ if(EngineIO_is_key_pressed(EngineIO_Key_M)) = ColoredRect.set_h(ColoredRect.get_h() - 5);;
 
  # creates dynamic rectangle body
  if(EngineIO_is_mouse_button_just_pressed(EngineIO_Button_Right)) =

@@ -24,10 +24,13 @@ static inline std::string_view function_name;
 #define DEFINE_MEMBER_MODULE_CLASS_CUSTOM_DERIVED_FROM(name, module_name, arg_count, self_type, derived_from) \
   class Fescript##module_name##name : public derived_from { \
   public: \
-    explicit Fescript##module_name##name(std::shared_ptr<self_type> self) : _self{std::move(self)} {} \
+    Fescript##module_name##name() = default; \
+    explicit Fescript##module_name##name(const std::shared_ptr<self_type>& self) : _self{self} {} \
     [[nodiscard]] int arity() override { return arg_count; } \
     [[nodiscard]] constexpr const char* to_string() const noexcept override { return #name; } \
     [[nodiscard]] Object call([[maybe_unused]] Interpreter& interpreter, const std::vector<Object>& arguments) override; \
+    [[nodiscard]] const std::shared_ptr<self_type>& get_self() const noexcept { return this->_self; } \
+    void set_self(const std::shared_ptr<self_type>& slf_ptr) noexcept { this->_self = slf_ptr; } \
   private: \
     std::shared_ptr<self_type> _self; \
   };

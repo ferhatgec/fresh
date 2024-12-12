@@ -61,7 +61,7 @@ public:
   [[nodiscard]] static std::string stringify(const Object &object);
   [[nodiscard]] idk::i64& get_global_seed() noexcept;
 
-  [[nodiscard]] static Object get_object_property(const Token& keyword, Object value);
+  [[nodiscard]] static Object get_object_property(const Token& keyword, const Object& value);
   [[nodiscard]] static Object baseobject_to_fescript_object(std::shared_ptr<fresh::BaseObject> base_obj) noexcept;
   [[nodiscard]] static std::shared_ptr<fresh::BaseObject> fescript_object_to_baseobject(Object obj) noexcept;
 

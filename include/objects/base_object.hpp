@@ -188,6 +188,8 @@ class BaseObject {
 
   [[nodiscard]] static idk::f32 counter_clockwise_to_clockwise(
       idk::f32 rad_degrees) noexcept;
+
+  std::unordered_map<std::string_view, std::shared_ptr<fescript::FescriptCallable>> cache_fn;
  private:
   /// BaseObject::_give_shared_ptr() mimics std::enable_shared_from_this when
   /// multiple inheritance applied to the class; creates additional shared_ptr

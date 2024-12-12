@@ -22,10 +22,98 @@ namespace fescript {
   return nullptr;
 }
 
-[[nodiscard]] Object FescriptBaseObjectMemberSetRotationByRadianDegrees::call(Interpreter& interpreter, const std::vector<Object>& arguments) {
-  ERR_CHECK_DECIMAL("BaseObject().set_rotation()", 1)
-  this->_self->set_rotation(static_cast<idk::f32>(std::get<LongDoubleIndex>(arguments[0])));
+[[nodiscard]] Object FescriptBaseObjectMemberSetVisible::call(Interpreter& interpreter, const std::vector<Object>& arguments) {
+  ERR_CHECK_BOOL("BaseObject.set_visible()", 1)
+  this->get_self()->set_visible(std::get<BoolIndex>(arguments[0]));
   return nullptr;
+}
+
+[[nodiscard]] Object FescriptBaseObjectMemberSetDisabled::call(Interpreter& interpreter, const std::vector<Object>& arguments) {
+  ERR_CHECK_BOOL("BaseObject.set_disabled()", 1)
+  this->get_self()->set_disabled(std::get<BoolIndex>(arguments[0]));
+  return nullptr;
+}
+
+[[nodiscard]] Object FescriptBaseObjectMemberSetX::call(Interpreter& interpreter, const std::vector<Object>& arguments) {
+  ERR_CHECK_DECIMAL("BaseObject.set_x()", 1)
+  // FIXME: there might be some issues with that, using lazy_set_h could be better (for all xywh functions)
+  this->get_self()->set_x(std::get<LongDoubleIndex>(arguments[0]));
+  return nullptr;
+}
+
+[[nodiscard]] Object FescriptBaseObjectMemberSetY::call(Interpreter& interpreter, const std::vector<Object>& arguments) {
+  ERR_CHECK_DECIMAL("BaseObject.set_y()", 1)
+  // FIXME: there might be some issues with that, using lazy_set_h could be better.
+  this->get_self()->set_w(std::get<LongDoubleIndex>(arguments[0]));
+  return nullptr;
+}
+
+[[nodiscard]] Object FescriptBaseObjectMemberSetW::call(Interpreter& interpreter, const std::vector<Object>& arguments) {
+  ERR_CHECK_DECIMAL("BaseObject.set_w()", 1)
+  // FIXME: there might be some issues with that, using lazy_set_h could be better.
+  this->get_self()->set_w(std::get<LongDoubleIndex>(arguments[0]));
+  return nullptr;
+}
+
+[[nodiscard]] Object FescriptBaseObjectMemberSetH::call(Interpreter& interpreter, const std::vector<Object>& arguments) {
+  ERR_CHECK_DECIMAL("BaseObject.set_h()", 1)
+  // FIXME: there might be some issues with that, using lazy_set_h could be better.
+  this->get_self()->set_h(std::get<LongDoubleIndex>(arguments[0]));
+  return nullptr;
+}
+
+[[nodiscard]] Object FescriptBaseObjectMemberSetRot::call(Interpreter& interpreter, const std::vector<Object>& arguments) {
+  ERR_CHECK_DECIMAL("BaseObject.set_rot()", 1)
+  this->get_self()->set_rotation(std::get<LongDoubleIndex>(arguments[0]));
+  return nullptr;
+}
+
+[[nodiscard]] Object FescriptBaseObjectMemberSetName::call(Interpreter& interpreter, const std::vector<Object>& arguments) {
+  ERR_CHECK_STRING("BaseObject.set_name()", 1)
+  this->get_self()->set_name(std::get<StringIndex>(arguments[0]));
+  return nullptr;
+}
+
+[[nodiscard]] Object FescriptBaseObjectMemberGetVisible::call(Interpreter& interpreter, const std::vector<Object>& arguments) {
+  return this->get_self()->get_visible();
+}
+
+[[nodiscard]] Object FescriptBaseObjectMemberGetDisabled::call(Interpreter& interpreter, const std::vector<Object>& arguments) {
+  return this->get_self()->get_disabled();
+}
+
+[[nodiscard]] Object FescriptBaseObjectMemberGetX::call(Interpreter& interpreter, const std::vector<Object>& arguments) {
+  // TODO: we need float, double representation in fescript,
+  // it's like waste of memory when C++ API uses float and fescript uses long double.
+  return static_cast<idk::f80>(this->get_self()->get_x());
+}
+
+[[nodiscard]] Object FescriptBaseObjectMemberGetY::call(Interpreter& interpreter, const std::vector<Object>& arguments) {
+  // TODO: we need float, double representation in fescript,
+  // it's like waste of memory when C++ API uses float and fescript uses long double.
+  return static_cast<idk::f80>(this->get_self()->get_y());
+}
+
+[[nodiscard]] Object FescriptBaseObjectMemberGetW::call(Interpreter& interpreter, const std::vector<Object>& arguments) {
+  // TODO: we need float, double representation in fescript,
+  // it's like waste of memory when C++ API uses float and fescript uses long double.
+  return static_cast<idk::f80>(this->get_self()->get_w());
+}
+
+[[nodiscard]] Object FescriptBaseObjectMemberGetH::call(Interpreter& interpreter, const std::vector<Object>& arguments) {
+  // TODO: we need float, double representation in fescript,
+  // it's like waste of memory when C++ API uses float and fescript uses long double.
+  return static_cast<idk::f80>(this->get_self()->get_h());
+}
+
+[[nodiscard]] Object FescriptBaseObjectMemberGetRot::call(Interpreter& interpreter, const std::vector<Object>& arguments) {
+  // TODO: we need float, double representation in fescript,
+  // it's like waste of memory when C++ API uses float and fescript uses long double.
+  return static_cast<idk::f80>(this->get_self()->get_rotation());
+}
+
+[[nodiscard]] Object FescriptBaseObjectMemberGetName::call(Interpreter& interpreter, const std::vector<Object>& arguments) {
+  return this->get_self()->get_name();
 }
 
 FescriptBaseObjectWrapper::FescriptBaseObjectWrapper(
