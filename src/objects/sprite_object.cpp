@@ -24,7 +24,7 @@ void SpriteObject::sync(bool is_member_of_camera) noexcept {
   }
   if(this->_visible) {
     this->_rectangle.draw(this->_shader,
-      Engine::get_instance()->get_camera()->get_camera()
+      FreshInstance->get_camera()->get_camera()
       );
   }
   this->apply_changes();
@@ -37,8 +37,8 @@ SpriteResource& SpriteObject::get_sprite_resource() noexcept {
 
 void SpriteObject::set(const fescript::Token& name, fescript::Object value) {
   SET_BASE_OBJECT_PROPERTIES()
-  else if (name.lexeme == "sprite_resource") this->get_sprite_resource()
-      .load_resource(std::get<StringIndex>(value));
+  else if (name.lexeme == "sprite_resource")
+    this->get_sprite_resource().set_path(std::get<StringIndex>(value));
   else {
     std::cout << "Engine [language] error: SpriteObject has no field named as '"
               << name.lexeme << "'.\n";
@@ -47,7 +47,7 @@ void SpriteObject::set(const fescript::Token& name, fescript::Object value) {
 }
 
 void SpriteObject::init_signal() noexcept {
-  if(!this->_initialized) {
+  //if(!this->_initialized) {
     this->_rectangle.initialize_rectangle(
         this->_pos_info.get_w(),
         this->_pos_info.get_h(),
@@ -62,7 +62,7 @@ void SpriteObject::init_signal() noexcept {
       fre2d::detail::shader::default_fragment
     );
     this->_initialized = true;
-  }
+  //}
 }
 
 void SpriteObject::set_rotation(idk::f32 rad_degrees) noexcept {

@@ -3,8 +3,9 @@
 // Copyright (c) 2024 Ferhat Geçdoğan All Rights Reserved.
 // Distributed under the terms of the MIT License.
 //
-#include <log/log.hpp>
 #include <fescript/wrappers/fescript_base_object.hpp>
+#include <fescript/fescript_array.hpp>
+#include <log/log.hpp>
 
 namespace fescript {
 [[nodiscard]] Object FescriptBaseObjectMemberPushSubObject::call(Interpreter& interpreter, const std::vector<Object>& arguments) {
@@ -62,6 +63,17 @@ namespace fescript {
   return nullptr;
 }
 
+[[nodiscard]] Object FescriptBaseObjectMemberSetXYWH::call(Interpreter& interpreter, const std::vector<Object>& arguments) {
+  ERR_CHECK_ARRAY("BaseObject.set_xywh()", 1)
+  const auto& arr = std::get<FescriptArrayIndex>(arguments[0]);
+  this->get_self()->set_x(static_cast<idk::f32>(std::get<LongDoubleIndex>(arr->get_value(0))));
+  this->get_self()->set_y(static_cast<idk::f32>(std::get<LongDoubleIndex>(arr->get_value(1))));
+  this->get_self()->set_w(static_cast<idk::f32>(std::get<LongDoubleIndex>(arr->get_value(2))));
+  this->get_self()->set_h(static_cast<idk::f32>(std::get<LongDoubleIndex>(arr->get_value(3))));
+  return nullptr;
+}
+
+
 [[nodiscard]] Object FescriptBaseObjectMemberSetRot::call(Interpreter& interpreter, const std::vector<Object>& arguments) {
   ERR_CHECK_DECIMAL("BaseObject.set_rot()", 1)
   this->get_self()->set_rotation(std::get<LongDoubleIndex>(arguments[0]));
@@ -104,6 +116,18 @@ namespace fescript {
   // TODO: we need float, double representation in fescript,
   // it's like waste of memory when C++ API uses float and fescript uses long double.
   return static_cast<idk::f80>(this->get_self()->get_h());
+}
+
+[[nodiscard]] Object FescriptBaseObjectMemberGetXYWH::call(Interpreter& interpreter, const std::vector<Object>& arguments) {
+  // TODO: cache FescriptArray in BaseObject.
+  auto arr = std::make_shared<FescriptArray>();
+  arr->set_array({
+    static_cast<idk::f80>(this->get_self()->get_x()),
+    static_cast<idk::f80>(this->get_self()->get_y()),
+    static_cast<idk::f80>(this->get_self()->get_w()),
+    static_cast<idk::f80>(this->get_self()->get_h())
+  });
+  return std::move(arr);
 }
 
 [[nodiscard]] Object FescriptBaseObjectMemberGetRot::call(Interpreter& interpreter, const std::vector<Object>& arguments) {

@@ -40,6 +40,7 @@
   if(keyword.lexeme == "set_y") return fescript::cache_make_shared<FescriptBaseObjectMemberSetY>(obj_ptr); \
   if(keyword.lexeme == "set_w") return fescript::cache_make_shared<FescriptBaseObjectMemberSetW>(obj_ptr); \
   if(keyword.lexeme == "set_h") return fescript::cache_make_shared<FescriptBaseObjectMemberSetH>(obj_ptr); \
+  if(keyword.lexeme == "set_xywh") return fescript::cache_make_shared<FescriptBaseObjectMemberSetXYWH>(obj_ptr); \
   if(keyword.lexeme == "set_rot") return fescript::cache_make_shared<FescriptBaseObjectMemberSetRot>(obj_ptr); \
   if(keyword.lexeme == "set_name") return fescript::cache_make_shared<FescriptBaseObjectMemberSetName>(obj_ptr); \
   if(keyword.lexeme == "get_visible") return fescript::cache_make_shared<FescriptBaseObjectMemberGetVisible>(obj_ptr); \
@@ -48,6 +49,7 @@
   if(keyword.lexeme == "get_y") return fescript::cache_make_shared<FescriptBaseObjectMemberGetY>(obj_ptr); \
   if(keyword.lexeme == "get_w") return fescript::cache_make_shared<FescriptBaseObjectMemberGetW>(obj_ptr); \
   if(keyword.lexeme == "get_h") return fescript::cache_make_shared<FescriptBaseObjectMemberGetH>(obj_ptr); \
+  if(keyword.lexeme == "get_xywh") return fescript::cache_make_shared<FescriptBaseObjectMemberGetXYWH>(obj_ptr); \
   if(keyword.lexeme == "get_rot") return fescript::cache_make_shared<FescriptBaseObjectMemberGetRot>(obj_ptr); \
   if(keyword.lexeme == "get_name") return fescript::cache_make_shared<FescriptBaseObjectMemberGetName>(obj_ptr); \
   if(keyword.lexeme == "sub_groups") { \
@@ -117,7 +119,7 @@ static const std::shared_ptr<FescriptCallable>& cache_make_shared(const std::sha
   if (const auto& it = obj->cache_fn.find(fn_str);
     it != obj->cache_fn.end()) {
     return it->second;
-    }
+  }
   obj->cache_fn[fn_str] = std::make_shared<U>(obj);
   return obj->cache_fn[fn_str];
 }
@@ -129,6 +131,7 @@ DEFINE_MEMBER_MODULE_CLASS(SetX, BaseObjectMember, 1, fresh::BaseObject)
 DEFINE_MEMBER_MODULE_CLASS(SetY, BaseObjectMember, 1, fresh::BaseObject)
 DEFINE_MEMBER_MODULE_CLASS(SetW, BaseObjectMember, 1, fresh::BaseObject)
 DEFINE_MEMBER_MODULE_CLASS(SetH, BaseObjectMember, 1, fresh::BaseObject)
+DEFINE_MEMBER_MODULE_CLASS(SetXYWH, BaseObjectMember, 1, fresh::BaseObject)
 DEFINE_MEMBER_MODULE_CLASS(SetRot, BaseObjectMember, 1, fresh::BaseObject)
 DEFINE_MEMBER_MODULE_CLASS(SetName, BaseObjectMember, 1, fresh::BaseObject)
 DEFINE_MEMBER_MODULE_CLASS(GetVisible, BaseObjectMember, 0, fresh::BaseObject)
@@ -137,6 +140,7 @@ DEFINE_MEMBER_MODULE_CLASS(GetX, BaseObjectMember, 0, fresh::BaseObject)
 DEFINE_MEMBER_MODULE_CLASS(GetY, BaseObjectMember, 0, fresh::BaseObject)
 DEFINE_MEMBER_MODULE_CLASS(GetW, BaseObjectMember, 0, fresh::BaseObject)
 DEFINE_MEMBER_MODULE_CLASS(GetH, BaseObjectMember, 0, fresh::BaseObject)
+DEFINE_MEMBER_MODULE_CLASS(GetXYWH, BaseObjectMember, 0, fresh::BaseObject)
 DEFINE_MEMBER_MODULE_CLASS(GetRot, BaseObjectMember, 0, fresh::BaseObject)
 DEFINE_MEMBER_MODULE_CLASS(GetName, BaseObjectMember, 0, fresh::BaseObject)
 

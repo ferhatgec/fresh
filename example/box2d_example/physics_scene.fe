@@ -37,7 +37,11 @@ def update(delta) =
   def CursorPos = EngineWindow_get_current_cursor_pos();
   def r = [CursorPos.0, CursorPos.1, 30, 30];
   def Box = Engine_RectangleBodyObject(World, r, false);
-  Box.push_to_sub_objects(Engine_RectangleObject(r, [0, 0, 1, 1], false));
+  def SpriteBox = Engine_SpriteObject();
+  SpriteBox.set_xywh(r);
+  SpriteBox.sprite_resource = "gechland.icon.png";
+  SpriteBox.init_sprite();
+  Box.push_to_sub_objects(SpriteBox);
   Engine_render_objects_push(Box);
  ;
 

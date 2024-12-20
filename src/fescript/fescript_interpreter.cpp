@@ -131,7 +131,7 @@ Interpreter::Interpreter() {
   this->globals->define("EngineWindow_get_window_opacity", std::make_shared<FescriptEngineWindowGetWindowOpacity>());
 
   ENGINEWINDOW_GLOBAL_CONSTANTS()
-
+//
   this->globals->define("Engine_BaseObject", std::make_shared<FescriptBaseObjectWrapper>());
   this->globals->define("Engine_SpriteObject", std::make_shared<FescriptSpriteObjectWrapper>());
   this->globals->define("Engine_LabelObject", std::make_shared<FescriptLabelObjectWrapper>());
@@ -725,8 +725,8 @@ void Interpreter::check_number_operands(const Token &op, const Object &left,
     }
     case FescriptSpriteObjectIndex: {
       RETURN_BASE_OBJECT_PROPERTIES(FescriptSpriteObjectIndex)
-      else if (keyword.lexeme == "sprite_resource") return std::get<FescriptSpriteObjectIndex>(value)->get_sprite_resource().get_path();
-      else if (keyword.lexeme == "init_sprite"    ) return cache_make_shared<FescriptSpriteObjectMemberInitSprite>(std::get<FescriptSpriteObjectIndex>(value));
+      if (keyword.lexeme == "sprite_resource") return std::get<FescriptSpriteObjectIndex>(value)->get_sprite_resource().get_path();
+      if (keyword.lexeme == "init_sprite"    ) return cache_make_shared<FescriptSpriteObjectMemberInitSprite>(std::get<FescriptSpriteObjectIndex>(value));
       throw RuntimeError(keyword, "SpriteObject property cannot be found.");
     }
     case FescriptLabelObjectIndex: {

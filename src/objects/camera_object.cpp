@@ -65,8 +65,7 @@ void CameraObject::resize_camera(idk::f32 w, idk::f32 h) noexcept {
   //this->apply_changes(true);
 }
 
-[[nodiscard]] const std::unique_ptr<fre2d::Camera>& CameraObject::get_camera()
-    const noexcept {
+[[nodiscard]] const std::unique_ptr<fre2d::Camera>& CameraObject::get_camera() const noexcept {
   return this->_camera;
 }
 
