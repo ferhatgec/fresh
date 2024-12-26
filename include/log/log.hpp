@@ -29,12 +29,12 @@ static constexpr auto error_color = colorized::Foreground::FgBrRed;
 
 template<typename... Args>
 static void print(std::string_view fmt_str, Args&&... args) noexcept {
-  std::cout << std::vformat(fmt_str, std::make_format_args(std::forward<Args>(args)...));
+  std::cout << std::vformat(fmt_str, std::make_format_args(args...));
 }
 
 template<typename... Args>
 static void println(std::string_view fmt_str, Args&&... args) noexcept {
-  std::cout << std::vformat(fmt_str, std::make_format_args(std::forward<Args>(args)...)) << '\n';
+  std::cout << std::vformat(fmt_str, std::make_format_args(args...)) << '\n';
 }
 
 template<typename... Args>

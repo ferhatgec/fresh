@@ -8,8 +8,8 @@
 #include <numbers>
 
 namespace fresh {
-BodyObject::BodyObject(bool is_static_body)
-  : _is_static_body{is_static_body} {}
+BodyObject::BodyObject(bool is_static_body, bool is_fixed_rotation)
+  : _is_static_body{is_static_body}, _is_fixed_rotation{is_fixed_rotation} {}
 
 void BodyObject::sync(bool is_member_of_camera) noexcept {
   CHECK_DISABLED()
@@ -35,41 +35,36 @@ void BodyObject::set_is_static_body(bool is_static_body) noexcept {
                "             Use RectangleBodyObject if you want rectangle physics body.\n";
 }
 
+[[nodiscard]] const bool& BodyObject::get_fixed_rotation() const noexcept {
+  return this->_is_fixed_rotation;
+}
+
+void BodyObject::set_fixed_rotation(bool fixed_rotation) noexcept {
+  this->_is_fixed_rotation = fixed_rotation;
+  b2Body_SetFixedRotation(this->_body_id, this->_is_fixed_rotation);
+}
+
+void BodyObject::set_linear_velocity(const PointResource& pt) const noexcept {
+  b2Body_SetLinearVelocity(this->get_body_id(), b2Vec2 { pt.get_x() * ptm_ratio, pt.get_y() * ptm_ratio });
+}
+
+[[nodiscard]] PointResource BodyObject::get_linear_velocity() const noexcept {
+  return b2Body_GetLinearVelocity(this->get_body_id());
+}
+
+void BodyObject::apply_force_center(const PointResource& pt) const noexcept {
+  b2Body_ApplyForceToCenter(this->get_body_id(), b2Vec2{pt.get_x() * ptm_ratio, pt.get_y() * ptm_ratio}, true);
+}
+
+void BodyObject::apply_linear_impulse_center(const PointResource& pt) const noexcept {
+  b2Body_ApplyLinearImpulseToCenter(this->get_body_id(), b2Vec2{pt.get_x() * ptm_ratio, pt.get_y() * ptm_ratio}, true);
+}
+
 [[nodiscard]] idk::f32 BodyObject::to_physics(idk::f32 pixels) noexcept {
   return pixels / ptm_ratio;
 }
 
 [[nodiscard]] idk::f32 BodyObject::to_renderer(idk::f32 meters) noexcept {
   return meters * ptm_ratio;
-}
-
-// converts [-2pi, +2pi] range to box2d [-pi, +pi] range.
-[[nodiscard]] idk::f32 BodyObject::to_box2d_angle(idk::f32 angle_rad) noexcept {
-  if(angle_rad < std::numbers::pi_v<idk::f32>)
-    return angle_rad + 2.f * std::numbers::pi_v<idk::f32>;
-  if(angle_rad > std::numbers::pi_v<idk::f32>)
-    return angle_rad - 2.f * std::numbers::pi_v<idk::f32>;
-  return angle_rad;
-}
-
-// converts [-pi, +pi] range to fresh [-2pi, +2pi] range.
-[[nodiscard]] idk::f32 BodyObject::to_sdl_angle(idk::f32 angle_rad) noexcept {
-  return angle_rad < 0.f ? angle_rad + 2.f * std::numbers::pi_v<idk::f32>: angle_rad;
-}
-
-[[nodiscard]] BBoxResource BodyObject::to_sdl(b2Vec2 vec, idk::f32 w, idk::f32 h) noexcept {
-  return BBoxResource {
-    ptm_ratio * vec.x,
-    static_cast<idk::f32>(std::get<1>(Engine::get_instance()->get_window()->get_window_size())) - ptm_ratio * vec.y,
-    w,
-    h
-  };
-}
-
-[[nodiscard]] b2Vec2 BodyObject::to_box2d(BBoxResource rect) noexcept {
-  return b2Vec2 {
-    rect.get_x() / ptm_ratio,
-    (static_cast<idk::f32>(std::get<1>(Engine::get_instance()->get_window()->get_window_size())) - rect.get_y()) / ptm_ratio
-  };
 }
 } // namespace fresh

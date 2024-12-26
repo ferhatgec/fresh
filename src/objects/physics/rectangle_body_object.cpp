@@ -12,9 +12,15 @@
 #include <format>
 
 namespace fresh {
-RectangleBodyObject::RectangleBodyObject(const b2WorldId& world_id, BBoxResource pos, bool is_static_body) {
+RectangleBodyObject::RectangleBodyObject(
+  const b2WorldId& world_id,
+  BBoxResource pos,
+  bool is_static_body,
+  bool is_fixed_rotation
+) {
   this->_world_id = world_id;
   this->_is_static_body = is_static_body;
+  this->_is_fixed_rotation = is_fixed_rotation;
   this->_pos_info = pos;
   this->_create_body();
   this->reset_delta();
@@ -43,6 +49,7 @@ void RectangleBodyObject::set_is_static_body(bool is_static_body) noexcept {
     return;
   b2DestroyBody(this->_body_id);
   this->_body_id = b2_nullBodyId;
+
   this->_is_static_body = is_static_body;
   this->_create_body();
 }
@@ -59,11 +66,12 @@ void RectangleBodyObject::_create_body() noexcept {
   ); // box2d takes half width; half height so we divide it by 2.
   b2ShapeDef const shape_def = b2DefaultShapeDef();
   b2CreatePolygonShape(this->_body_id, &shape_def, &rect);
+  this->set_fixed_rotation(this->get_fixed_rotation());
 }
 
 void RectangleBodyObject::set_rotation(idk::f32 rad_degrees) noexcept {
   const auto rad_fresh = std::fmodf(rad_degrees, mul_2_pi_v<idk::f32>);
-  if(f32_nearly_equals(this->_rotation_degrees, rad_fresh))
+  if (f32_nearly_equals(this->_rotation_degrees, rad_fresh))
     return;
   this->_last_rotation_degrees = this->_rotation_degrees;
   this->_rotation_degrees = rad_fresh;

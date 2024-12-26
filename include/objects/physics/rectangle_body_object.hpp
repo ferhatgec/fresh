@@ -10,7 +10,12 @@
 namespace fresh {
 class RectangleBodyObject : public BodyObject {
 public:
-  RectangleBodyObject(const b2WorldId& world_id, BBoxResource pos, bool is_static_body = false);
+  RectangleBodyObject(
+    const b2WorldId& world_id,
+    BBoxResource pos,
+    bool is_static_body = IsStaticBodyDefault,
+    bool is_fixed_rotation = IsFixedRotationDefault
+  );
   ~RectangleBodyObject() override = default;
 
   void sync(bool is_member_of_camera = false) noexcept override;
@@ -20,9 +25,7 @@ public:
   }
 
   void set(const fescript::Token& name, fescript::Object value) override;
-
   void set_is_static_body(bool is_static_body) noexcept override;
-
   void set_rotation(idk::f32 rad_degrees) noexcept override;
 private:
   void _create_body() noexcept;

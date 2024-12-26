@@ -836,16 +836,17 @@ void Interpreter::check_number_operands(const Token &op, const Object &left,
     }
     case FescriptBodyObjectIndex: {
       RETURN_BASE_OBJECT_PROPERTIES(FescriptBodyObjectIndex)
+      RETURN_BODY_OBJECT_PROPERTIES()
       throw RuntimeError(keyword, "BodyObject property cannot be found.");
     }
     case FescriptRectangleBodyObjectIndex: {
       RETURN_BASE_OBJECT_PROPERTIES(FescriptRectangleBodyObjectIndex)
-      if(keyword.lexeme == "set_is_static_body") return cache_make_shared<FescriptRectangleBodyObjectMemberSetIsStaticBody>(std::get<FescriptRectangleBodyObjectIndex>(value));
-      if(keyword.lexeme == "get_is_static_body") return cache_make_shared<FescriptRectangleBodyObjectMemberGetIsStaticBody>(std::get<FescriptRectangleBodyObjectIndex>(value));
+      RETURN_BODY_OBJECT_PROPERTIES()
       throw RuntimeError(keyword, "RectangleBodyObject property cannot be found.");
     }
     case FescriptCircleBodyObjectIndex: {
       RETURN_BASE_OBJECT_PROPERTIES(FescriptCircleBodyObjectIndex)
+      RETURN_BODY_OBJECT_PROPERTIES()
       if(keyword.lexeme == "set_is_static_body") return cache_make_shared<FescriptCircleBodyObjectMemberSetIsStaticBody>(std::get<FescriptCircleBodyObjectIndex>(value));
       if(keyword.lexeme == "get_is_static_body") return cache_make_shared<FescriptCircleBodyObjectMemberGetIsStaticBody>(std::get<FescriptCircleBodyObjectIndex>(value));
       if(keyword.lexeme == "set_radius") return cache_make_shared<FescriptCircleBodyObjectMemberSetRadius>(std::get<FescriptCircleBodyObjectIndex>(value));
@@ -854,8 +855,7 @@ void Interpreter::check_number_operands(const Token &op, const Object &left,
     }
     case FescriptPolygonBodyObjectIndex: {
       RETURN_BASE_OBJECT_PROPERTIES(FescriptPolygonBodyObjectIndex)
-      if(keyword.lexeme == "set_is_static_body") return cache_make_shared<FescriptPolygonBodyObjectMemberSetIsStaticBody>(std::get<FescriptPolygonBodyObjectIndex>(value));
-      if(keyword.lexeme == "get_is_static_body") return cache_make_shared<FescriptRectangleBodyObjectMemberGetIsStaticBody>(std::get<FescriptRectangleBodyObjectIndex>(value));
+      RETURN_BODY_OBJECT_PROPERTIES()
       throw RuntimeError(keyword, "PolygonBodyObject property cannot be found.");
     }
     default: {

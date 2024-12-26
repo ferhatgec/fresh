@@ -102,8 +102,7 @@ public:
   }
 
   friend std::ostream& operator<<(std::ostream& ostr, const BBoxResource& res) noexcept {
-    ostr << std::format("x, y, w, h = {}, {}, {}, {}", res.get_x(), res.get_y(), res.get_w(), res.get_h());
-    return ostr;
+    return ostr << std::format("x, y, w, h = {}, {}, {}, {}", res.get_x(), res.get_y(), res.get_w(), res.get_h());;
   }
 private:
   idk::f32 _x, _y, _w, _h;

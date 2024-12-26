@@ -10,7 +10,13 @@
 namespace fresh {
 class CircleBodyObject : public BodyObject {
 public:
-  CircleBodyObject(const b2WorldId& world_id, BBoxResource pos, idk::f32 radius, bool is_static_body = false);
+  CircleBodyObject(
+    const b2WorldId& world_id,
+    BBoxResource pos,
+    idk::f32 radius,
+    bool is_static_body = IsStaticBodyDefault,
+    bool is_fixed_rotation = IsFixedRotationDefault
+  );
   ~CircleBodyObject() override = default;
 
   void sync(bool is_member_of_camera = false) noexcept override;

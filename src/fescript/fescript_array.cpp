@@ -8,6 +8,7 @@
 #include <fescript/fescript_interpreter.hpp>
 #include <fescript/fescript_runtime_error.hpp>
 #include <log/log.hpp>
+#include <resources/point_resource.hpp>
 
 namespace fescript {
 FescriptArray::FescriptArray() noexcept
@@ -48,9 +49,28 @@ void FescriptArray::set_array(std::vector<Object>&& values) noexcept {
   this->_values = std::move(values);
 }
 
-void FescriptArray::push_value(const Object& value) noexcept {
+void FescriptArray::push_value(const Object& value, bool) noexcept {
   this->_needs_update = true;
   this->_values.push_back(value);
+}
+
+void FescriptArray::push_value(const fresh::PointResource& value, bool) noexcept {
+  this->_values.insert(
+    this->_values.end(),
+    {static_cast<idk::f80>(value.get_x()), static_cast<idk::f80>(value.get_y()) }
+  );
+}
+
+void FescriptArray::push_value(const fresh::BBoxResource& value, bool) noexcept {
+  this->_values.insert(
+    this->_values.end(),
+    {
+      static_cast<idk::f80>(value.get_x()),
+      static_cast<idk::f80>(value.get_y()),
+      static_cast<idk::f80>(value.get_w()),
+      static_cast<idk::f80>(value.get_h())
+    }
+  );
 }
 
 void FescriptArray::pop_value() noexcept {
@@ -71,8 +91,11 @@ void FescriptArray::remove_value(std::size_t index) noexcept {
   this->_values.erase(this->_values.begin() + static_cast<long long>(index));
 }
 
-void FescriptArray::push_value(std::size_t index,
-                               const Object& value) noexcept {
+void FescriptArray::push_value(std::size_t index, const Object& value) noexcept {
   this->_values.insert(this->_values.begin() + static_cast<long long>(index), value);
+}
+
+[[nodiscard]] std::size_t FescriptArray::get_size() const noexcept {
+  return this->_values.size();
 }
 }  // namespace fescript

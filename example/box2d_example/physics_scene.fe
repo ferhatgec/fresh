@@ -4,6 +4,26 @@ def RectBody;
 def RectBodyDegrees = 0;
 def ColoredRect;
 
+def Character;
+
+def CreateDynamicRectangleBody(sprite_path, pos, size) =
+  def r = [pos.0, pos.1, size.0, size.1];
+  def Box = Engine_RectangleBodyObject(World, r, false);
+  def SpriteBox = Engine_SpriteObject();
+  SpriteBox.set_xywh(r);
+  SpriteBox.sprite_resource = sprite_path;
+  SpriteBox.init_sprite();
+  Box.push_to_sub_objects(SpriteBox);
+  return Box;
+;
+
+def CreateStaticRectangleBody(pos, size) =
+ def r = [pos.0, pos.1, size.0, size.1];
+ def Box = Engine_RectangleBodyObject(World, r, true);
+ Box.push_to_sub_objects(Engine_RectangleObject(r, [0, 0, 1, 1], true));
+ return Box;
+;
+
 def init(delta) =
  World = Engine_WorldObject();
  EngineWindow_set_window_title("Box2D physics test");
@@ -11,6 +31,11 @@ def init(delta) =
  Engine_render_objects_push(World); # we need to push WorldObject so we can sync.
 
  ColoredRect = Engine_get_object("Camera/ColoredRect1");
+ Character = CreateDynamicRectangleBody("character_pixel.png", [0, 0], [40, 80]);
+ Character.set_fixed_rot(true);
+ Engine_render_objects_push(CreateStaticRectangleBody([0, -100], [200, 30]));
+ Engine_render_objects_push(Character);
+ IO_print("character rot:", Character.get_fixed_rot(), "\n");
 ;
 
 def update(delta) =
@@ -32,26 +57,43 @@ def update(delta) =
  if(EngineIO_is_key_pressed(EngineIO_Key_N)) = ColoredRect.set_h(ColoredRect.get_h() + 5);;
  if(EngineIO_is_key_pressed(EngineIO_Key_M)) = ColoredRect.set_h(ColoredRect.get_h() - 5);;
 
+
+ if(EngineIO_is_key_pressed(EngineIO_Key_Right)) =
+  Character.apply_linear_impulse_center(30 * delta, 0);
+ ;
+
+ if(EngineIO_is_key_pressed(EngineIO_Key_Left)) =
+  Character.apply_linear_impulse_center(-30 * delta, 0);
+ ;
+
+ if(EngineIO_is_key_just_pressed(EngineIO_Key_C)) =
+  Character.apply_linear_impulse_center(0, 1);
+ # Character.apply_force_center([0, 100]);
+ ;
+
+ if(EngineIO_is_key_pressed(EngineIO_Key_Down)) =
+
+ ;
+
  # creates dynamic rectangle body
  if(EngineIO_is_mouse_button_just_pressed(EngineIO_Button_Right)) =
-  def CursorPos = EngineWindow_get_current_cursor_pos();
-  def r = [CursorPos.0, CursorPos.1, 30, 30];
-  def Box = Engine_RectangleBodyObject(World, r, false);
-  def SpriteBox = Engine_SpriteObject();
-  SpriteBox.set_xywh(r);
-  SpriteBox.sprite_resource = "gechland.icon.png";
-  SpriteBox.init_sprite();
-  Box.push_to_sub_objects(SpriteBox);
-  Engine_render_objects_push(Box);
+  Engine_render_objects_push(
+   CreateDynamicRectangleBody(
+    "gechland.icon.png",
+    EngineWindow_get_current_cursor_pos(),
+    [30, 30]
+   )
+  );
  ;
 
  # creates static rectangle body
  if(EngineIO_is_mouse_button_just_pressed(EngineIO_Button_Left)) =
-  def CursorPos = EngineWindow_get_current_cursor_pos();
-  def r = [CursorPos.0, CursorPos.1, 200, 30];
-  def Box = Engine_RectangleBodyObject(World, r, true);
-  Box.push_to_sub_objects(Engine_RectangleObject(r, [0, 0, 1, 1], true));
-  Engine_render_objects_push(Box);
+  Engine_render_objects_push(
+   CreateStaticRectangleBody(
+    EngineWindow_get_current_cursor_pos(),
+    [200, 30]
+   )
+  );
  ;
 
  # creates dynamic circle body

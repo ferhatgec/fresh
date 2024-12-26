@@ -13,9 +13,10 @@ constexpr static idk::f32 ptm_ratio { 32.f };
 
 class BodyObject : public BaseObject {
 public:
-  static constexpr bool IsStaticBodyDefault { false };
+  static constexpr bool IsStaticBodyDefault { false },
+                        IsFixedRotationDefault { false };
 
-  explicit BodyObject(bool is_static_body = false);
+  explicit BodyObject(bool is_static_body = IsStaticBodyDefault, bool is_fixed_rotation = IsFixedRotationDefault);
   virtual ~BodyObject() = default;
 
   void
@@ -31,15 +32,17 @@ public:
   [[nodiscard]] const b2BodyId& get_body_id() const noexcept;
 
   virtual void set_is_static_body(bool is_static_body) noexcept;
+  [[nodiscard]] const bool& get_fixed_rotation() const noexcept;
+  void set_fixed_rotation(bool fixed_rotation) noexcept;
+  void set_linear_velocity(const PointResource& pt) const noexcept;
+  [[nodiscard]] PointResource get_linear_velocity() const noexcept;
+  void apply_force_center(const PointResource& pt) const noexcept;
+  void apply_linear_impulse_center(const PointResource& pt) const noexcept;
 
   [[nodiscard]] static idk::f32 to_physics(idk::f32 pixels) noexcept;
   [[nodiscard]] static idk::f32 to_renderer(idk::f32 meters) noexcept;
-  [[nodiscard]] static idk::f32 to_box2d_angle(idk::f32 angle_rad) noexcept;
-  [[nodiscard]] static idk::f32 to_sdl_angle(idk::f32 angle_rad) noexcept;
-  [[nodiscard]] static BBoxResource to_sdl(b2Vec2 vec, idk::f32 w, idk::f32 h) noexcept;
-  [[nodiscard]] static b2Vec2 to_box2d(BBoxResource rect) noexcept;
 protected:
-  bool _is_static_body;
+  bool _is_static_body, _is_fixed_rotation;
   b2BodyId _body_id;
   b2WorldId _world_id;
 };

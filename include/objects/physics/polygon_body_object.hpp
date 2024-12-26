@@ -11,7 +11,13 @@
 namespace fresh {
 class PolygonBodyObject : public BodyObject {
 public:
-  PolygonBodyObject(const b2WorldId& world_id, BBoxResource pos, PolygonResource vertices, bool is_static_body = BodyObject::IsStaticBodyDefault);
+  PolygonBodyObject(
+    const b2WorldId& world_id,
+    BBoxResource pos,
+    const PolygonResource& vertices,
+    bool is_static_body = IsStaticBodyDefault,
+    bool is_fixed_rotation = IsFixedRotationDefault
+  );
   ~PolygonBodyObject() override = default;
 
   void sync(bool is_member_of_camera = false) noexcept override;

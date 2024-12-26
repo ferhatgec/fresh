@@ -60,8 +60,16 @@
     return std::move(array); \
   }
 
-
-
+// always add after RETURN_BASE_OBJECT_PROPERTIES()
+#define RETURN_BODY_OBJECT_PROPERTIES() \
+  if(keyword.lexeme == "set_fixed_rot") return fescript::cache_make_shared<FescriptBodyObjectMemberSetFixedRot>(obj_ptr); \
+  if(keyword.lexeme == "get_fixed_rot") return fescript::cache_make_shared<FescriptBodyObjectMemberGetFixedRot>(obj_ptr); \
+  if(keyword.lexeme == "set_is_static_body") return fescript::cache_make_shared<FescriptBodyObjectMemberSetIsStaticBody>(obj_ptr); \
+  if(keyword.lexeme == "get_is_static_body") return fescript::cache_make_shared<FescriptBodyObjectMemberGetIsStaticBody>(obj_ptr); \
+  if(keyword.lexeme == "set_linear_velocity") return fescript::cache_make_shared<FescriptBodyObjectMemberSetLinearVelocity>(obj_ptr); \
+  if(keyword.lexeme == "get_linear_velocity") return fescript::cache_make_shared<FescriptBodyObjectMemberGetLinearVelocity>(obj_ptr); \
+  if(keyword.lexeme == "apply_force_center") return fescript::cache_make_shared<FescriptBodyObjectMemberApplyForceCenter>(obj_ptr); \
+  if(keyword.lexeme == "apply_linear_impulse_center") return fescript::cache_make_shared<FescriptBodyObjectMemberApplyLinearImpulseCenter>(obj_ptr);
 #define SET_BASE_OBJECT_PROPERTIES() \
   if(name.lexeme == "sub_groups") { \
     this->_sub_objects.clear(); \

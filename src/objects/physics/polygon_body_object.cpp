@@ -10,11 +10,18 @@
 
 namespace fresh {
 // TODO: Box2D uses counter clockwise winding; we need to use clockwise to counter clockwise winding.
-PolygonBodyObject::PolygonBodyObject(const b2WorldId& world_id, BBoxResource pos, PolygonResource vertices, bool is_static_body) {
+PolygonBodyObject::PolygonBodyObject(
+  const b2WorldId& world_id,
+  BBoxResource pos,
+  const PolygonResource& vertices,
+  bool is_static_body,
+  bool is_fixed_rotation
+) {
   this->_world_id = world_id;
   this->_pos_info = pos;
   this->_vertices = vertices;
   this->_is_static_body = is_static_body;
+  this->_is_fixed_rotation = is_fixed_rotation;
   this->_create_body();
 }
 
@@ -60,14 +67,13 @@ void PolygonBodyObject::_create_body() noexcept {
   b2Hull hull = b2ComputeHull(points, static_cast<std::int32_t>(this->_vertices.get_polygons().size()));
   if(hull.count == 0) {
     std::cout << "Engine error: PolygonBodyObject failed to create hull.\n";
-    if(points)
-      delete points;
+    delete[] points;
     std::exit(1);
   }
   b2Polygon polygon = b2MakePolygon(&hull, 0.f);
   b2ShapeDef shape_def = b2DefaultShapeDef();
   b2CreatePolygonShape(this->_body_id, &shape_def, &polygon);
-  if(points)
-    delete points;
+  delete[] points;
+  this->set_fixed_rotation(this->get_fixed_rotation());
 }
 } // namespace fresh

@@ -11,18 +11,6 @@
 #include <render_objects.hpp>
 
 namespace fescript {
-[[nodiscard]] Object FescriptRectangleBodyObjectMemberSetIsStaticBody::call([[maybe_unused]] Interpreter& interpreter, const std::vector<Object>& arguments) {
-  ERR_CHECK_BOOL("RectangleBodyObject.set_is_static_body()", 1)
-  ERR_CHECK_UNINITIALIZED_AUTO()
-  this->_self->set_is_static_body(std::get<BoolIndex>(arguments.front()));
-  return nullptr;
-}
-
-[[nodiscard]] Object FescriptRectangleBodyObjectMemberGetIsStaticBody::call([[maybe_unused]] Interpreter& interpreter, const std::vector<Object>& arguments) {
-  ERR_CHECK_UNINITIALIZED("RectangleBodyObject.get_is_static_body()")
-  return this->_self->get_is_static_body();
-}
-
 // RectangleBodyObject(WorldObject, [x, y, w, h], static)
 [[nodiscard]] Object FescriptRectangleBodyObjectWrapper::call([[maybe_unused]] Interpreter& interpreter, const std::vector<Object>& arguments) {
   ERR_CHECK_TYPE_AT("RectangleBodyObject()", 0, "worldobject", FescriptWorldObjectIndex)

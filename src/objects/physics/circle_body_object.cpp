@@ -14,11 +14,17 @@
 
 namespace fresh {
 // FIXME: spawn in certain positions gives NaN.
-CircleBodyObject::CircleBodyObject(const b2WorldId& world_id, BBoxResource pos, idk::f32 radius, bool is_static_body)
-  : _radius{radius} {
+CircleBodyObject::CircleBodyObject(
+  const b2WorldId& world_id,
+  BBoxResource pos,
+  idk::f32 radius,
+  bool is_static_body,
+  bool is_fixed_rotation
+) : _radius{radius} {
   this->_world_id = world_id;
   this->_pos_info = pos;
   this->_is_static_body = is_static_body;
+  this->_is_fixed_rotation = is_fixed_rotation;
   this->_rotation_degrees = this->_last_rotation_degrees = 0.f;
   this->_create_body();
   this->reset_delta();
@@ -61,6 +67,7 @@ void CircleBodyObject::_create_body() noexcept {
   circle.radius = to_physics(this->_radius) * 0.5f;
   b2ShapeDef const shape_def = b2DefaultShapeDef();
   b2CreateCircleShape(this->_body_id, &shape_def, &circle);
+  this->set_fixed_rotation(this->get_fixed_rotation());
 }
 
 [[nodiscard]] const idk::f32& CircleBodyObject::get_radius() const noexcept {

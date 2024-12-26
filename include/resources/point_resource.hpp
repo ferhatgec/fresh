@@ -9,6 +9,7 @@
 #include <numbers>
 #include <render_objects.hpp>
 #include <types/predefined.hpp>
+#include <box2d/math_functions.h>
 
 namespace fresh {
 template<std::floating_point Fp>
@@ -21,8 +22,8 @@ class PointResource {
 
   constexpr PointResource(idk::f32 x = 0.0f, idk::f32 y = 0.0f) noexcept
       : _x{x}, _y{y} {}
-  constexpr PointResource(PointResource&& res) = default;
-  constexpr PointResource(const PointResource& res) = default;
+  constexpr PointResource(const PointResource& res) noexcept = default;
+  constexpr PointResource(const b2Vec2& pt) noexcept : _x{pt.x}, _y{pt.y} {}
   constexpr ~PointResource() = default;
 
   constexpr PointResource& operator=(PointResource&& rhs) = default;
