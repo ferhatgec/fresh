@@ -72,8 +72,23 @@ void SpriteObject::set_rotation(idk::f32 rad_degrees) noexcept {
   this->_rotation_degrees = rad_degrees;
   // radians to degrees (SDL uses degrees and clockwise winding)
   // fresh uses radian degrees and clockwise winding.
-  this->_cache_degrees =
-      this->_rotation_degrees * 180.f / std::numbers::pi_v<idk::f32>;
+  this->_cache_degrees = this->_rotation_degrees * 180.f / std::numbers::pi_v<idk::f32>;
+}
+
+void SpriteObject::set_flip_vertically(bool flip_vertically) noexcept {
+  this->_rectangle.set_flip_vertically(flip_vertically);
+}
+
+void SpriteObject::set_flip_horizontally(bool flip_horizontally) noexcept {
+  this->_rectangle.set_flip_horizontally(flip_horizontally);
+}
+
+[[nodiscard]] const bool& SpriteObject::get_flip_vertically() const noexcept {
+  return this->_rectangle.get_flip_vertically();
+}
+
+[[nodiscard]] const bool& SpriteObject::get_flip_horizontally() const noexcept {
+  return this->_rectangle.get_flip_horizontally();
 }
 
 void SpriteObject::notify_x() noexcept {

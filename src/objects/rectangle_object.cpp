@@ -82,6 +82,22 @@ void RectangleObject::set_rotation(idk::f32 rad_degrees) noexcept {
   this->_rectangle.set_rotation(rad_degrees);
 }
 
+void RectangleObject::set_flip_vertically(bool flip_vertically) noexcept {
+  this->_rectangle.set_flip_vertically(flip_vertically);
+}
+
+void RectangleObject::set_flip_horizontally(bool flip_horizontally) noexcept {
+  this->_rectangle.set_flip_horizontally(flip_horizontally);
+}
+
+[[nodiscard]] const bool& RectangleObject::get_flip_vertically() const noexcept {
+  return this->_rectangle.get_flip_vertically();
+}
+
+[[nodiscard]] const bool& RectangleObject::get_flip_horizontally() const noexcept {
+  return this->_rectangle.get_flip_horizontally();
+}
+
 void RectangleObject::notify_x() noexcept {
   this->_base_notify_xy();
 }

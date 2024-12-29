@@ -3,18 +3,24 @@ def World;
 def RectBody;
 def RectBodyDegrees = 0;
 def ColoredRect;
-
+def CharacterAnimation;
 def Character;
 
-def CreateDynamicRectangleBody(sprite_path, pos, size) =
-  def r = [pos.0, pos.1, size.0, size.1];
-  def Box = Engine_RectangleBodyObject(World, r, false);
-  def SpriteBox = Engine_SpriteObject();
-  SpriteBox.set_xywh(r);
-  SpriteBox.sprite_resource = sprite_path;
-  SpriteBox.init_sprite();
-  Box.push_to_sub_objects(SpriteBox);
-  return Box;
+def println(arr...) =
+ IO_println(arr);
+;
+
+def CreateDynamicRectangleBody(sprite_path, pos, size, object_name, sprite_name) =
+ def r = [pos.0, pos.1, size.0, size.1];
+ def Box = Engine_RectangleBodyObject(World, r, false);
+ Box.set_name(object_name);
+ def SpriteBox = Engine_SpriteObject();
+ SpriteBox.set_name(sprite_name);
+ SpriteBox.set_xywh(r);
+ SpriteBox.sprite_resource = sprite_path;
+ SpriteBox.init_sprite();
+ Box.push_to_sub_objects(SpriteBox);
+ return Box;
 ;
 
 def CreateStaticRectangleBody(pos, size) =
@@ -31,14 +37,38 @@ def init(delta) =
  Engine_render_objects_push(World); # we need to push WorldObject so we can sync.
 
  ColoredRect = Engine_get_object("Camera/ColoredRect1");
- Character = CreateDynamicRectangleBody("character_pixel.png", [0, 0], [40, 80]);
+ Character = CreateDynamicRectangleBody("character_pixel.png", [0, 0], [40, 80], "Gech", "PixelCharacter");
  Character.set_fixed_rot(true);
  Engine_render_objects_push(CreateStaticRectangleBody([0, -100], [200, 30]));
  Engine_render_objects_push(Character);
- IO_print("character rot:", Character.get_fixed_rot(), "\n");
+
+ CharacterAnimation = Engine_AnimationPlayerObject();
+ CharacterAnimation.push_frame(
+   Engine_AnimationFrameObject(0, 1, Character.get_object("PixelCharacter"), "character_walk_frame_1.png", "sprite_resource")
+ );
+
+ CharacterAnimation.push_frame(
+  Engine_AnimationFrameObject(1, 2, Character.get_object("PixelCharacter"), "character_walk_frame_2.png", "sprite_resource")
+ );
+
+ CharacterAnimation.push_frame(
+  Engine_AnimationFrameObject(2, 3, Character.get_object("PixelCharacter"), "character_walk_frame_3.png", "sprite_resource")
+ );
+
+ CharacterAnimation.push_frame(
+  Engine_AnimationFrameObject(3, 4, Character.get_object("PixelCharacter"), "character_walk_frame_4.png", "sprite_resource")
+ );
+
+ CharacterAnimation.push_frame(
+  Engine_AnimationFrameObject(4, 5, Character.get_object("PixelCharacter"), "character_pixel.png", "sprite_resource")
+ );
+
+ Engine_render_objects_push(CharacterAnimation);
 ;
 
 def update(delta) =
+ delta = delta * 10.0;
+
  # move camera with WASD keys
  if(EngineIO_is_key_pressed(EngineIO_Key_W)) = Engine_get_object("Camera").move(0, -CameraMoveSpeed);;
  if(EngineIO_is_key_pressed(EngineIO_Key_S)) = Engine_get_object("Camera").move(0, CameraMoveSpeed);;
@@ -57,13 +87,18 @@ def update(delta) =
  if(EngineIO_is_key_pressed(EngineIO_Key_N)) = ColoredRect.set_h(ColoredRect.get_h() + 5);;
  if(EngineIO_is_key_pressed(EngineIO_Key_M)) = ColoredRect.set_h(ColoredRect.get_h() - 5);;
 
-
  if(EngineIO_is_key_pressed(EngineIO_Key_Right)) =
-  Character.apply_linear_impulse_center(30 * delta, 0);
+  Character.apply_linear_impulse_center(0.1, 0);
+  Character.get_object("PixelCharacter").set_flip_horizontally(false);
+  # TODO: need async
+  CharacterAnimation.run_animation();
  ;
 
  if(EngineIO_is_key_pressed(EngineIO_Key_Left)) =
-  Character.apply_linear_impulse_center(-30 * delta, 0);
+  Character.apply_linear_impulse_center(-0.1, 0);
+  Character.get_object("PixelCharacter").set_flip_horizontally(true);
+  # TODO: needs async
+  CharacterAnimation.run_animation();
  ;
 
  if(EngineIO_is_key_just_pressed(EngineIO_Key_C)) =
@@ -81,7 +116,9 @@ def update(delta) =
    CreateDynamicRectangleBody(
     "gechland.icon.png",
     EngineWindow_get_current_cursor_pos(),
-    [30, 30]
+    [30, 30],
+    "RectangleBody",
+    "SpriteWithinRectangleBody"
    )
   );
  ;

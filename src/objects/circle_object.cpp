@@ -46,6 +46,22 @@ __idk_nodiscard ColorResource& CircleObject::get_color_resource() noexcept {
   return this->_color;
 }
 
+void CircleObject::set_flip_vertically(bool flip_vertically) noexcept {
+  this->_circle.set_flip_vertically(flip_vertically);
+}
+
+void CircleObject::set_flip_horizontally(bool flip_horizontally) noexcept {
+  this->_circle.set_flip_horizontally(flip_horizontally);
+}
+
+[[nodiscard]] const bool& CircleObject::get_flip_vertically() const noexcept {
+  return this->_circle.get_flip_vertically();
+}
+
+[[nodiscard]] const bool& CircleObject::get_flip_horizontally() const noexcept {
+  return this->_circle.get_flip_horizontally();
+}
+
 void CircleObject::init_signal() noexcept {
   this->_circle.initialize_circle(
       this->_resource.get_radius(), this->_resource.get_radius(),

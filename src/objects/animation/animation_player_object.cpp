@@ -20,7 +20,7 @@ AnimationPlayerObject::~AnimationPlayerObject() {
 void AnimationPlayerObject::sync(bool is_member_of_camera) noexcept {
   CHECK_DISABLED()
   this->_code.interpret_update();
-    if(!this->_start)
+  if(!this->_start)
     return;
   if(this->_timer.paused())
     return;
@@ -35,8 +35,6 @@ void AnimationPlayerObject::sync(bool is_member_of_camera) noexcept {
   if(const auto ticks = this->_timer.get_ticks(); this->_frames[this->_current_index]._end_ms <= ticks)
     ++this->_current_index;
   this->_process_current_frame();
-  if(this->_current_index == this->_frames.size())
-    this->_timer.stop();
   this->apply_changes();
 }
 
@@ -53,10 +51,16 @@ void AnimationPlayerObject::push_frame(const fresh::AnimationFrameObject& frame)
 }
 
 void AnimationPlayerObject::run_animation() noexcept {
-  if(this->_timer.paused()) {
-    this->_timer.resume();
+  if (this->_timer.started()) {
+    return;
   }
   this->_start = true;
+  if(this->_timer.paused()) {
+    this->_timer.resume();
+    return;
+  }
+  this->_timer.start();
+  this->_current_index = 0;
 }
 
 void AnimationPlayerObject::pause_animation() noexcept {
@@ -83,6 +87,11 @@ bool AnimationPlayerObject::is_started() noexcept {
 }
 
 void AnimationPlayerObject::_process_current_frame() noexcept {
+  if(this->_current_index == this->_frames.size()) {
+    this->_timer.stop();
+    this->_start = false;
+    return;
+  }
   auto& current_frame = this->_frames[this->_current_index];
   if(current_frame._property == "pos_x") {
     MUST_BE_DECIMAL(current_frame._replace_value)

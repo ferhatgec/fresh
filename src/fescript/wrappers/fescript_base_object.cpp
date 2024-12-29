@@ -86,6 +86,18 @@ namespace fescript {
   return nullptr;
 }
 
+[[nodiscard]] Object FescriptBaseObjectMemberSetFlipVertically::call(Interpreter& interpreter, const std::vector<Object>& arguments) {
+  ERR_CHECK_BOOL("BaseObject.set_flip_vertically()", 1)
+  this->get_self()->set_flip_vertically(std::get<BoolIndex>(arguments[0]));
+  return nullptr;
+}
+
+[[nodiscard]] Object FescriptBaseObjectMemberSetFlipHorizontally::call(Interpreter& interpreter, const std::vector<Object>& arguments) {
+  ERR_CHECK_BOOL("BaseObject.set_flip_horizontally()", 1)
+  this->get_self()->set_flip_horizontally(std::get<BoolIndex>(arguments[0]));
+  return nullptr;
+}
+
 [[nodiscard]] Object FescriptBaseObjectMemberGetVisible::call(Interpreter& interpreter, const std::vector<Object>& arguments) {
   return this->get_self()->get_visible();
 }
@@ -139,6 +151,23 @@ namespace fescript {
 [[nodiscard]] Object FescriptBaseObjectMemberGetName::call(Interpreter& interpreter, const std::vector<Object>& arguments) {
   return this->get_self()->get_name();
 }
+
+[[nodiscard]] Object FescriptBaseObjectMemberGetFlipVertically::call(Interpreter& interpreter, const std::vector<Object>& arguments) {
+  return this->get_self()->get_flip_vertically();
+}
+
+[[nodiscard]] Object FescriptBaseObjectMemberGetFlipHorizontally::call(Interpreter& interpreter, const std::vector<Object>& arguments) {
+  return this->get_self()->get_flip_horizontally();
+}
+
+[[nodiscard]] Object FescriptBaseObjectMemberGetObject::call(Interpreter& interpreter, const std::vector<Object>& arguments) {
+  ERR_CHECK_STRING("BaseObject.get_object", 1)
+  ERR_CHECK_UNINITIALIZED_AUTO()
+  return Interpreter::baseobject_to_fescript_object(
+    this->get_self()->get_object_by_path(std::get<StringIndex>(arguments[0]))
+  );
+}
+
 
 FescriptBaseObjectWrapper::FescriptBaseObjectWrapper(
   idk::u32 object_id,

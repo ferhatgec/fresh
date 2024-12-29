@@ -5,6 +5,7 @@
 //
 #include <resources/timer_resource.hpp>
 #include <iostream>
+#include <types/predefined.hpp>
 #include <chrono>
 #define GLFW_INCLUDE_NONE
 #include <GLFW/glfw3.h>

@@ -97,4 +97,20 @@ void LabelObject::init_signal() noexcept {
 void LabelObject::set_rotation(idk::f32 rad_degrees) noexcept {
   this->_rotation_degrees = rad_degrees;
 }
-}// namespace fresh
+
+void LabelObject::set_flip_vertically(bool flip_vertically) noexcept {
+  this->_label.set_flip_vertically(flip_vertically);
+}
+
+void LabelObject::set_flip_horizontally(bool flip_horizontally) noexcept {
+  this->_label.set_flip_horizontally(flip_horizontally);
+}
+
+[[nodiscard]] const bool& LabelObject::get_flip_vertically() const noexcept {
+  return this->_label.get_flip_vertically();
+}
+
+[[nodiscard]] const bool& LabelObject::get_flip_horizontally() const noexcept {
+  return this->_label.get_flip_horizontally();
+}
+}  // namespace fresh

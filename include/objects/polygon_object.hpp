@@ -38,6 +38,11 @@ public:
   ColorResource& get_color_resource() noexcept;
 
   void set_rotation(idk::f32 rad_degrees) noexcept override;
+  void set_flip_vertically(bool flip_vertically) noexcept override;
+  void set_flip_horizontally(bool flip_horizontally) noexcept override;
+
+  [[nodiscard]] const bool& get_flip_vertically() const noexcept override;
+  [[nodiscard]] const bool& get_flip_horizontally() const noexcept override;
 protected:
   PolygonResource _resource;
   fre2d::Polygon _polygon;

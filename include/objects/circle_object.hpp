@@ -35,6 +35,12 @@ public:
   __idk_nodiscard
   ColorResource& get_color_resource() noexcept;
 
+  void set_flip_vertically(bool flip_vertically) noexcept override;
+  void set_flip_horizontally(bool flip_horizontally) noexcept override;
+
+  [[nodiscard]] const bool& get_flip_vertically() const noexcept override;
+  [[nodiscard]] const bool& get_flip_horizontally() const noexcept override;
+
   void init_signal() noexcept override;
 
   void notify_x() noexcept override;

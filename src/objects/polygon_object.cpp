@@ -95,4 +95,20 @@ void PolygonObject::set_rotation(idk::f32 rad_degrees) noexcept {
   this->_rotation_degrees = std::fmodf(rad_degrees, mul_2_pi_v<idk::f32>);
   this->get_polygon_resource() = this->get_polygon_resource().rotate(this->_rotation_degrees);
 }
+
+void PolygonObject::set_flip_vertically(bool flip_vertically) noexcept {
+  this->_polygon.set_flip_vertically(flip_vertically);
+}
+
+void PolygonObject::set_flip_horizontally(bool flip_horizontally) noexcept {
+  this->_polygon.set_flip_horizontally(flip_horizontally);
+}
+
+[[nodiscard]] const bool& PolygonObject::get_flip_vertically() const noexcept {
+  return this->_polygon.get_flip_vertically();
+}
+
+[[nodiscard]] const bool& PolygonObject::get_flip_horizontally() const noexcept {
+  return this->_polygon.get_flip_horizontally();
+}
 } // namespace fresh

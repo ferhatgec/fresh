@@ -27,7 +27,7 @@ AnimationFrameObject::~AnimationFrameObject() {
 void AnimationFrameObject::sync(bool is_member_of_camera) noexcept {
   CHECK_DISABLED()
   this->_code.interpret_update();
-    this->apply_changes();
+  this->apply_changes();
 }
 
 void AnimationFrameObject::set(const fescript::Token& name, fescript::Object value) {

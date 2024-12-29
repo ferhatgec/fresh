@@ -80,15 +80,21 @@ class BaseObject {
   /// BaseObject::get_color() is read-only access to _color property.
   [[nodiscard]] const ColorResource& get_color() const noexcept;
 
+  /// does not set anything if self is BaseObject.
+  virtual void set_flip_vertically(bool flip_vertically) noexcept;
+  virtual void set_flip_horizontally(bool flip_horizontally) noexcept;
+
+  /// returns dummy value if self is BaseObject.
+  [[nodiscard]] virtual const bool& get_flip_vertically() const noexcept;
+  [[nodiscard]] virtual const bool& get_flip_horizontally() const noexcept;
+
   /// BaseObject::is_imported_from_somewhere() checks if imported_from is empty
   /// or not. if it's empty then given object is not generated from importing
   /// other fes file.
   [[nodiscard]] bool is_imported_from_somewhere() const noexcept;
 
   /// BaseObject::get_x() is write-only access to _pos_info._x property.
-  void set_x(idk::f32 x,
-             const std::source_location& instance =
-                 std::source_location::current()) noexcept;
+  void set_x(idk::f32 x, const std::source_location& instance = std::source_location::current()) noexcept;
   /// BaseObject::get_y() is write-only access to _pos_info._y property.
   void set_y(idk::f32 y) noexcept;
   /// BaseObject::get_w() is write-only access to _pos_info._w property.

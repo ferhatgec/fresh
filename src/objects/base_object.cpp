@@ -142,6 +142,18 @@ void BaseObject::set_position(const BBoxResource& pos) noexcept {
   return this->_color;
 }
 
+void BaseObject::set_flip_vertically(bool flip_vertically) noexcept {}
+
+void BaseObject::set_flip_horizontally(bool flip_horizontally) noexcept {}
+
+[[nodiscard]] const bool& BaseObject::get_flip_vertically() const noexcept {
+  return this->get_initialized();
+}
+
+[[nodiscard]] const bool& BaseObject::get_flip_horizontally() const noexcept {
+  return this->get_initialized();
+}
+
 [[nodiscard]] bool BaseObject::is_imported_from_somewhere() const noexcept {
   return !this->imported_from.empty();
 }
