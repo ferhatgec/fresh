@@ -3,9 +3,9 @@
 // Copyright (c) 2024 Ferhat Geçdoğan All Rights Reserved.
 // Distributed under the terms of the MIT License.
 //
-#include <objects/physics/body_object.hpp>
 #include <freshengine.hpp>
-#include <numbers>
+#include <objects/physics/body_object.hpp>
+#include <box2d/box2d.h>
 
 namespace fresh {
 BodyObject::BodyObject(bool is_static_body, bool is_fixed_rotation)

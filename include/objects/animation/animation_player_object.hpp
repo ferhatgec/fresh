@@ -48,7 +48,7 @@ class AnimationPlayerObject : public BaseObject {
 public:
   AnimationPlayerObject();
   AnimationPlayerObject(bool replay = false) noexcept;
-  ~AnimationPlayerObject();
+  ~AnimationPlayerObject() = default;
 
   void sync(bool is_member_of_camera = false) noexcept override;
 
@@ -66,6 +66,13 @@ public:
   bool is_started() noexcept;
 
   void synchronize_frames() noexcept;
+
+  void increase_frame() noexcept;
+  void decrease_frame() noexcept;
+  void reset_frame() noexcept;
+
+  [[nodiscard]] const idk::isize& get_frame() const noexcept;
+  [[nodiscard]] idk::isize get_delta_frame() const noexcept;
 private:
   void _process_current_frame() noexcept;
 protected:
@@ -74,7 +81,7 @@ protected:
   bool _is_ended;
   bool _is_first;
   TimerResource _timer;
-  idk::isize _current_index;
+  idk::isize _current_index, _previous_index;
   bool _start;
 };
 } // namespace fresh

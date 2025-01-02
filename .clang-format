@@ -4,3 +4,4 @@ MaxEmptyLinesToKeep: 1
 TabWidth: 2
 UseTab: Never
 ColumnLimit: 300
+SpaceBeforeParens: Never

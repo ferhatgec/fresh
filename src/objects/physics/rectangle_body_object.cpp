@@ -3,13 +3,13 @@
 // Copyright (c) 2024 Ferhat Geçdoğan All Rights Reserved.
 // Distributed under the terms of the MIT License.
 //
+#include <fescript/fescript_array.hpp>
+#include <fescript/wrappers/fescript_base_object.hpp>
+#include <format>
 #include <objects/camera_object.hpp>
 #include <objects/physics/rectangle_body_object.hpp>
 #include <resources/polygon_resource.hpp>
-#include <fescript/wrappers/fescript_base_object.hpp>
-#include <fescript/fescript_array.hpp>
-#include <numbers>
-#include <format>
+#include <box2d/box2d.h>
 
 namespace fresh {
 RectangleBodyObject::RectangleBodyObject(

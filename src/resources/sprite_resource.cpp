@@ -3,11 +3,46 @@
 // Copyright (c) 2024 Ferhat Geçdoğan All Rights Reserved.
 // Distributed under the terms of the MIT License.
 //
+#include <stb_image.h>
+#include <filesystem>
 #include <freshengine.hpp>
+#include <fstream>
 
-#include "log/log.hpp"
+#include <log/log.hpp>
+#include <ranges>
 
 namespace fresh {
+void CacheSpriteResource::push_overwrite(
+  const std::string& sprite_path,
+  const SpriteMetadata& meta
+) noexcept {
+  this->_sprites.insert_or_assign(sprite_path, meta);
+}
+
+[[nodiscard]] PathSpritePair::const_iterator CacheSpriteResource::get_sprite_iter(const std::string& sprite_path) const noexcept {
+  return this->_sprites.find(sprite_path);
+}
+
+[[nodiscard]] PathSpritePair::iterator CacheSpriteResource::begin() noexcept {
+  return this->_sprites.begin();
+}
+
+[[nodiscard]] PathSpritePair::iterator CacheSpriteResource::end() noexcept {
+  return this->_sprites.end();
+}
+
+[[nodiscard]] PathSpritePair::const_iterator CacheSpriteResource::cbegin() const noexcept {
+  return this->_sprites.cbegin();
+}
+
+[[nodiscard]] PathSpritePair::const_iterator CacheSpriteResource::cend() const noexcept {
+  return this->_sprites.cend();
+}
+
+[[nodiscard]] PathSpritePair& CacheSpriteResource::get_map() noexcept {
+  return this->_sprites;
+}
+
 SpriteResource::SpriteResource(const std::string& sprite_file) noexcept {
   this->load_resource(sprite_file);
 }
@@ -18,8 +53,55 @@ SpriteResource::SpriteResource(const std::string& sprite_file) noexcept {
 
 // TODO: check if Engine (or Window) already initialized; we might need it
 // since fre2d uses OpenGL calls when loading a texture.
-void SpriteResource::load_resource(const std::string& sprite_file) noexcept {
-  this->_texture.load(sprite_file.data());
+void SpriteResource::load_resource(
+  const std::string& sprite_file,
+  const std::shared_ptr<SpriteObject>& opt_ptr
+) noexcept {
+  if(!FreshInstance->get_cache_sprite_resource().get_map().contains(sprite_file)) {
+    int w {0}, h {0}, channels{0};
+    stbi_set_flip_vertically_on_load(true);
+    auto* image_data = stbi_load(
+      sprite_file.c_str(),
+      &w,
+      &h,
+      &channels,
+      0
+    );
+    if(image_data) {
+      SpriteMetadata meta;
+      meta.width = w;
+      meta.height = h;
+      meta.channels = channels;
+      meta.tex.load_from_data(
+        image_data,
+        meta.width,
+        meta.height,
+        fre2d::detail::texture::default_use_nearest,
+        fre2d::detail::texture::default_use_mipmap,
+        fre2d::Texture::WrapOptions::default_value(),
+        meta.channels
+      );
+      FreshInstance->get_cache_sprite_resource().push_overwrite(sprite_file, meta);
+      stbi_image_free(image_data);
+    } else {
+      log_warning(src(), "failed to load sprite resource: {}", sprite_file.data());
+      return;
+    }
+  }
+  if(const auto& it = FreshInstance->get_cache_sprite_resource().get_sprite_iter(sprite_file);
+    it != FreshInstance->get_cache_sprite_resource().end()) {
+    const auto& meta = it->second;
+    this->_texture = meta.tex;
+    this->_texture_path = sprite_file;
+    // automatically synchronizes textures between fre2d and fresh;
+    // otherwise you need to do it later, fescript does it automatically.
+    if(opt_ptr) {
+      BaseObject::sync_textures_if_necessary(
+        opt_ptr->get_rectangle_mutable().get_mesh_mutable().get_texture_mutable(),
+        opt_ptr->get_sprite_resource().get_texture()
+      );
+    }
+  }
 }
 
 void SpriteResource::load_resource() noexcept {

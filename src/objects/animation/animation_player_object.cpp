@@ -10,12 +10,12 @@
 
 // TODO: add reverse animation support (run_backwards).
 namespace fresh {
-AnimationPlayerObject::AnimationPlayerObject(bool replay) noexcept 
-  : _replay{replay}, _is_first{true}, _start{false} {
-}
-
-AnimationPlayerObject::~AnimationPlayerObject() {
-}
+AnimationPlayerObject::AnimationPlayerObject(bool replay) noexcept
+  : _replay{replay},
+    _is_first{true},
+    _start{false},
+    _current_index{0},
+    _previous_index{-1} {}
 
 void AnimationPlayerObject::sync(bool is_member_of_camera) noexcept {
   CHECK_DISABLED()
@@ -32,9 +32,12 @@ void AnimationPlayerObject::sync(bool is_member_of_camera) noexcept {
     } else
       return;
   }
-  if(const auto ticks = this->_timer.get_ticks(); this->_frames[this->_current_index]._end_ms <= ticks)
-    ++this->_current_index;
-  this->_process_current_frame();
+  if(const auto ticks = this->_timer.get_ticks(); this->_frames[this->_current_index]._end_ms <= ticks) {
+    this->increase_frame();
+  }
+  if (this->get_delta_frame() != 0) {
+    this->_process_current_frame();
+  }
   this->apply_changes();
 }
 
@@ -46,7 +49,7 @@ void AnimationPlayerObject::set(const fescript::Token& name, fescript::Object va
   }
 }
 
-void AnimationPlayerObject::push_frame(const fresh::AnimationFrameObject& frame) noexcept {
+void AnimationPlayerObject::push_frame(const AnimationFrameObject& frame) noexcept {
   this->_frames.push_back(frame);
 }
 
@@ -113,9 +116,12 @@ void AnimationPlayerObject::_process_current_frame() noexcept {
     current_frame._obj->set_disabled(std::get<BoolIndex>(current_frame._replace_value));
   } else if(current_frame._property == "sprite_resource") {
     MUST_BE_STRING(current_frame._replace_value)
-    if(auto sprite_ptr = std::dynamic_pointer_cast<fresh::SpriteObject>(current_frame._obj);
+    if(const auto& sprite_ptr = std::static_pointer_cast<fresh::SpriteObject>(current_frame._obj);
       sprite_ptr != nullptr) {
-      sprite_ptr->get_sprite_resource().load_resource(std::get<StringIndex>(current_frame._replace_value).data());
+      sprite_ptr->get_sprite_resource().load_resource(
+        std::get<StringIndex>(current_frame._replace_value),
+        sprite_ptr
+      );
     } else {
       std::cout << "Engine error: AnimationFrameObject got non-SpriteObject for sprite_resource.\n";
       std::exit(1);
@@ -125,7 +131,30 @@ void AnimationPlayerObject::_process_current_frame() noexcept {
 
 // synchronizes start_ms of (n + 1)th frame with end_ms of nth frame.
 void AnimationPlayerObject::synchronize_frames() noexcept {
-  for(idk::isize i = 1; i < this->_frames.size(); ++i)
+  for (idk::isize i = 1; i < this->_frames.size(); ++i)
     this->_frames[i]._start_ms = this->_frames[i - 1]._end_ms;
+}
+
+void AnimationPlayerObject::increase_frame() noexcept {
+  this->_previous_index = this->_current_index;
+  ++this->_current_index;
+}
+
+void AnimationPlayerObject::decrease_frame() noexcept {
+  this->_previous_index = this->_current_index;
+  --this->_current_index;
+}
+
+void AnimationPlayerObject::reset_frame() noexcept {
+  this->_previous_index = this->_current_index;
+  this->_current_index = 0;
+}
+
+[[nodiscard]] const idk::isize& AnimationPlayerObject::get_frame() const noexcept {
+  return this->_current_index;
+}
+
+[[nodiscard]] idk::isize AnimationPlayerObject::get_delta_frame() const noexcept {
+  return this->_current_index - this->_previous_index;
 }
 } // namespace fresh

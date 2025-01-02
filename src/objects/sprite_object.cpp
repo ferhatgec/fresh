@@ -10,8 +10,8 @@
 
 namespace fresh {
 SpriteObject::SpriteObject() : _cache_degrees{0.f} {
-  this->_object_id = Engine::get_instance()->get_id();
-  Engine::get_instance()->increase_global_id();
+  this->_object_id = FreshInstance->get_id();
+  FreshInstance->increase_global_id();
 }
 
 // disable gizmos etc when exporting the project. it's easy to make with some booleans or different function
@@ -23,9 +23,7 @@ void SpriteObject::sync(bool is_member_of_camera) noexcept {
     this->_rectangle.set_rotation(this->get_rotation());
   }
   if(this->_visible) {
-    this->_rectangle.draw(this->_shader,
-      FreshInstance->get_camera()->get_camera()
-      );
+    this->_rectangle.draw(this->_shader, FreshInstance->get_camera()->get_camera());
   }
   this->apply_changes();
 }
@@ -105,6 +103,14 @@ void SpriteObject::notify_w() noexcept {
 
 void SpriteObject::notify_h() noexcept {
   this->_base_notify_wh();
+}
+
+[[nodiscard]] const fre2d::Rectangle& SpriteObject::get_rectangle() const noexcept {
+  return this->_rectangle;
+}
+
+[[nodiscard]] fre2d::Rectangle& SpriteObject::get_rectangle_mutable() noexcept {
+  return this->_rectangle;
 }
 
 void SpriteObject::_base_notify_xy() noexcept {

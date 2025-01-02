@@ -123,6 +123,10 @@ __idk_nodiscard ClipboardResource& Engine::get_clipboard_resource() noexcept {
   return this->_clipboard_resource;
 }
 
+[[nodiscard]] CacheSpriteResource& Engine::get_cache_sprite_resource() noexcept {
+  return this->_sprite_cache;
+}
+
 [[nodiscard]] fre2d::FontManager& Engine::get_font_manager() noexcept {
   if(!this->_font_manager.is_initialized()) {
     this->_font_manager.initialize();

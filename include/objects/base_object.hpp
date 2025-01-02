@@ -16,6 +16,10 @@
 
 #define CHECK_DISABLED() if(this->_disabled) return;
 
+namespace fre2d {
+class Texture;
+} // namespace fre2d
+
 namespace fresh {
 enum : idk::u8 {
   PosXIndex,
@@ -192,8 +196,14 @@ class BaseObject {
   /// resources in-place upon rotation changes to cache it then use.
   virtual void set_rotation(idk::f32 rad_degrees) noexcept;
 
-  [[nodiscard]] static idk::f32 counter_clockwise_to_clockwise(
-      idk::f32 rad_degrees) noexcept;
+  [[nodiscard]] static idk::f32 counter_clockwise_to_clockwise(idk::f32 rad_degrees) noexcept;
+
+  [[nodiscard]] static inline bool are_textures_same(
+    const std::optional<fre2d::Texture>& tex1,
+    const fre2d::Texture& tex2
+  ) noexcept;
+
+  static void sync_textures_if_necessary(std::optional<fre2d::Texture>& tex1, fre2d::Texture& tex2) noexcept;
 
   std::unordered_map<std::string_view, std::shared_ptr<fescript::FescriptCallable>> cache_fn;
  private:

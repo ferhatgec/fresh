@@ -4,7 +4,6 @@
 // Distributed under the terms of the MIT License.
 //
 #pragma once
-
 #include "application/window.hpp"
 
 #include "input/keyboard_input.hpp"
@@ -108,6 +107,8 @@ class Engine {
 
   __idk_nodiscard ClipboardResource& get_clipboard_resource() noexcept;
 
+  [[nodiscard]] CacheSpriteResource& get_cache_sprite_resource() noexcept;
+
   [[nodiscard]] fre2d::FontManager& get_font_manager() noexcept;
 
   /// Engine::link_camera(std::shared_ptr<CameraObject>) links given camera
@@ -135,6 +136,7 @@ class Engine {
   std::shared_ptr<Window> _window;
   std::shared_ptr<CameraObject> _camera_object;
 
+  CacheSpriteResource _sprite_cache;
   KeyboardInput _keyboard_input;
   MouseInput _mouse_input;
   fre2d::FontManager _font_manager;

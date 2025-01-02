@@ -44,23 +44,23 @@ def init(delta) =
 
  CharacterAnimation = Engine_AnimationPlayerObject();
  CharacterAnimation.push_frame(
-   Engine_AnimationFrameObject(0, 1, Character.get_object("PixelCharacter"), "character_walk_frame_1.png", "sprite_resource")
+   Engine_AnimationFrameObject(0, 50, Character.get_object("PixelCharacter"), "character_walk_frame_1.png", "sprite_resource")
  );
 
  CharacterAnimation.push_frame(
-  Engine_AnimationFrameObject(1, 2, Character.get_object("PixelCharacter"), "character_walk_frame_2.png", "sprite_resource")
+  Engine_AnimationFrameObject(50, 100, Character.get_object("PixelCharacter"), "character_walk_frame_2.png", "sprite_resource")
  );
 
  CharacterAnimation.push_frame(
-  Engine_AnimationFrameObject(2, 3, Character.get_object("PixelCharacter"), "character_walk_frame_3.png", "sprite_resource")
+  Engine_AnimationFrameObject(100, 150, Character.get_object("PixelCharacter"), "character_walk_frame_3.png", "sprite_resource")
  );
 
  CharacterAnimation.push_frame(
-  Engine_AnimationFrameObject(3, 4, Character.get_object("PixelCharacter"), "character_walk_frame_4.png", "sprite_resource")
+  Engine_AnimationFrameObject(150, 200, Character.get_object("PixelCharacter"), "character_walk_frame_4.png", "sprite_resource")
  );
 
  CharacterAnimation.push_frame(
-  Engine_AnimationFrameObject(4, 5, Character.get_object("PixelCharacter"), "character_pixel.png", "sprite_resource")
+  Engine_AnimationFrameObject(200, 250, Character.get_object("PixelCharacter"), "character_pixel.png", "sprite_resource")
  );
 
  Engine_render_objects_push(CharacterAnimation);
@@ -88,14 +88,14 @@ def update(delta) =
  if(EngineIO_is_key_pressed(EngineIO_Key_M)) = ColoredRect.set_h(ColoredRect.get_h() - 5);;
 
  if(EngineIO_is_key_pressed(EngineIO_Key_Right)) =
-  Character.apply_linear_impulse_center(0.1, 0);
+  Character.apply_linear_impulse_center(0.05, 0);
   Character.get_object("PixelCharacter").set_flip_horizontally(false);
   # TODO: need async
   CharacterAnimation.run_animation();
  ;
 
  if(EngineIO_is_key_pressed(EngineIO_Key_Left)) =
-  Character.apply_linear_impulse_center(-0.1, 0);
+  Character.apply_linear_impulse_center(-0.05, 0);
   Character.get_object("PixelCharacter").set_flip_horizontally(true);
   # TODO: needs async
   CharacterAnimation.run_animation();
@@ -103,11 +103,23 @@ def update(delta) =
 
  if(EngineIO_is_key_just_pressed(EngineIO_Key_C)) =
   Character.apply_linear_impulse_center(0, 1);
- # Character.apply_force_center([0, 100]);
+  # Character.apply_force_center([0, 100]);
  ;
 
  if(EngineIO_is_key_pressed(EngineIO_Key_Down)) =
 
+ ;
+
+ if(EngineIO_is_key_released(EngineIO_Key_Right)) =
+  CharacterAnimation.stop_animation();
+  Character.get_object("PixelCharacter").sprite_resource = "character_pixel.png";
+  Character.get_object("PixelCharacter").init_sprite();
+ ;
+
+ if(EngineIO_is_key_released(EngineIO_Key_Left)) =
+  CharacterAnimation.stop_animation();
+  Character.get_object("PixelCharacter").sprite_resource = "character_pixel.png";
+  Character.get_object("PixelCharacter").init_sprite();
  ;
 
  # creates dynamic rectangle body

@@ -22,6 +22,7 @@ namespace defaults {
 static constexpr ColorResource clear_color { 1.f, 1.f, 1.f, 1.f };
 } // namespace fresh::defaults
 
+// FIXME: quick alt-tab makes framebuffer incomplete.
 class Window {
 public:
   friend class Engine;

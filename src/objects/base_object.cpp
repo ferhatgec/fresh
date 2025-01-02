@@ -366,9 +366,22 @@ void BaseObject::set_rotation(idk::f32 rad_degrees) noexcept {
   this->_rotation_degrees = std::fmodf(rad_degrees, mul_2_pi_v<idk::f32>);
 }
 
-[[nodiscard]] idk::f32 BaseObject::counter_clockwise_to_clockwise(
-    idk::f32 rad_degrees) noexcept {
+[[nodiscard]] idk::f32 BaseObject::counter_clockwise_to_clockwise(idk::f32 rad_degrees) noexcept {
   return std::fmodf(rad_degrees + mul_2_pi_v<idk::f32>, mul_2_pi_v<idk::f32>);
+}
+
+[[nodiscard]] bool BaseObject::are_textures_same(const std::optional<fre2d::Texture>& tex1, const fre2d::Texture& tex2) noexcept {
+  if(!tex1.has_value()) {
+    log_warning(src(), "tex1 no value assigned before.");
+    return false;
+  }
+  return tex1.value().get_texture_id() == tex2.get_texture_id();
+}
+
+void BaseObject::sync_textures_if_necessary(std::optional<fre2d::Texture>& tex1, fre2d::Texture& tex2) noexcept {
+  if(!tex1.has_value() || !are_textures_same(tex1, tex2)) {
+    tex1 = tex2;
+  }
 }
 
 [[nodiscard]] const std::shared_ptr<BaseObject>& BaseObject::_get_object_by_single_path(const std::string& path) noexcept {

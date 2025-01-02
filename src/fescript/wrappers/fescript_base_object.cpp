@@ -168,11 +168,11 @@ namespace fescript {
   );
 }
 
-
 FescriptBaseObjectWrapper::FescriptBaseObjectWrapper(
   idk::u32 object_id,
   const std::vector <std::shared_ptr<FescriptBaseObjectWrapper>>& sub_objects
-) : _object_id{object_id}, _sub_objects{sub_objects} {}
+) : _object_id{object_id}, _sub_objects{sub_objects} {
+}
 
 [[nodiscard]] Object FescriptBaseObjectWrapper::call([[maybe_unused]] Interpreter& interpreter, const std::vector<Object>& arguments) {
   return std::make_shared<fresh::BaseObject>();

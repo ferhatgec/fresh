@@ -92,12 +92,9 @@ void FesLoaderResource::load_fes(const std::string& ctx,
       break;
     }
     case fes::SpriteObject: {
-      const auto& fes_sprite_obj =
-          std::static_pointer_cast<fes::FesSpriteObjectAST>(fes_obj);
-      const auto& sprite_obj =
-          std::static_pointer_cast<fresh::SpriteObject>(gen_obj);
-      sprite_obj->get_sprite_resource().load_resource(
-          fes_sprite_obj->get_sprite_path());
+      const auto& fes_sprite_obj = std::static_pointer_cast<fes::FesSpriteObjectAST>(fes_obj);
+      const auto& sprite_obj = std::static_pointer_cast<fresh::SpriteObject>(gen_obj);
+      sprite_obj->get_sprite_resource().load_resource(fes_sprite_obj->get_sprite_path(), sprite_obj);
       break;
     }
     case fes::CircleObject: {

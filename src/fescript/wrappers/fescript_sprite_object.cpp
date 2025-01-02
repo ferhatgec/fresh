@@ -5,8 +5,7 @@
 //
 #include <fescript/wrappers/fescript_sprite_object.hpp>
 #include <objects/sprite_object.hpp>
-#include <fescript/wrappers/fescript_sprite_object.hpp>
-#include <objects/sprite_object.hpp>
+#include <freshengine.hpp>
 
 namespace fescript {
 [[nodiscard]] Object FescriptSpriteObjectMemberInitSprite::call([[maybe_unused]] Interpreter& interpreter, const std::vector<Object>& arguments) {
@@ -18,7 +17,10 @@ namespace fescript {
     std::cout << "SpriteObject.init_sprite() must have not take any argument/s.\n";
     std::exit(1);
   }
-  this->_self->get_sprite_resource().load_resource(this->_self->get_sprite_resource().get_path());
+  this->get_self()->get_sprite_resource().load_resource(
+    this->get_self()->get_sprite_resource().get_path(),
+    this->get_self()
+  );
   return nullptr;
 }
 

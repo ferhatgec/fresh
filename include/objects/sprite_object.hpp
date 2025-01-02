@@ -47,6 +47,9 @@ public:
   void notify_y() noexcept override;
   void notify_w() noexcept override;
   void notify_h() noexcept override;
+
+  [[nodiscard]] const fre2d::Rectangle& get_rectangle() const noexcept;
+  [[nodiscard]] fre2d::Rectangle& get_rectangle_mutable() noexcept;
 protected:
   void _base_notify_xy() noexcept;
   void _base_notify_wh() noexcept;

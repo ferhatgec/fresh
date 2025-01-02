@@ -5,8 +5,10 @@
 //
 #pragma once
 
-#include "world_object.hpp"
 #include <objects/base_object.hpp>
+#include "world_object.hpp"
+
+#include "box2d/id.h"
 
 namespace fresh {
 constexpr static idk::f32 ptm_ratio { 32.f };
