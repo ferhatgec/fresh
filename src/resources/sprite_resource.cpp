@@ -1,6 +1,6 @@
 // MIT License
 //
-// Copyright (c) 2024 Ferhat Geçdoğan All Rights Reserved.
+// Copyright (c) 2024-2025 Ferhat Geçdoğan All Rights Reserved.
 // Distributed under the terms of the MIT License.
 //
 #include <stb_image.h>
@@ -12,37 +12,6 @@
 #include <ranges>
 
 namespace fresh {
-void CacheSpriteResource::push_overwrite(
-  const std::string& sprite_path,
-  const SpriteMetadata& meta
-) noexcept {
-  this->_sprites.insert_or_assign(sprite_path, meta);
-}
-
-[[nodiscard]] PathSpritePair::const_iterator CacheSpriteResource::get_sprite_iter(const std::string& sprite_path) const noexcept {
-  return this->_sprites.find(sprite_path);
-}
-
-[[nodiscard]] PathSpritePair::iterator CacheSpriteResource::begin() noexcept {
-  return this->_sprites.begin();
-}
-
-[[nodiscard]] PathSpritePair::iterator CacheSpriteResource::end() noexcept {
-  return this->_sprites.end();
-}
-
-[[nodiscard]] PathSpritePair::const_iterator CacheSpriteResource::cbegin() const noexcept {
-  return this->_sprites.cbegin();
-}
-
-[[nodiscard]] PathSpritePair::const_iterator CacheSpriteResource::cend() const noexcept {
-  return this->_sprites.cend();
-}
-
-[[nodiscard]] PathSpritePair& CacheSpriteResource::get_map() noexcept {
-  return this->_sprites;
-}
-
 SpriteResource::SpriteResource(const std::string& sprite_file) noexcept {
   this->load_resource(sprite_file);
 }

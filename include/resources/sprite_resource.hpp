@@ -1,15 +1,13 @@
 // MIT License
 //
-// Copyright (c) 2024 Ferhat Geçdoğan All Rights Reserved.
+// Copyright (c) 2024-2025 Ferhat Geçdoğan All Rights Reserved.
 // Distributed under the terms of the MIT License.
 //
 #pragma once
 
-// resources are objects those are not have any position,
-// visibility etc. parameters.
-
-#include <stb_image.h>
 #include <texture.hpp>
+#include "cache_resource.hpp"
+#include "meta_data_resource.hpp"
 
 namespace fresh {
 enum class SpriteBlendMode {
@@ -20,33 +18,9 @@ enum class SpriteBlendMode {
   Multiply
 };
 
-struct SpriteMetadata {
-  fre2d::Texture tex;
-  idk::i32 width;
-  idk::i32 height;
-  idk::i32 channels;
-};
 
-using PathSpritePair = std::unordered_map<std::string, SpriteMetadata>;
-
-class CacheSpriteResource {
-public:
-  CacheSpriteResource() noexcept = default;
-  ~CacheSpriteResource() noexcept = default;
-
-  void push_overwrite(const std::string& sprite_path, const SpriteMetadata& sprite_data) noexcept;
-  [[nodiscard]] PathSpritePair::const_iterator get_sprite_iter(const std::string& sprite_path) const noexcept;
-  [[nodiscard]] PathSpritePair& get_map() noexcept;
-
-  [[nodiscard]] PathSpritePair::iterator begin() noexcept;
-  [[nodiscard]] PathSpritePair::iterator end() noexcept;
-  [[nodiscard]] PathSpritePair::const_iterator cbegin() const noexcept;
-  [[nodiscard]] PathSpritePair::const_iterator cend() const noexcept;
-private:
-  /// first part is sprite path, second is content of the sprite;
-  /// mostly in RGBA format.
-  PathSpritePair _sprites;
-};
+using CacheSpriteResource = CacheResource<std::string, SpriteMetadata>;
+using PathSpritePair = CacheSpriteResource::KeyValueType;
 
 // TODO: sprite batching? (should be done within fre2d)
 class SpriteResource {
