@@ -1,6 +1,6 @@
 // MIT License
 //
-// Copyright (c) 2024 Ferhat Geçdoğan All Rights Reserved.
+// Copyright (c) 2024-2025 Ferhat Geçdoğan All Rights Reserved.
 // Distributed under the terms of the MIT License.
 //
 #pragma once
@@ -10,19 +10,19 @@
 #include <resources/polygon_resource.hpp>
 #include "base_object.hpp"
 #include "polygon.hpp"
+#include "shader_object.hpp"
 
 namespace fresh {
-class PolygonObject : public BaseObject {
+class PolygonObject : public BaseObject, public ShaderObject {
 public:
   friend class FesLoaderResource;
   friend class RectangleObject;
 
   PolygonObject();
   PolygonObject(PolygonResource resource, ColorResource color);
-  ~PolygonObject();
+  ~PolygonObject() override;
 
-  void
-  sync(bool is_member_of_camera = false) noexcept override;
+  void sync(bool is_member_of_camera = false) noexcept override;
 
   [[nodiscard]] constexpr const char* to_string() noexcept override {
     return "polygonobject";
@@ -46,7 +46,6 @@ public:
 protected:
   PolygonResource _resource;
   fre2d::Polygon _polygon;
-  fre2d::Shader _shader;
   BBoxResource _cache_pos;
 };
 } // namespace fresh

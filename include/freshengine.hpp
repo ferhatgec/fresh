@@ -1,6 +1,6 @@
 // MIT License
 //
-// Copyright (c) 2024 Ferhat Geçdoğan All Rights Reserved.
+// Copyright (c) 2024-2025 Ferhat Geçdoğan All Rights Reserved.
 // Distributed under the terms of the MIT License.
 //
 #pragma once
@@ -27,6 +27,7 @@
 #include "resources/clipboard_resource.hpp"
 #include "resources/audio_resource.hpp"
 #include "resources/fes_loader_resource.hpp"
+#include "resources/shader_resource.hpp"
 
 #include "fes/fes_ast.hpp"
 #include "fes/fes_keywords.hpp"
@@ -109,6 +110,8 @@ class Engine {
 
   [[nodiscard]] CacheSpriteResource& get_cache_sprite_resource() noexcept;
 
+  [[nodiscard]] CacheShaderResource& get_cache_shader_resource() noexcept;
+
   [[nodiscard]] fre2d::FontManager& get_font_manager() noexcept;
 
   /// Engine::link_camera(std::shared_ptr<CameraObject>) links given camera
@@ -136,6 +139,7 @@ class Engine {
   std::shared_ptr<Window> _window;
   std::shared_ptr<CameraObject> _camera_object;
 
+  CacheShaderResource _shader_cache;
   CacheSpriteResource _sprite_cache;
   KeyboardInput _keyboard_input;
   MouseInput _mouse_input;

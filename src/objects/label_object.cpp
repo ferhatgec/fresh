@@ -1,10 +1,9 @@
 // MIT License
 //
-// Copyright (c) 2024 Ferhat Geçdoğan All Rights Reserved.
+// Copyright (c) 2024-2025 Ferhat Geçdoğan All Rights Reserved.
 // Distributed under the terms of the MIT License.
 //
-#include "log/log.hpp"
-
+#include <log/log.hpp>
 #include <fescript/fescript_array.hpp>
 #include <fescript/wrappers/fescript_base_object.hpp>
 #include <freshengine.hpp>
@@ -72,26 +71,19 @@ void LabelObject::set(const fescript::Token& name, fescript::Object value) {
 }
 
 void LabelObject::init_signal() noexcept {
-  if(!this->_initialized) {
-    this->_label.initialize_label(
-      this->_label_font_resource.get_font(),
-      this->_label_text.data(),
-      glm::vec2{ this->_pos_info.get_x(), this->_pos_info.get_y() },
-        glm::vec4{
-          this->_fg.get_red(),
-          this->_fg.get_green(),
-          this->_fg.get_blue(),
-          this->_fg.get_alpha()
-        }
-      );
-
-    this->_shader.initialize(
-      fre2d::detail::label::default_vertex,
-      fre2d::detail::label::default_fragment
-    );
-
-    this->_initialized = true;
-  }
+  this->_label.initialize_label(
+    this->_label_font_resource.get_font(),
+    this->_label_text.data(),
+    glm::vec2{ this->_pos_info.get_x(), this->_pos_info.get_y() },
+    glm::vec4{
+      this->_fg.get_red(),
+      this->_fg.get_green(),
+      this->_fg.get_blue(),
+      this->_fg.get_alpha()
+    }
+  );
+  this->init_shader(label_shader_key);
+  this->_initialized = true;
 }
 
 void LabelObject::set_rotation(idk::f32 rad_degrees) noexcept {

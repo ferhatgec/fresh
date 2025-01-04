@@ -1,6 +1,6 @@
 // MIT License
 //
-// Copyright (c) 2024 Ferhat Geçdoğan All Rights Reserved.
+// Copyright (c) 2024-2025 Ferhat Geçdoğan All Rights Reserved.
 // Distributed under the terms of the MIT License.
 //
 #include <fescript/wrappers/fescript_base_object.hpp>
@@ -49,34 +49,23 @@ void PolygonObject::set(const fescript::Token& name, fescript::Object value) {
 }
 
 void PolygonObject::init_signal() noexcept {
-  //if(!this->_initialized) {
-    // TODO:
-    // i am kinda lazy for now but PolygonResource will be based on Vertex2 and Vertex3.
-    // so that's unnecessary.
-    std::vector<fre2d::Vertex2> convert;
-
-    this->_color.set_red(1.f);
-    this->_color.set_green(0.f);
-    this->_color.set_alpha(1.f);
-    for(auto& vert: this->_resource.get_polygons()) {
-      convert.emplace_back(
-        glm::vec2{ vert.get_x(), vert.get_y() },
-        glm::vec4{ this->_color.get_red(), this->_color.get_green(), this->_color.get_blue(), this->_color.get_alpha() }
-      );
-    }
-    this->_polygon.initialize_polygon(
-      1, 1, // pixel-sized polygons
-      convert,
-      glm::vec2 { this->_pos_info.get_x(), this->_pos_info.get_y() }
+  // TODO:
+  // i am kinda lazy for now but PolygonResource will be based on Vertex2 and Vertex3.
+  // so that's unnecessary.
+  std::vector<fre2d::Vertex2> convert;
+  for(auto& vert: this->_resource.get_polygons()) {
+    convert.emplace_back(
+      glm::vec2{ vert.get_x(), vert.get_y() },
+      glm::vec4{ this->_color.get_red(), this->_color.get_green(), this->_color.get_blue(), this->_color.get_alpha() }
     );
-    if(this->_shader.get_program_id() == 0) {
-      this->_shader.initialize(
-        fre2d::detail::shader::default_vertex,
-        fre2d::detail::shader::default_fragment
-      );
-    }
-    this->_initialized = true;
-  //}
+  }
+  this->_polygon.initialize_polygon(
+    1, 1, // pixel-sized polygons
+    convert,
+    glm::vec2 { this->_pos_info.get_x(), this->_pos_info.get_y() }
+  );
+  this->init_shader(generic_shader_key);
+  this->_initialized = true;
 }
 
 __idk_nodiscard PolygonResource& PolygonObject::get_polygon_resource() noexcept {
@@ -88,6 +77,7 @@ ColorResource& PolygonObject::get_color_resource() noexcept {
   return this->_color;
 }
 
+/// FIXME: this is from SDL part of fresh, fre2d gives rotation support already.
 void PolygonObject::set_rotation(idk::f32 rad_degrees) noexcept {
   if(f32_nearly_equals(this->_rotation_degrees, rad_degrees))
     return;

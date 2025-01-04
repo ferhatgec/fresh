@@ -1,13 +1,14 @@
 // MIT License
 //
-// Copyright (c) 2024 Ferhat Geçdoğan All Rights Reserved.
+// Copyright (c) 2024-2025 Ferhat Geçdoğan All Rights Reserved.
 // Distributed under the terms of the MIT License.
 //
-#include <log/log.hpp>
-#include <freshengine.hpp>
 #include <string>
-#include <types/predefined.hpp>
 #include <utility>
+#include <freshengine.hpp>
+#include <types/predefined.hpp>
+#include <resources/shader_resource.hpp>
+#include <log/log.hpp>
 
 namespace fresh {
 std::unique_ptr<Engine> Engine::_instance;
@@ -44,6 +45,7 @@ void Engine::last() {
 }
 
 void Engine::run() {
+  init_cache_shader_map();
   if(!Engine::get_instance()->_camera_object) {
     Engine::get_instance()->_camera_object = std::make_shared<CameraObject>(
       Engine::get_instance()->get_window()->get_width(),
@@ -125,6 +127,10 @@ __idk_nodiscard ClipboardResource& Engine::get_clipboard_resource() noexcept {
 
 [[nodiscard]] CacheSpriteResource& Engine::get_cache_sprite_resource() noexcept {
   return this->_sprite_cache;
+}
+
+[[nodiscard]] CacheShaderResource& Engine::get_cache_shader_resource() noexcept {
+  return this->_shader_cache;
 }
 
 [[nodiscard]] fre2d::FontManager& Engine::get_font_manager() noexcept {

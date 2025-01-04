@@ -1,6 +1,6 @@
 // MIT License
 //
-// Copyright (c) 2024 Ferhat Geçdoğan All Rights Reserved.
+// Copyright (c) 2024-2025 Ferhat Geçdoğan All Rights Reserved.
 // Distributed under the terms of the MIT License.
 //
 #include <fescript/wrappers/fescript_base_object.hpp>
@@ -45,22 +45,15 @@ void SpriteObject::set(const fescript::Token& name, fescript::Object value) {
 }
 
 void SpriteObject::init_signal() noexcept {
-  //if(!this->_initialized) {
-    this->_rectangle.initialize_rectangle(
-        this->_pos_info.get_w(),
-        this->_pos_info.get_h(),
-        glm::vec2{this->_pos_info.get_x(), this->_pos_info.get_y()},
-        glm::vec4 {
-          1.f, 1.f, 1.f, 1.f
-        },
-        this->_sprite_resource.get_texture()
-    );
-    this->_shader.initialize(
-      fre2d::detail::shader::default_vertex,
-      fre2d::detail::shader::default_fragment
-    );
-    this->_initialized = true;
-  //}
+  this->_rectangle.initialize_rectangle(
+    this->_pos_info.get_w(),
+    this->_pos_info.get_h(),
+    glm::vec2{this->_pos_info.get_x(), this->_pos_info.get_y()},
+    glm::vec4 {1.f, 1.f, 1.f, 1.f},
+    this->_sprite_resource.get_texture()
+  );
+  this->init_shader(generic_shader_key);
+  this->_initialized = true;
 }
 
 void SpriteObject::set_rotation(idk::f32 rad_degrees) noexcept {

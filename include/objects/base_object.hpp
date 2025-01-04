@@ -1,6 +1,6 @@
 // MIT License
 //
-// Copyright (c) 2024 Ferhat Geçdoğan All Rights Reserved.
+// Copyright (c) 2024-2025 Ferhat Geçdoğan All Rights Reserved.
 // Distributed under the terms of the MIT License.
 //
 #pragma once
@@ -175,8 +175,7 @@ class BaseObject {
   /// are being called.
   /// --------
   /// fun fact: i don't remember what _rt stands for.
-  void load_fescript_rt(const std::string& script,
-                        bool is_file = false) noexcept;
+  void load_fescript_rt(const std::string& script, bool is_file = false) noexcept;
 
   /// BaseObject::get_object_by_path(std::string) splits given path
   /// by '/' or '\' -depends on filesystem- then walks through to the parent
@@ -184,8 +183,7 @@ class BaseObject {
   /// ----
   /// note: ".."  will let you access to parent object;
   /// meanwhile "." will point to current object.
-  [[nodiscard]] const std::shared_ptr<BaseObject>& get_object_by_path(
-      const std::string& path) noexcept;
+  [[nodiscard]] const std::shared_ptr<BaseObject>& get_object_by_path(const std::string& path) noexcept;
 
   /// BaseObject::get_rotation() returns current rotation angle by radian
   /// degrees.

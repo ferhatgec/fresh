@@ -1,6 +1,6 @@
 // MIT License
 //
-// Copyright (c) 2024 Ferhat Geçdoğan All Rights Reserved.
+// Copyright (c) 2024-2025 Ferhat Geçdoğan All Rights Reserved.
 // Distributed under the terms of the MIT License.
 //
 #pragma once
@@ -8,9 +8,10 @@
 #include <resources/font_resource.hpp>
 #include "base_object.hpp"
 #include "label.hpp"
+#include "shader_object.hpp"
 
 namespace fresh {
-class LabelObject : public BaseObject {
+class LabelObject : public BaseObject, public ShaderObject {
 public:
   friend class FesLoaderResource;
 
@@ -55,7 +56,6 @@ protected:
   ColorResource _bg, _fg;
   std::string _label_text;
   FontResource _label_font_resource;
-  fre2d::Shader _shader;
   fre2d::Label _label;
 };
 } // namespace fresh

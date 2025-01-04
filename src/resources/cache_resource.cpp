@@ -50,4 +50,5 @@ template<typename Key, typename Value>
 }
 
 template class CacheResource<std::string, SpriteMetadata>;
+template class CacheResource<std::pair<std::string, std::string>, ShaderMetadata>;
 } // namespace fresh

@@ -1,16 +1,17 @@
 // MIT License
 //
-// Copyright (c) 2024 Ferhat Geçdoğan All Rights Reserved.
+// Copyright (c) 2024-2025 Ferhat Geçdoğan All Rights Reserved.
 // Distributed under the terms of the MIT License.
 //
 #pragma once
 
-#include "base_object.hpp"
 #include <resources/sprite_resource.hpp>
+#include "base_object.hpp"
 #include "rectangle.hpp"
+#include "shader_object.hpp"
 
 namespace fresh {
-class SpriteObject : public BaseObject {
+class SpriteObject : public BaseObject, public ShaderObject {
 public:
   friend class FesLoaderResource;
 
@@ -57,6 +58,5 @@ protected:
   SpriteResource _sprite_resource;
   idk::f32 _cache_degrees;
   fre2d::Rectangle _rectangle;
-  fre2d::Shader _shader;
 };
 } // namespace fresh

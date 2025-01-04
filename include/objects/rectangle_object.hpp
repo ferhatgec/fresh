@@ -1,6 +1,6 @@
 // MIT License
 //
-// Copyright (c) 2024 Ferhat Geçdoğan All Rights Reserved.
+// Copyright (c) 2024-2025 Ferhat Geçdoğan All Rights Reserved.
 // Distributed under the terms of the MIT License.
 //
 #pragma once
@@ -10,9 +10,10 @@
 #include "base_object.hpp"
 #include "polygon_object.hpp"
 #include "rectangle.hpp"
+#include "shader_object.hpp"
 
 namespace fresh {
-class RectangleObject : public BaseObject {
+class RectangleObject : public BaseObject, public ShaderObject {
 public:
   friend class FesLoaderResource;
 
@@ -54,6 +55,5 @@ protected:
   void _base_notify_wh() noexcept;
   bool _is_filled;
   fre2d::Rectangle _rectangle;
-  fre2d::Shader _shader;
 };
 } // namespace fresh

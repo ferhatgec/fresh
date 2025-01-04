@@ -1,6 +1,6 @@
 // MIT License
 //
-// Copyright (c) 2024 Ferhat Geçdoğan All Rights Reserved.
+// Copyright (c) 2024-2025 Ferhat Geçdoğan All Rights Reserved.
 // Distributed under the terms of the MIT License.
 //
 #pragma once
@@ -10,9 +10,10 @@
 #include <circle.hpp>
 #include <shader.hpp>
 #include "base_object.hpp"
+#include "shader_object.hpp"
 
 namespace fresh {
-class CircleObject : public BaseObject {
+class CircleObject : public BaseObject, public ShaderObject {
 public:
   friend class FesLoaderResource;
 
@@ -52,6 +53,5 @@ protected:
   void _base_notify_wh() noexcept;
   CircleResource _resource;
   fre2d::Circle _circle;
-  fre2d::Shader _shader;
 };
 } // namespace fresh

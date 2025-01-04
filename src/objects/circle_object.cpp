@@ -1,6 +1,6 @@
 // MIT License
 //
-// Copyright (c) 2024 Ferhat Geçdoğan All Rights Reserved.
+// Copyright (c) 2024-2025 Ferhat Geçdoğan All Rights Reserved.
 // Distributed under the terms of the MIT License.
 //
 #include <objects/circle_object.hpp>
@@ -64,15 +64,18 @@ void CircleObject::set_flip_horizontally(bool flip_horizontally) noexcept {
 
 void CircleObject::init_signal() noexcept {
   this->_circle.initialize_circle(
-      this->_resource.get_radius(), this->_resource.get_radius(),
-      glm::vec2{this->get_x(), this->get_y()},
-      glm::vec4{this->_color.get_red(), this->_color.get_green(),
-                this->_color.get_blue(), this->_color.get_alpha()},
-      this->_resource.get_thickness());
-  if (this->_shader.get_program_id() == 0) {
-    this->_shader.initialize(fre2d::detail::circle::default_vertex,
-                             fre2d::detail::circle::default_fragment);
-  }
+    this->_resource.get_radius(),
+    this->_resource.get_radius(),
+    glm::vec2{this->get_x(), this->get_y()},
+    glm::vec4{
+      this->_color.get_red(),
+      this->_color.get_green(),
+      this->_color.get_blue(),
+      this->_color.get_alpha()
+    },
+    this->_resource.get_thickness()
+  );
+  this->init_shader(circle_shader_key);
   this->_initialized = true;
 }
 

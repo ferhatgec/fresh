@@ -8,6 +8,7 @@
 #include <string>
 #include <types/predefined.hpp>
 #include <texture.hpp>
+#include <shader.hpp>
 
 namespace fresh {
 struct SpriteMetadata {
@@ -15,5 +16,9 @@ struct SpriteMetadata {
   idk::i32 width;
   idk::i32 height;
   idk::i32 channels;
+};
+
+struct ShaderMetadata {
+  fre2d::Shader prog;
 };
 } // namespace fresh

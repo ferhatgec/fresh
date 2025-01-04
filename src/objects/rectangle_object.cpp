@@ -1,6 +1,6 @@
 // MIT License
 //
-// Copyright (c) 2024 Ferhat Geçdoğan All Rights Reserved.
+// Copyright (c) 2024-2025 Ferhat Geçdoğan All Rights Reserved.
 // Distributed under the terms of the MIT License.
 //
 #include <objects/rectangle_object.hpp>
@@ -43,25 +43,19 @@ void RectangleObject::set(const fescript::Token& name, fescript::Object value) {
 
 void RectangleObject::init_signal() noexcept {
   // TODO: check if Window and Framebuffer initialized correctly.
-  //if(!this->_initialized) {
-    this->_rectangle.initialize_rectangle(
-        this->_pos_info.get_w(),
-        this->_pos_info.get_h(),
-        glm::vec2{this->_pos_info.get_x(), this->_pos_info.get_y()},
-        glm::vec4 {
-          this->_color.get_red(),
-          this->_color.get_green(),
-          this->_color.get_blue(),
-          this->_color.get_alpha()
-        });
-    if(this->_shader.get_program_id() == 0) {
-      this->_shader.initialize(
-        fre2d::detail::shader::default_vertex,
-        fre2d::detail::shader::default_fragment
-      );
+  this->_rectangle.initialize_rectangle(
+    this->_pos_info.get_w(),
+    this->_pos_info.get_h(),
+    glm::vec2{this->_pos_info.get_x(), this->_pos_info.get_y()},
+    glm::vec4 {
+      this->_color.get_red(),
+      this->_color.get_green(),
+      this->_color.get_blue(),
+      this->_color.get_alpha()
     }
-    this->_initialized = true;
-  //}
+  );
+  this->init_shader(generic_shader_key);
+  this->_initialized = true;
 }
 
 __idk_nodiscard ColorResource& RectangleObject::get_color_resource() noexcept {
