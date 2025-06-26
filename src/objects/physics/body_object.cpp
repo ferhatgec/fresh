@@ -41,7 +41,7 @@ void BodyObject::set_is_static_body(bool is_static_body) noexcept {
 
 void BodyObject::set_fixed_rotation(bool fixed_rotation) noexcept {
   this->_is_fixed_rotation = fixed_rotation;
-  b2Body_SetFixedRotation(this->_body_id, this->_is_fixed_rotation);
+  b2Body_SetMotionLocks(this->_body_id, b2MotionLocks { false, false, this->_is_fixed_rotation });
 }
 
 void BodyObject::set_linear_velocity(const PointResource& pt) const noexcept {
