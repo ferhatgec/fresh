@@ -119,8 +119,11 @@ class Engine {
   void link_camera(std::shared_ptr<CameraObject> camera_object) noexcept;
 
   /// Engine::get_camera() returns current Engine-backed/bounded Camera.
-  [[nodiscard]] static const std::shared_ptr<CameraObject>&
-  get_camera() noexcept;
+  [[nodiscard]]
+  static const std::shared_ptr<CameraObject>& get_camera() noexcept;
+
+  [[nodiscard]]
+  const std::unique_ptr<fre2d::LightManager>& get_light_manager() noexcept;
 
   /// Engine::get_id() returns global id that counts how many objects
   /// have been created. not thread-safe; generally fresh isn't thread-safe too.
@@ -144,6 +147,9 @@ class Engine {
   KeyboardInput _keyboard_input;
   MouseInput _mouse_input;
   fre2d::FontManager _font_manager;
+
+  // it's just a temporary use, it will have its own Object class.
+  std::unique_ptr<fre2d::LightManager> lm;
 
   bool _engine_running{true};
 

@@ -33,7 +33,7 @@ void PolygonObject::sync(bool is_member_of_camera) noexcept {
     this->_polygon.set_scale({this->get_w(), this->get_h(), 1.f});
   }
   if(this->_visible) {
-    this->_polygon.draw(this->_shader, FreshInstance->get_camera()->get_camera());
+    this->_polygon.draw(this->_shader, FreshInstance->get_camera()->get_camera(), FreshInstance->get_light_manager());
   }
   this->apply_changes();
 }

@@ -164,6 +164,13 @@ const std::shared_ptr<CameraObject>& Engine::get_camera() noexcept {
   return Engine::get_instance()->_camera_object;
 }
 
+[[nodiscard]] const std::unique_ptr<fre2d::LightManager>& Engine::get_light_manager() noexcept {
+  if(!FreshInstance->lm) {
+    FreshInstance->lm = std::make_unique<fre2d::LightManager>();
+  }
+  return FreshInstance->lm;
+}
+
 /// Engine::get_global_id returns current id which is associated with
 /// how many BaseObjects have been created; currently it's not thread safe;
 /// fresh isn't thread safe either.

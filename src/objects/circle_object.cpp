@@ -24,7 +24,7 @@ void CircleObject::sync(bool is_member_of_camera) noexcept {
   }
 
   if(this->_visible) {
-    this->_circle.draw(this->_shader, FreshInstance->get_camera()->get_camera());
+    this->_circle.draw(this->_shader, FreshInstance->get_camera()->get_camera(), FreshInstance->get_light_manager());
   }
   this->apply_changes();
 }

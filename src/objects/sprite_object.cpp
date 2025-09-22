@@ -23,7 +23,7 @@ void SpriteObject::sync(bool is_member_of_camera) noexcept {
     this->_rectangle.set_rotation(this->get_rotation());
   }
   if(this->_visible) {
-    this->_rectangle.draw(this->_shader, FreshInstance->get_camera()->get_camera());
+    this->_rectangle.draw(this->_shader, FreshInstance->get_camera()->get_camera(), FreshInstance->get_light_manager());
   }
   this->apply_changes();
 }

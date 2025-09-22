@@ -21,7 +21,7 @@ void LabelObject::sync(bool is_member_of_camera) noexcept {
   CHECK_DISABLED()
   this->_code.interpret_update();
   if(this->_visible) {
-    this->_label.draw(this->_shader, Engine::get_instance()->get_camera()->get_camera());
+    this->_label.draw(this->_shader, FreshInstance->get_camera()->get_camera(), FreshInstance->get_light_manager());
   }
   this->apply_changes();
 }
