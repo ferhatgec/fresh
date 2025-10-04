@@ -14,6 +14,7 @@
 #include "../include/resources/color_resource.hpp"
 #include "objects/physics/circle_body_object.hpp"
 #include "objects/rectangle_object.hpp"
+#include "objects/point_light_object.hpp"
 
 #include <fstream>
 #include <numbers>
@@ -87,7 +88,13 @@ public:
     */
 
     this->_resource.load_fes("physics_scene.fes");
+    FreshInstance->get_light_manager()->get_ambient_light_mutable().set_color(
+        glm::vec4 { 0.f, 0.f, 0.f, 1.f }
+    );
+    // FreshInstance->get_window()->set_clear_color(fresh::ColorResource(0.f, 0.f, 0.f, 1.f));
+
     fresh::RenderObjects::push_object(std::move(this->_resource.generate()));
+
   }
 
   ~Application() noexcept override = default;

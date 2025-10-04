@@ -52,6 +52,8 @@ void Engine::run() {
       Engine::get_instance()->get_window()->get_height()
     );
   }
+  FreshInstance->get_light_manager()->initialize();
+
   // make sure objects are initialized since FesLoaderResource will create
   // them in-place so we don't want them evaluated at the time.
   // that gives us lazy-evaluated-till-the-run objects.
@@ -83,7 +85,6 @@ void Engine::run() {
         log_warning(fresh::src(), "iterated object is invalid, index is {}.", i);
       }
     });
-    this->_window->_fb.clear_color(1.f, 1.f, 1.f, 1.f);
     this->_window->_fb.render_texture();
     glfwSwapBuffers(this->_window->_window);
   }

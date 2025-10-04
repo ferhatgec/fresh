@@ -117,6 +117,8 @@ class BaseObject {
   virtual void notify_y() noexcept;
   virtual void notify_w() noexcept;
   virtual void notify_h() noexcept;
+  virtual void notify_disabled() noexcept;
+  virtual void notify_visible() noexcept;
 
   /// BaseObject::get_id() is read-only access to _object_id property.
   [[nodiscard]] const idk::u32& get_id() const noexcept;

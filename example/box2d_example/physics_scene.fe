@@ -64,6 +64,17 @@ def init(delta) =
  );
 
  Engine_render_objects_push(CharacterAnimation);
+
+ def pt = Engine_PointLightObject(
+    [-200, 0],
+    [1, 1, 1],
+    [0, 0, 0],
+    0,
+    0.0009,
+    0.000032
+ );
+
+ Engine_render_objects_push(pt);
 ;
 
 def update(delta) =

@@ -43,6 +43,7 @@ enum : std::int8_t {
   FescriptRectangleBodyObjectIndex,
   FescriptCircleBodyObjectIndex,
   FescriptPolygonBodyObjectIndex,
+  FescriptPointLightObjectIndex,
   ObjectsEnd_
 };
 
@@ -66,6 +67,7 @@ class BodyObject;
 class RectangleBodyObject;
 class CircleBodyObject;
 class PolygonBodyObject;
+class PointLightObject;
 } // namespace fresh
 
 namespace fescript {
@@ -106,7 +108,8 @@ using Object =
                std::shared_ptr<fresh::BodyObject>,
                std::shared_ptr<fresh::RectangleBodyObject>,
                std::shared_ptr<fresh::CircleBodyObject>,
-               std::shared_ptr<fresh::PolygonBodyObject>>;
+               std::shared_ptr<fresh::PolygonBodyObject>,
+               std::shared_ptr<fresh::PointLightObject>>;
 
 template<typename T> struct RemoveSmartPtr { using type = T; };
 template<typename T> struct RemoveSmartPtr<std::shared_ptr<T>> { using type = T; };

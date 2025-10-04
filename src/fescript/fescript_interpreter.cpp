@@ -40,6 +40,7 @@
 #include <fescript/wrappers/fescript_polygon_object.hpp>
 #include <fescript/wrappers/fescript_rectangle_object.hpp>
 #include <fescript/wrappers/fescript_sprite_object.hpp>
+#include <fescript/wrappers/fescript_point_light_object.hpp>
 
 #include <objects/animation/animation_player_object.hpp>
 #include <objects/audio_player_object.hpp>
@@ -54,6 +55,7 @@
 #include <objects/physics/rectangle_body_object.hpp>
 #include <objects/physics/circle_body_object.hpp>
 #include <objects/physics/polygon_body_object.hpp>
+#include <objects/point_light_object.hpp>
 #include <chrono>
 
 // TODO: Do not create new shared_ptr every member function call.
@@ -151,6 +153,7 @@ Interpreter::Interpreter() {
   this->globals->define("Engine_RectangleBodyObject", std::make_shared<FescriptRectangleBodyObjectWrapper>());
   this->globals->define("Engine_PolygonBodyObject", std::make_shared<FescriptPolygonBodyObjectWrapper>());
   this->globals->define("Engine_CircleBodyObject", std::make_shared<FescriptCircleBodyObjectWrapper>());
+  this->globals->define("Engine_PointLightObject", std::make_shared<FescriptPointLightObjectWrapper>());
 
   this->globals->define("Engine_load_fes", std::make_shared<FescriptEngineLoadFes>());
   this->globals->define("Engine_get_object", std::make_shared<FescriptEngineGetObject>());
@@ -535,7 +538,8 @@ void Interpreter::execute_block(const std::vector<std::shared_ptr<Stmt>> &statem
     case FescriptBodyObjectIndex:
     case FescriptRectangleBodyObjectIndex:
     case FescriptCircleBodyObjectIndex:
-    case FescriptPolygonBodyObjectIndex: {
+    case FescriptPolygonBodyObjectIndex:
+    case FescriptPointLightObjectIndex: {
       if(expr->is_name_an_expr)
         return "TODO"; // TODO
       return this->get_object_property(expr->name, object);
@@ -602,6 +606,7 @@ void Interpreter::execute_block(const std::vector<std::shared_ptr<Stmt>> &statem
     SET_VISIT_IMPL_OBJECT(FescriptRectangleBodyObjectIndex)
     SET_VISIT_IMPL_OBJECT(FescriptCircleBodyObjectIndex)
     SET_VISIT_IMPL_OBJECT(FescriptPolygonBodyObjectIndex)
+    SET_VISIT_IMPL_OBJECT(FescriptPointLightObjectIndex)
   }
   if (object.index() != FescriptInstanceIndex)
     throw RuntimeError(expr->name, "only instances have fields.");
@@ -716,6 +721,7 @@ void Interpreter::check_number_operands(const Token &op, const Object &left,
     IS_INHERITED_BY(CircleBodyObject) return Interpreter::get_object_property(keyword, obj_CircleBodyObject);
     IS_INHERITED_BY(PolygonBodyObject) return Interpreter::get_object_property(keyword, obj_PolygonBodyObject);
     IS_INHERITED_BY(WorldObject) return Interpreter::get_object_property(keyword, obj_WorldObject);
+    IS_INHERITED_BY(PointLightObject) return Interpreter::get_object_property(keyword, obj_PointLightObject);
   }
 
   switch (value.index()) {
@@ -858,6 +864,19 @@ void Interpreter::check_number_operands(const Token &op, const Object &left,
       RETURN_BODY_OBJECT_PROPERTIES()
       throw RuntimeError(keyword, "PolygonBodyObject property cannot be found.");
     }
+    case FescriptPointLightObjectIndex: {
+      RETURN_BASE_OBJECT_PROPERTIES(FescriptPointLightObjectIndex)
+      if(keyword.lexeme == "get_ambient") return cache_make_shared<FescriptPointLightObjectMemberGetAmbient>(std::get<FescriptPointLightObjectIndex>(value));
+      if(keyword.lexeme == "get_diffuse") return cache_make_shared<FescriptPointLightObjectMemberGetDiffuse>(std::get<FescriptPointLightObjectIndex>(value));
+      if(keyword.lexeme == "get_attenuation_constant") return cache_make_shared<FescriptPointLightObjectMemberGetAttenuationConstant>(std::get<FescriptPointLightObjectIndex>(value));
+      if(keyword.lexeme == "get_attenuation_linear") return cache_make_shared<FescriptPointLightObjectMemberGetAttenuationLinear>(std::get<FescriptPointLightObjectIndex>(value));
+      if(keyword.lexeme == "get_attenuation_quadratic") return cache_make_shared<FescriptPointLightObjectMemberGetAttenuationQuadratic>(std::get<FescriptPointLightObjectIndex>(value));
+      if(keyword.lexeme == "set_ambient") return cache_make_shared<FescriptPointLightObjectMemberSetAmbient>(std::get<FescriptPointLightObjectIndex>(value));
+      if(keyword.lexeme == "set_diffuse") return cache_make_shared<FescriptPointLightObjectMemberSetDiffuse>(std::get<FescriptPointLightObjectIndex>(value));
+      if(keyword.lexeme == "set_attenuation_constant") return cache_make_shared<FescriptPointLightObjectMemberSetAttenuationConstant>(std::get<FescriptPointLightObjectIndex>(value));
+      if(keyword.lexeme == "set_attenuation_linear") return cache_make_shared<FescriptPointLightObjectMemberSetAttenuationLinear>(std::get<FescriptPointLightObjectIndex>(value));
+      if(keyword.lexeme == "set_attenuation_quadratic") return cache_make_shared<FescriptPointLightObjectMemberSetAttenuationQuadratic>(std::get<FescriptPointLightObjectIndex>(value));
+    }
     default: {
       std::cout << "Engine error: Invalid pointer passed to get_object_property!\n";
       std::exit(1);
@@ -889,6 +908,7 @@ void Interpreter::check_number_operands(const Token &op, const Object &left,
   IS_INHERITED_BY(CircleBodyObject) return obj_CircleBodyObject;
   IS_INHERITED_BY(PolygonBodyObject) return obj_PolygonBodyObject;
   IS_INHERITED_BY(WorldObject) return obj_WorldObject;
+  IS_INHERITED_BY(PointLightObject) return obj_PointLightObject;
   return base_obj;
 }
 
@@ -953,6 +973,7 @@ std::string Interpreter::stringify(const Object &object) {
   GET_STRINGIFY_IMPL_OBJECT(FescriptRectangleBodyObjectIndex)
   GET_STRINGIFY_IMPL_OBJECT(FescriptCircleBodyObjectIndex)
   GET_STRINGIFY_IMPL_OBJECT(FescriptPolygonBodyObjectIndex)
+  GET_STRINGIFY_IMPL_OBJECT(FescriptPointLightObjectIndex)
   }
   return "nil";
 }

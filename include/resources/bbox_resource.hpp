@@ -19,7 +19,17 @@ public:
     idk::f32 y = 0.f,
     idk::f32 w = 0.f,
     idk::f32 h = 0.f
-  ) noexcept : _x{x}, _y{y}, _w{w}, _h{h} {}
+  ) noexcept : _x{x}, _y{y}, _w{w}, _h{h}
+  {}
+
+  constexpr BBoxResource(glm::vec2 pos, glm::vec2 size = glm::vec2 { 0.f, 0.f }) noexcept
+      : _x{pos.x}, _y{pos.y}, _w{size.x}, _h{size.y}
+  {}
+
+  constexpr BBoxResource(glm::vec4 pos_size) noexcept
+      : BBoxResource(glm::vec2 { pos_size.x, pos_size.y }, glm::vec2 { pos_size.z, pos_size.w})
+  {}
+
   ~BBoxResource() = default;
 
   [[nodiscard]] constexpr const idk::f32& get_x() const noexcept {
