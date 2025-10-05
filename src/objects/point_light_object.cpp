@@ -92,6 +92,7 @@ void PointLightObject::_base_notify_xy() noexcept {
 
 void PointLightObject::init_signal() noexcept {
   if(this->get_point_light_index() == -1) {
+    this->_pt.set_position({this->get_x(), this->get_y()});
     FreshInstance->get_light_manager()->push_point_light(this->get_point_light());
     this->_lm_index = FreshInstance->get_light_manager()->get_point_lights().size() - 1;
   }

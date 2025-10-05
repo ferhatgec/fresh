@@ -1,6 +1,6 @@
 // MIT License
 //
-// Copyright (c) 2024 Ferhat Geçdoğan All Rights Reserved.
+// Copyright (c) 2024-2025 Ferhat Geçdoğan All Rights Reserved.
 // Distributed under the terms of the MIT License.
 //
 #include <fes/fes_tokenizer.hpp>
@@ -174,6 +174,7 @@ void FesTokenizer::_check_and_push() noexcept {
     pushe("CameraObject", Keywords::CameraObject)
     pushe("LabelObject", Keywords::LabelObject)
     pushe("SpriteObject", Keywords::SpriteObject)
+    pushe("PointLightObject", Keywords::PointLightObject)
     pushe("sprite_resource", Keywords::SpriteResource)
     pushe("red", Keywords::Red)
     pushe("green", Keywords::Green)
@@ -189,6 +190,11 @@ void FesTokenizer::_check_and_push() noexcept {
     pushe("default_fes_file", Keywords::DefaultFesFile)
     pushe("preloaded_fes_files", Keywords::PreloadedFesFiles)
     pushe("vertices", Keywords::Vertices)
+    pushe("ambient", Keywords::Ambient)
+    pushe("diffuse", Keywords::Diffuse)
+    pushe("att_constant", Keywords::AttConstant)
+    pushe("att_linear", Keywords::AttLinear)
+    pushe("att_quadratic", Keywords::AttQuadratic)
     pushe("path", Keywords::Path)
     pushe("default_clear_color", Keywords::DefaultClearColor)
     pushe("label_text", Keywords::LabelText)

@@ -52,13 +52,21 @@ BaseObject::BaseObject()
 }
 
 void BaseObject::set_disabled(bool disabled) noexcept {
-  this->_disabled = disabled;
+  this->lazy_set_disabled(disabled);
   this->notify_disabled();
 }
 
 void BaseObject::set_visible(bool visible) noexcept {
-  this->_visible = visible;
+  this->lazy_set_visible(visible);
   this->notify_visible();
+}
+
+void BaseObject::lazy_set_disabled(bool disabled) noexcept {
+  this->_disabled = disabled;
+}
+
+void BaseObject::lazy_set_visible(bool visible) noexcept {
+  this->_visible = visible;
 }
 
 void BaseObject::sync(bool is_member_of_camera) noexcept {

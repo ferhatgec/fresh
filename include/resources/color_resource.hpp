@@ -1,6 +1,6 @@
 // MIT License
 //
-// Copyright (c) 2024 Ferhat Geçdoğan All Rights Reserved.
+// Copyright (c) 2024-2025 Ferhat Geçdoğan All Rights Reserved.
 // Distributed under the terms of the MIT License.
 //
 #pragma once
@@ -24,6 +24,10 @@ public:
   constexpr explicit ColorResource(
     idk::f32 r = 0.f, idk::f32 g = 0.f, idk::f32 b = 0.f, idk::f32 a = 1.f
   ) noexcept : _r{r}, _g{g}, _b{b}, _a{a} {}
+
+  constexpr ColorResource(
+    glm::vec4 rgba
+  ) noexcept : ColorResource(rgba.x, rgba.y, rgba.z, rgba.w) {}
 
   ~ColorResource() noexcept = default;
 

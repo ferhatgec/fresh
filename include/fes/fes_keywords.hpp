@@ -1,6 +1,6 @@
 // MIT License
 //
-// Copyright (c) 2024 Ferhat Geçdoğan All Rights Reserved.
+// Copyright (c) 2024-2025 Ferhat Geçdoğan All Rights Reserved.
 // Distributed under the terms of the MIT License.
 //
 #pragma once
@@ -53,6 +53,11 @@ enum Keywords {
   PositionX, // position_x
   PositionY, // position_y
   Vertices, // vertices
+  Ambient, // ambient
+  Diffuse, // diffuse
+  AttConstant, // att_constant
+  AttLinear, // att_linear
+  AttQuadratic, // att_quadratic
 
 /// start of objects >
   Project, // Project
@@ -74,6 +79,7 @@ enum Keywords {
   WorldObject, // WorldObject
   AudioPlayerObject, // AudioPlayerObject
   // < TODO
+  PointLightObject, // PointLightObject
 
   BaseObject, // BaseObject
   CircleObject, // CircleObject

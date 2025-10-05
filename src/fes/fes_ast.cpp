@@ -1,6 +1,6 @@
 // MIT License
 //
-// Copyright (c) 2024 Ferhat Geçdoğan All Rights Reserved.
+// Copyright (c) 2024-2025 Ferhat Geçdoğan All Rights Reserved.
 // Distributed under the terms of the MIT License.
 //
 #include <fes/fes_ast.hpp>
@@ -219,6 +219,50 @@ FesSpriteObjectAST::FesSpriteObjectAST() noexcept {
 
 void FesSpriteObjectAST::set_sprite_path(const std::string& path) noexcept {
   this->_sprite_path = path;
+}
+
+FesPointLightObjectAST::FesPointLightObjectAST() noexcept {
+  this->_object_type = Keywords::PointLightObject;
+  this->_ambient = std::make_shared<FesColorObjectAST>();
+  this->_diffuse = std::make_shared<FesColorObjectAST>();
+  this->_constant = this->_linear = this->_quadratic = 0.f;
+}
+
+[[nodiscard]] std::shared_ptr<FesColorObjectAST>&
+FesPointLightObjectAST::get_ambient() noexcept {
+  return this->_ambient;
+}
+
+[[nodiscard]] std::shared_ptr<FesColorObjectAST>&
+FesPointLightObjectAST::get_diffuse() noexcept {
+  return this->_diffuse;
+}
+
+[[nodiscard]] idk::f32
+FesPointLightObjectAST::get_attenuation_constant() const noexcept {
+  return this->_constant;
+}
+
+[[nodiscard]] idk::f32
+FesPointLightObjectAST::get_attenuation_linear() const noexcept {
+  return this->_linear;
+}
+
+[[nodiscard]] idk::f32
+FesPointLightObjectAST::get_attenuation_quadratic() const noexcept {
+  return this->_quadratic;
+}
+
+void FesPointLightObjectAST::set_attenuation_constant(idk::f32 att) noexcept {
+  this->_constant = att;
+}
+
+void FesPointLightObjectAST::set_attenuation_linear(idk::f32 att) noexcept {
+  this->_linear = att;
+}
+
+void FesPointLightObjectAST::set_attenuation_quadratic(idk::f32 att) noexcept {
+  this->_quadratic = att;
 }
 
 FesProjectObjectAST::FesProjectObjectAST() noexcept {

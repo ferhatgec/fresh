@@ -1,6 +1,6 @@
 // MIT License
 //
-// Copyright (c) 2024 Ferhat Geçdoğan All Rights Reserved.
+// Copyright (c) 2024-2025 Ferhat Geçdoğan All Rights Reserved.
 // Distributed under the terms of the MIT License.
 //
 #include <fes/fes_parser.hpp>
@@ -41,7 +41,10 @@ void FesParser::parse_variable(std::shared_ptr<FesObjectAST> object_node) noexce
         case Thickness:
         case DefaultWindowSizeWidth:
         case DefaultWindowSizeHeight:
-        case FontSize: {
+        case FontSize:
+        case AttConstant:
+        case AttLinear:
+        case AttQuadratic: {
           const auto& val = _parse_floats<idk::f64>(var);
           if(val.index() == ConvertibleToFloat) {
             const auto& _value = std::get<ConvertibleToFloat>(val);
@@ -139,6 +142,21 @@ void FesParser::parse_variable(std::shared_ptr<FesObjectAST> object_node) noexce
                     project_object->_default_size.set_w(static_cast<idk::f32>(_value));
                   } else {
                     project_object->_default_size.set_h(static_cast<idk::f32>(_value));
+                  }
+                }
+                break;
+              }
+              case AttConstant:
+              case AttLinear:
+              case AttQuadratic: {
+                if(object_node->get_type() == PointLightObject) {
+                  const auto& pt_obj = std::static_pointer_cast<FesPointLightObjectAST>(object_node);
+                  if(kw == AttConstant) {
+                    pt_obj->set_attenuation_constant(static_cast<idk::f32>(_value));
+                  } else if(kw == AttLinear) {
+                    pt_obj->set_attenuation_linear(static_cast<idk::f32>(_value));
+                  } else { // AttQuadratic
+                    pt_obj->set_attenuation_quadratic(static_cast<idk::f32>(_value));
                   }
                 }
                 break;
@@ -305,12 +323,38 @@ void FesParser::parse_variable(std::shared_ptr<FesObjectAST> object_node) noexce
             return;
           }
           if(ptr->get_sub_groups()[0]->get_type() != Color) {
-            log_error(src(), "fg_color expects Color object in the list.");
+            log_error(src(), "bg_color expects Color object in the list.");
             return;
           }
           const auto& label_obj = std::static_pointer_cast<fes::FesLabelObjectAST>(object_node);
           auto color = std::static_pointer_cast<fes::FesColorObjectAST>(ptr->get_sub_groups()[0]);
           label_obj->get_bg_color() = std::move(color);
+          break;
+        }
+        case Ambient:
+        case Diffuse: {
+          if(object_node->get_type() != PointLightObject) {
+            log_error(src(), "ambient and diffuse expects to be constructed within a PointLightObject.");
+            return;
+          }
+          ++i;
+          auto ptr = std::make_shared<fes::FesObjectAST>();
+          this->parse_list(ptr);
+          if(ptr->get_sub_groups().size() != 1) {
+            log_warning(src(), "ambient and diffuse expects only 1 Color object.");
+            return;
+          }
+          if(ptr->get_sub_groups()[0]->get_type() != Color) {
+            log_error(src(), "ambient and diffuse expects Color object in the list.");
+            return;
+          }
+          const auto& pt_obj = std::static_pointer_cast<fes::FesPointLightObjectAST>(object_node);
+          auto color = std::static_pointer_cast<fes::FesColorObjectAST>(ptr->get_sub_groups()[0]);
+          if(kw == Ambient) {
+            pt_obj->get_ambient() = std::move(color);
+          } else { // Diffuse
+            pt_obj->get_diffuse() = std::move(color);
+          }
           break;
         }
         case SubGroups: {
@@ -399,10 +443,12 @@ void FesParser::parse_list(std::shared_ptr<FesObjectAST> object_node) noexcept {
       case LabelObject:
         object_node->_sub_groups.push_back(std::make_shared<FesLabelObjectAST>());
         break;
-      case SpriteObject: {
+      case SpriteObject:
         object_node->_sub_groups.push_back(std::make_shared<FesSpriteObjectAST>());
         break;
-      }
+      case PointLightObject:
+        object_node->_sub_groups.push_back(std::make_shared<FesPointLightObjectAST>());
+        break;
     }
 
     if(object_node->_object_type == Project) {

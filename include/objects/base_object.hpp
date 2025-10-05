@@ -112,6 +112,8 @@ class BaseObject {
   void lazy_set_y(idk::f32 y) noexcept;
   void lazy_set_w(idk::f32 w) noexcept;
   void lazy_set_h(idk::f32 h) noexcept;
+  void lazy_set_disabled(bool disabled) noexcept;
+  void lazy_set_visible(bool visible) noexcept;
 
   virtual void notify_x() noexcept;
   virtual void notify_y() noexcept;

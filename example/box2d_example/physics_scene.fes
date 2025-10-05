@@ -143,6 +143,18 @@
     sub_groups = {},
     sprite_resource = "apartment_5.png";
    ],
+   [PointLightObject,
+    name = "WhitePointLight",
+    group_id = auto,
+    position_x = -200,
+    position_y = 0,
+    ambient = { [Color, red = 1, green = 1, blue = 1; ]; },
+    diffuse = { [Color, red = 0, green = 0, blue = 0; ]; },
+    att_constant = 0.0,
+    att_linear = 0.0009,
+    att_quadratic = 0.000032,
+    sub_groups = {};
+   ],
    [CameraObject,
     name = "Camera",
     group_id = auto,

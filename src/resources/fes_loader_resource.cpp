@@ -1,6 +1,6 @@
 // MIT License
 //
-// Copyright (c) 2024 Ferhat Geçdoğan All Rights Reserved.
+// Copyright (c) 2024-2025 Ferhat Geçdoğan All Rights Reserved.
 // Distributed under the terms of the MIT License.
 //
 #include <filesystem>
@@ -14,6 +14,7 @@
 #include <objects/physics/rectangle_area_object.hpp>
 #include <objects/polygon_object.hpp>
 #include <objects/rectangle_object.hpp>
+#include <objects/point_light_object.hpp>
 
 namespace fresh {
 [[nodiscard]] fes::FesParser& FesLoaderResource::get_parser() noexcept {
@@ -34,7 +35,8 @@ void FesLoaderResource::load_fes(const std::string& ctx,
 }
 
 [[nodiscard]] std::shared_ptr<BaseObject> FesLoaderResource::generate_from_ast(
-    const std::shared_ptr<fes::FesObjectAST>& fes_obj) noexcept {
+    const std::shared_ptr<fes::FesObjectAST>& fes_obj
+) noexcept {
   const auto& fes_obj_type = fes_obj->get_type();
   auto gen_obj = std::move(FesLoaderResource::_create_object(fes_obj_type));
   // FesLoaderResource::_create_object(Keywords) returns nullptr if given type
@@ -95,6 +97,31 @@ void FesLoaderResource::load_fes(const std::string& ctx,
       const auto& fes_sprite_obj = std::static_pointer_cast<fes::FesSpriteObjectAST>(fes_obj);
       const auto& sprite_obj = std::static_pointer_cast<fresh::SpriteObject>(gen_obj);
       sprite_obj->get_sprite_resource().load_resource(fes_sprite_obj->get_sprite_path(), sprite_obj);
+      break;
+    }
+    case fes::PointLightObject: {
+      const auto& fes_pt_obj = std::static_pointer_cast<fes::FesPointLightObjectAST>(fes_obj);
+      const auto& pt_obj = std::static_pointer_cast<fresh::PointLightObject>(gen_obj);
+      {
+        const auto& ambient = fes_pt_obj->get_ambient()->get_color();
+        const auto& diffuse = fes_pt_obj->get_diffuse()->get_color();
+        const auto att_constant = fes_pt_obj->get_attenuation_constant();
+        const auto att_linear = fes_pt_obj->get_attenuation_linear();
+        const auto att_quadratic = fes_pt_obj->get_attenuation_quadratic();
+        pt_obj->get_point_light().set_ambient(glm::vec3 {
+            ambient.get_red(),
+            ambient.get_green(),
+            ambient.get_blue()
+        });
+        pt_obj->get_point_light().set_diffuse(glm::vec3 {
+            diffuse.get_red(),
+            diffuse.get_green(),
+            diffuse.get_blue()
+        });
+        pt_obj->get_point_light().set_attenuation_constant(att_constant);
+        pt_obj->get_point_light().set_attenuation_linear(att_linear);
+        pt_obj->get_point_light().set_attenuation_quadratic(att_quadratic);
+      }
       break;
     }
     case fes::CircleObject: {
@@ -169,6 +196,20 @@ FesLoaderResource::generate_from_object(
           std::static_pointer_cast<fes::FesSpriteObjectAST>(fes_object);
       const auto& gen_obj = std::static_pointer_cast<SpriteObject>(fresh_obj);
       gen_fes_obj->set_sprite_path(gen_obj->get_sprite_resource().get_path());
+      break;
+    }
+    case fes::PointLightObject: {
+      const auto& gen_fes_obj = std::static_pointer_cast<fes::FesPointLightObjectAST>(fes_object);
+      const auto& gen_obj = std::static_pointer_cast<PointLightObject>(fresh_obj);
+      gen_fes_obj->get_ambient()->set_color(fresh::ColorResource(
+        gen_obj->get_point_light().get_ambient()
+      ));
+      gen_fes_obj->get_diffuse()->set_color(fresh::ColorResource(
+        gen_obj->get_point_light().get_diffuse()
+      ));
+      gen_fes_obj->set_attenuation_constant(gen_obj->get_point_light().get_attenuation_constant());
+      gen_fes_obj->set_attenuation_linear(gen_obj->get_point_light().get_attenuation_linear());
+      gen_fes_obj->set_attenuation_quadratic(gen_obj->get_point_light().get_attenuation_quadratic());
       break;
     }
     case fes::CircleObject: {
@@ -266,6 +307,9 @@ FesLoaderResource::generate_from_object(
     case fes::SpriteObject:
       ctx.append("SpriteObject");
       break;
+    case fes::PointLightObject:
+      ctx.append("PointLightObject");
+      break;
     case fes::Vertex:
       ctx.append("Vertex");
       break;
@@ -346,7 +390,15 @@ FesLoaderResource::generate_from_object(
         const auto& poly_ptr = std::static_pointer_cast<fes::FesPolygonAreaObjectAST>(fes_obj);
         _serialize_append(ctx, "vertices = " + serialize_list(poly_ptr->get_resource_mutable()) + ",",
           local_ws, true);
+      } else if(fes_obj->get_type() == fes::PointLightObject) {
+        const auto& pt_ptr = std::static_pointer_cast<fes::FesPointLightObjectAST>(fes_obj);
+        _serialize_append(ctx, "ambient = " + serialize_list(std::vector {pt_ptr->get_ambient()}) + ",", local_ws, true);
+        _serialize_append(ctx, "diffuse = " + serialize_list(std::vector{pt_ptr->get_diffuse()}) + ",", local_ws, true);
+        _serialize_append(ctx, "att_constant = " + std::to_string(pt_ptr->get_attenuation_constant()) + ",", local_ws, true);
+        _serialize_append(ctx, "att_linear = " + std::to_string(pt_ptr->get_attenuation_linear()) + ",", local_ws, true);
+        _serialize_append(ctx, "att_quadratic = " + std::to_string(pt_ptr->get_attenuation_quadratic()) + ",", local_ws, true);
       }
+
       _serialize_append(
             ctx,
             "sub_groups = " + FesLoaderResource::serialize_list(fes_obj->get_sub_groups()) + ";", local_ws, true);
@@ -400,12 +452,12 @@ void FesLoaderResource::_set_baseobject_properties(
   } else {
     fresh_obj->set_name(fes_obj->get_name());
   }
-  fresh_obj->set_disabled(fes_obj->get_disabled());
-  fresh_obj->set_visible(fes_obj->get_visible());
-  fresh_obj->set_x(fes_obj->get_position().get_x());
-  fresh_obj->set_y(fes_obj->get_position().get_y());
-  fresh_obj->set_w(fes_obj->get_size().get_w());
-  fresh_obj->set_h(fes_obj->get_size().get_h());
+  fresh_obj->lazy_set_disabled(fes_obj->get_disabled());
+  fresh_obj->lazy_set_visible(fes_obj->get_visible());
+  fresh_obj->lazy_set_x(fes_obj->get_position().get_x());
+  fresh_obj->lazy_set_y(fes_obj->get_position().get_y());
+  fresh_obj->lazy_set_w(fes_obj->get_size().get_w());
+  fresh_obj->lazy_set_h(fes_obj->get_size().get_h());
   fresh_obj->set_color(fes_obj->get_color());
   fresh_obj->_object_id = FesLoaderResource::id_counter;
   ++FesLoaderResource::id_counter;
@@ -474,6 +526,8 @@ void FesLoaderResource::_set_fesobject_properties(
       return std::make_shared<fresh::LabelObject>();
     case fes::SpriteObject:
       return std::make_shared<fresh::SpriteObject>();
+    case fes::PointLightObject:
+      return std::make_shared<fresh::PointLightObject>();
     default:
       return nullptr;
   }
@@ -503,6 +557,8 @@ FesLoaderResource::_create_fes_object(const char* fresh_kw) noexcept {
     return std::make_shared<fes::FesLabelObjectAST>();
   if (strcmp(fresh_kw, "spriteobject") == SameCstr)
     return std::make_shared<fes::FesSpriteObjectAST>();
+  if (strcmp(fresh_kw, "pointlightobject") == SameCstr)
+    return std::make_shared<fes::FesPointLightObjectAST>();
   // TODO: Import
   return nullptr;
 }

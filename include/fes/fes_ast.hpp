@@ -1,6 +1,6 @@
 // MIT License
 //
-// Copyright (c) 2024 Ferhat Geçdoğan All Rights Reserved.
+// Copyright (c) 2024-2025 Ferhat Geçdoğan All Rights Reserved.
 // Distributed under the terms of the MIT License.
 //
 #pragma once
@@ -189,6 +189,26 @@ public:
   void set_sprite_path(const std::string& path) noexcept;
 protected:
   std::string _sprite_path;
+};
+
+// ambient, diffuse, att_constant, att_linear, att_quadratic
+class FesPointLightObjectAST : public FesObjectAST {
+ public:
+  FesPointLightObjectAST() noexcept;
+  ~FesPointLightObjectAST() noexcept override = default;
+
+  [[nodiscard]] std::shared_ptr<FesColorObjectAST>& get_ambient() noexcept;
+  [[nodiscard]] std::shared_ptr<FesColorObjectAST>& get_diffuse() noexcept;
+  [[nodiscard]] idk::f32 get_attenuation_constant() const noexcept;
+  [[nodiscard]] idk::f32 get_attenuation_linear() const noexcept;
+  [[nodiscard]] idk::f32 get_attenuation_quadratic() const noexcept;
+
+  void set_attenuation_constant(idk::f32 att) noexcept;
+  void set_attenuation_linear(idk::f32 att) noexcept;
+  void set_attenuation_quadratic(idk::f32 att) noexcept;
+ protected:
+  std::shared_ptr<FesColorObjectAST> _ambient, _diffuse;
+  idk::f32 _constant, _linear, _quadratic;
 };
 
 class FesProjectObjectAST : public FesObjectAST {

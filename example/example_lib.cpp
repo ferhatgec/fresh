@@ -92,9 +92,7 @@ public:
         glm::vec4 { 0.f, 0.f, 0.f, 1.f }
     );
     // FreshInstance->get_window()->set_clear_color(fresh::ColorResource(0.f, 0.f, 0.f, 1.f));
-
     fresh::RenderObjects::push_object(std::move(this->_resource.generate()));
-
   }
 
   ~Application() noexcept override = default;
