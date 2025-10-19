@@ -34,7 +34,7 @@ void RectangleAreaObject::sync(bool is_member_of_camera) noexcept {
 }
 
 // rectangle to rectangle (using directly object's properties, which shouldn't be used in practice)
-__idk_nodiscard
+[[nodiscard]]
 bool RectangleAreaObject::is_colliding_with(std::shared_ptr<BaseObject> object) noexcept {
   return (!object || this->get_disabled() || object->get_disabled())
     ? false
@@ -46,19 +46,19 @@ bool RectangleAreaObject::is_colliding_with(std::shared_ptr<BaseObject> object) 
 }
 
 // rectangle to circle
-__idk_nodiscard
+[[nodiscard]]
 bool RectangleAreaObject::is_colliding_with(std::shared_ptr<CircleAreaObject> object) noexcept {
   return AreaObject::is_colliding_with(shared_from_this(), object);
 }
 
 // rectangle to rectangle
-__idk_nodiscard
+[[nodiscard]]
 bool RectangleAreaObject::is_colliding_with(std::shared_ptr<RectangleAreaObject> object) noexcept {
   return AreaObject::is_colliding_with(shared_from_this(), object);
 }
 
 // rectangle to polygon
-__idk_nodiscard
+[[nodiscard]]
 bool RectangleAreaObject::is_colliding_with(std::shared_ptr<PolygonAreaObject> object) noexcept {
   return AreaObject::is_colliding_with(shared_from_this(), object);
 }

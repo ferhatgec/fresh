@@ -73,6 +73,30 @@ public:
     };
   }
 
+  friend constexpr BBoxResource operator*(const BBoxResource& lhs, const BBoxResource& rhs) noexcept {
+    return {
+      lhs.get_x() * rhs.get_x(),
+        lhs.get_y() * rhs.get_y(),
+        lhs.get_w() * rhs.get_w(),
+        lhs.get_h() * rhs.get_h()
+      };
+  }
+
+  friend constexpr BBoxResource operator/(const BBoxResource& lhs, const BBoxResource& rhs) {
+    if(fre2d::detail::nearly_equals(rhs.get_x(), 0.f) ||
+       fre2d::detail::nearly_equals(rhs.get_y(), 0.f) ||
+       fre2d::detail::nearly_equals(rhs.get_w(), 0.f) ||
+       fre2d::detail::nearly_equals(rhs.get_h(), 0.f)) {
+      throw std::exception("cannot divide by 0");
+    }
+    return {
+      lhs.get_x() / rhs.get_x(),
+        lhs.get_y() / rhs.get_y(),
+        lhs.get_w() / rhs.get_w(),
+        lhs.get_h() / rhs.get_h()
+      };
+  }
+
   constexpr BBoxResource& operator+=(const BBoxResource& rhs) noexcept {
     *this = *this + rhs;
     return *this;

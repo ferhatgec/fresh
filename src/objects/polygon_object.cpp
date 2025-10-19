@@ -68,11 +68,11 @@ void PolygonObject::init_signal() noexcept {
   this->_initialized = true;
 }
 
-__idk_nodiscard PolygonResource& PolygonObject::get_polygon_resource() noexcept {
+[[nodiscard]] PolygonResource& PolygonObject::get_polygon_resource() noexcept {
   return this->_resource;
 }
 
-__idk_nodiscard
+[[nodiscard]]
 ColorResource& PolygonObject::get_color_resource() noexcept {
   return this->_color;
 }
@@ -92,6 +92,10 @@ void PolygonObject::set_flip_vertically(bool flip_vertically) noexcept {
 
 void PolygonObject::set_flip_horizontally(bool flip_horizontally) noexcept {
   this->_polygon.set_flip_horizontally(flip_horizontally);
+}
+
+void PolygonObject::set_ignore_zoom(bool ignore_zoom) noexcept {
+  this->_polygon.set_ignore_zoom(ignore_zoom);
 }
 
 [[nodiscard]] const bool& PolygonObject::get_flip_vertically() const noexcept {

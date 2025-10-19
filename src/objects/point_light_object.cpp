@@ -43,7 +43,7 @@ PointLightObject::PointLightObject(
 void PointLightObject::sync(bool is_member_of_camera) noexcept {
   CHECK_DISABLED()
   this->_code.interpret_update();
-  this->apply_changes(this->_member_of_camera);
+  this->apply_changes(is_member_of_camera);
 }
 
 void PointLightObject::set(const fescript::Token& name, fescript::Object value) {

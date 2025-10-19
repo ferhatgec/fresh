@@ -26,7 +26,7 @@ Engine::Engine() noexcept {
   return Engine::_instance;
 }
 
-__idk_nodiscard
+[[nodiscard]]
 std::shared_ptr<Window>&
 Engine::get_window() noexcept {
   return this->_window;
@@ -101,28 +101,28 @@ void Engine::set_engine_running(bool engine_running) noexcept {
 
 /// Engine::get_keyboard_input returns KeyboardInput instance.
 /// used for handling keyboard inputs, no Unicode support.
-__idk_nodiscard
+[[nodiscard]]
 KeyboardInput& Engine::get_keyboard_input() noexcept {
   return this->_keyboard_input;
 }
 
 /// Engine::get_mouse_input returns MouseInput instance.
 /// used for handling mouse inputs, limited support.
-__idk_nodiscard
+[[nodiscard]]
 MouseInput& Engine::get_mouse_input() noexcept {
   return this->_mouse_input;
 }
 
 /// Engine::get_cursor_resource returns CursorResource instance.
 /// used for changing cursor sprite.
-__idk_nodiscard
+[[nodiscard]]
 CursorResource& Engine::get_cursor_resource() noexcept {
   return this->_cursor_resource;
 }
 
 /// Engine::get_clipboard_resource returns ClipboardResource instance.
 /// used for manipulating clipboard.
-__idk_nodiscard ClipboardResource& Engine::get_clipboard_resource() noexcept {
+[[nodiscard]] ClipboardResource& Engine::get_clipboard_resource() noexcept {
   return this->_clipboard_resource;
 }
 

@@ -98,6 +98,10 @@ void LabelObject::set_flip_horizontally(bool flip_horizontally) noexcept {
   this->_label.set_flip_horizontally(flip_horizontally);
 }
 
+void LabelObject::set_ignore_zoom(bool ignore_zoom) noexcept {
+  this->_label.set_ignore_zoom(ignore_zoom);
+}
+
 [[nodiscard]] const bool& LabelObject::get_flip_vertically() const noexcept {
   return this->_label.get_flip_vertically();
 }

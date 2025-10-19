@@ -37,6 +37,22 @@ namespace fescript {
   return nullptr;
 }
 
+[[nodiscard]] Object FescriptCameraObjectMemberSetZoomFactor::call(
+  [[maybe_unused]] Interpreter& interpreter,
+  const std::vector<Object>& arguments
+) {
+  ERR_CHECK_DECIMAL("CameraObject.set_zoom_factor", 1)
+  this->_self->set_zoom_factor(static_cast<idk::f32>(std::get<LongDoubleIndex>(arguments[0])));
+  return nullptr;
+}
+
+[[nodiscard]] Object FescriptCameraObjectMemberGetZoomFactor::call(
+  [[maybe_unused]] Interpreter& interpreter,
+  const std::vector<Object>& arguments
+) {
+  return static_cast<idk::f80>(this->_self->get_camera()->get_zoom_factor());
+}
+
 [[nodiscard]] Object FescriptCameraObjectWrapper::call([[maybe_unused]] Interpreter& interpreter, const std::vector<Object>& arguments) {
   auto camera_object = std::make_shared<fresh::CameraObject>();
   this->_object_id = camera_object->get_id();

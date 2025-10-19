@@ -33,15 +33,16 @@ public:
 
   // TODO: we need Drawable class that gives get_position_resource(), get_color_resource()
   // and draw() function. so, that will change the definition of BaseObject.
-  __idk_nodiscard
+  [[nodiscard]]
   ColorResource& get_color_resource() noexcept;
 
-  __idk_nodiscard
+  [[nodiscard]]
   bool& get_is_filled() noexcept;
 
   void set_rotation(idk::f32 rad_degrees) noexcept override;
   void set_flip_vertically(bool flip_vertically) noexcept override;
   void set_flip_horizontally(bool flip_horizontally) noexcept override;
+  void set_ignore_zoom(bool ignore_zoom) noexcept override;
 
   [[nodiscard]] const bool& get_flip_vertically() const noexcept override;
   [[nodiscard]] const bool& get_flip_horizontally() const noexcept override;

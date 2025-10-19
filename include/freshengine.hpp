@@ -100,13 +100,13 @@ class Engine {
   /// loop after 1 tick.
   void set_engine_running(bool engine_running) noexcept;
 
-  __idk_nodiscard KeyboardInput& get_keyboard_input() noexcept;
+  [[nodiscard]] KeyboardInput& get_keyboard_input() noexcept;
 
-  __idk_nodiscard MouseInput& get_mouse_input() noexcept;
+  [[nodiscard]] MouseInput& get_mouse_input() noexcept;
 
-  __idk_nodiscard CursorResource& get_cursor_resource() noexcept;
+  [[nodiscard]] CursorResource& get_cursor_resource() noexcept;
 
-  __idk_nodiscard ClipboardResource& get_clipboard_resource() noexcept;
+  [[nodiscard]] ClipboardResource& get_clipboard_resource() noexcept;
 
   [[nodiscard]] CacheSpriteResource& get_cache_sprite_resource() noexcept;
 

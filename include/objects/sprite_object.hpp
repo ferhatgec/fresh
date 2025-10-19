@@ -26,7 +26,7 @@ public:
 
   [[nodiscard]] SpriteResource& get_sprite_resource() noexcept;
 
-  __idk_nodiscard
+  [[nodiscard]]
   SpriteResource copy_get_sprite_resource() const noexcept {
     return this->_sprite_resource;
   }
@@ -40,6 +40,7 @@ public:
   void set_rotation(idk::f32 rad_degrees) noexcept override;
   void set_flip_vertically(bool flip_vertically) noexcept override;
   void set_flip_horizontally(bool flip_horizontally) noexcept override;
+  void set_ignore_zoom(bool ignore_zoom) noexcept override;
 
   [[nodiscard]] const bool& get_flip_vertically() const noexcept override;
   [[nodiscard]] const bool& get_flip_horizontally() const noexcept override;

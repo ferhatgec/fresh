@@ -48,7 +48,7 @@ void AreaObject::sync(bool is_member_of_camera) noexcept {
   this->apply_changes();
 }
 
-__idk_nodiscard bool
+[[nodiscard]] bool
 AreaObject::is_colliding_with(std::shared_ptr<BaseObject> object) noexcept {
   if(this->_disabled)
     return false;
@@ -60,20 +60,20 @@ AreaObject::is_colliding_with(std::shared_ptr<BaseObject> object) noexcept {
           _pos_info.get_y() + _pos_info.get_h() > object->_pos_info.get_y());
 }
 
-__idk_nodiscard bool
+[[nodiscard]] bool
 AreaObject::is_colliding_with(std::shared_ptr<CircleAreaObject> object) noexcept {
   std::cout << "Engine error: Use RectangleAreaObject for rectangle to circle collision detections.\n";
   std::exit(1); // FIXME: Set Engine::is_running = false instead of abnormally exit from program.
 }
 
-__idk_nodiscard bool
+[[nodiscard]] bool
 AreaObject::is_colliding_with(std::shared_ptr<RectangleAreaObject> object) noexcept {
   if(!object)
     return false;
   return this->is_colliding_with(std::dynamic_pointer_cast<BaseObject>(object));
 }
 
-__idk_nodiscard
+[[nodiscard]]
 bool AreaObject::is_colliding_with(std::shared_ptr<PolygonAreaObject> object) noexcept {
   std::cout << "Engine error: Use RectangleAreaObject for rectangle to polygon collision detections.\n";
   std::exit(1);

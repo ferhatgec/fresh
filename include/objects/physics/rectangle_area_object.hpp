@@ -18,16 +18,16 @@ public:
   void
   sync(bool is_member_of_camera = false) noexcept override;
 
-  __idk_nodiscard
+  [[nodiscard]]
   bool is_colliding_with(std::shared_ptr<BaseObject> object) noexcept override;
 
-  __idk_nodiscard
+  [[nodiscard]]
   bool is_colliding_with(std::shared_ptr<CircleAreaObject> object) noexcept override;
 
-  __idk_nodiscard
+  [[nodiscard]]
   bool is_colliding_with(std::shared_ptr<RectangleAreaObject> object) noexcept override;
 
-  __idk_nodiscard
+  [[nodiscard]]
   bool is_colliding_with(std::shared_ptr<PolygonAreaObject> object) noexcept override;
 
   [[nodiscard]] constexpr const char* to_string() noexcept override {

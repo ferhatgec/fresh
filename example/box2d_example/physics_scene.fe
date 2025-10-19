@@ -5,6 +5,7 @@ def RectBodyDegrees = 0;
 def ColoredRect;
 def CharacterAnimation;
 def Character;
+def Camera;
 
 def println(arr...) =
  IO_println(arr);
@@ -35,12 +36,26 @@ def init(delta) =
  EngineWindow_set_window_title("Box2D physics test");
  Engine_link_camera(Engine_get_object("Camera")); # we get CameraObject from physics_scene.fes
  Engine_render_objects_push(World); # we need to push WorldObject so we can sync.
+ # TODO: fresh needs syntactic sugar like Godot's $
+ # so we can just write $"Camera" instead of Engine_get_object("Camera").
+ Camera = Engine_get_object("Camera");
 
  ColoredRect = Engine_get_object("Camera/ColoredRect1");
  Character = CreateDynamicRectangleBody("character_pixel.png", [0, 0], [40, 80], "Gech", "PixelCharacter");
  Character.set_fixed_rot(true);
  Engine_render_objects_push(CreateStaticRectangleBody([0, -100], [200, 30]));
  Engine_render_objects_push(Character);
+
+ Character.push_to_sub_objects(
+  Engine_PointLightObject(
+   [-20, -5],
+   [0, 0, 1],
+   [1, 1, 1],
+   0,
+   0.09,
+   0.000032
+  )
+ );
 
  CharacterAnimation = Engine_AnimationPlayerObject();
  CharacterAnimation.push_frame(
@@ -80,11 +95,20 @@ def update(delta) =
  delta = delta * 10.0;
 
  # move camera with WASD keys
- if(EngineIO_is_key_pressed(EngineIO_Key_W)) = Engine_get_object("Camera").move(0, -CameraMoveSpeed);;
- if(EngineIO_is_key_pressed(EngineIO_Key_S)) = Engine_get_object("Camera").move(0, CameraMoveSpeed);;
- if(EngineIO_is_key_pressed(EngineIO_Key_A)) = Engine_get_object("Camera").move(-CameraMoveSpeed, 0);;
- if(EngineIO_is_key_pressed(EngineIO_Key_D)) = Engine_get_object("Camera").move(CameraMoveSpeed, 0);;
+ if(EngineIO_is_key_pressed(EngineIO_Key_W)) = Camera.move(0, -CameraMoveSpeed);;
+ if(EngineIO_is_key_pressed(EngineIO_Key_S)) = Camera.move(0, CameraMoveSpeed);;
+ if(EngineIO_is_key_pressed(EngineIO_Key_A)) = Camera.move(-CameraMoveSpeed, 0);;
+ if(EngineIO_is_key_pressed(EngineIO_Key_D)) = Camera.move(CameraMoveSpeed, 0);;
 
+ # increase zoom
+ if(EngineIO_is_key_pressed(EngineIO_Key_V)) =
+  Camera.set_zoom_factor(Camera.get_zoom_factor() + 0.1);
+ ;
+
+ # decrease zoom
+ if(EngineIO_is_key_pressed(EngineIO_Key_B)) =
+  Camera.set_zoom_factor(Camera.get_zoom_factor() - 0.1);
+ ;
 
  if(EngineIO_is_key_pressed(EngineIO_Key_U)) = ColoredRect.set_y(ColoredRect.get_y() + 5);;
  if(EngineIO_is_key_pressed(EngineIO_Key_J)) = ColoredRect.set_y(ColoredRect.get_y() - 5);;

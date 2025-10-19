@@ -25,10 +25,10 @@ void SpriteObject::sync(bool is_member_of_camera) noexcept {
   if(this->_visible) {
     this->_rectangle.draw(this->_shader, FreshInstance->get_camera()->get_camera(), FreshInstance->get_light_manager());
   }
-  this->apply_changes();
+  this->apply_changes(is_member_of_camera);
 }
 
-__idk_nodiscard
+[[nodiscard]]
 SpriteResource& SpriteObject::get_sprite_resource() noexcept {
   return this->_sprite_resource;
 }
@@ -72,6 +72,10 @@ void SpriteObject::set_flip_vertically(bool flip_vertically) noexcept {
 
 void SpriteObject::set_flip_horizontally(bool flip_horizontally) noexcept {
   this->_rectangle.set_flip_horizontally(flip_horizontally);
+}
+
+void SpriteObject::set_ignore_zoom(bool ignore_zoom) noexcept {
+  this->_rectangle.set_ignore_zoom(ignore_zoom);
 }
 
 [[nodiscard]] const bool& SpriteObject::get_flip_vertically() const noexcept {

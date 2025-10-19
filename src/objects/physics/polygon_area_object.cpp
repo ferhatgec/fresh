@@ -43,23 +43,23 @@ void PolygonAreaObject::sync(bool is_member_of_camera) noexcept {
   this->apply_changes();
 }
 
-__idk_nodiscard
+[[nodiscard]]
 bool PolygonAreaObject::is_colliding_with(std::shared_ptr<BaseObject> object) noexcept {
   std::cout << "Engine error: Do not use BaseObject. Use RectangleAreaObject directly.\n";
   std::exit(1);
 }
 
-__idk_nodiscard
+[[nodiscard]]
 bool PolygonAreaObject::is_colliding_with(std::shared_ptr<CircleAreaObject> object) noexcept {
   return AreaObject::is_colliding_with(object, shared_from_this());
 }
 
-__idk_nodiscard
+[[nodiscard]]
 bool PolygonAreaObject::is_colliding_with(std::shared_ptr<RectangleAreaObject> object) noexcept {
   return AreaObject::is_colliding_with(object, shared_from_this());
 }
 
-__idk_nodiscard
+[[nodiscard]]
 bool PolygonAreaObject::is_colliding_with(std::shared_ptr<PolygonAreaObject> object) noexcept {
   return AreaObject::is_colliding_with(shared_from_this(), object);
 }

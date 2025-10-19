@@ -35,7 +35,7 @@ void CircleAreaObject::sync(bool is_member_of_camera) noexcept {
 }
 
 // circle to rectangle (this crap will probably be removed later because it's nonsense. jUsT uSe ReCtAngLeAreAoBjeCt)
-__idk_nodiscard
+[[nodiscard]]
 bool CircleAreaObject::is_colliding_with(std::shared_ptr<BaseObject> object) noexcept {
   if(!object || this->get_disabled() || object->get_disabled())
     return false;
@@ -47,19 +47,19 @@ bool CircleAreaObject::is_colliding_with(std::shared_ptr<BaseObject> object) noe
 }
 
 // circle to circle (not ellipse, not supported rn)
-__idk_nodiscard
+[[nodiscard]]
 bool CircleAreaObject::is_colliding_with(std::shared_ptr<CircleAreaObject> object) noexcept {
   return AreaObject::is_colliding_with(shared_from_this(), object);
 }
 
 // circle to rectangle
-__idk_nodiscard
+[[nodiscard]]
 bool CircleAreaObject::is_colliding_with(std::shared_ptr<RectangleAreaObject> object) noexcept {
   return AreaObject::is_colliding_with(object, shared_from_this());
 }
 
 // circle to polygon
-__idk_nodiscard
+[[nodiscard]]
 bool CircleAreaObject::is_colliding_with(std::shared_ptr<PolygonAreaObject> object) noexcept {
   return AreaObject::is_colliding_with(shared_from_this(), object);
 }

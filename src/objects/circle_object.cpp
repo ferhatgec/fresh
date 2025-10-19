@@ -37,12 +37,12 @@ void CircleObject::set(const fescript::Token& name, fescript::Object value) {
   }
 }
 
-__idk_nodiscard
+[[nodiscard]]
 CircleResource& CircleObject::get_circle_resource() noexcept {
   return this->_resource;
 }
 
-__idk_nodiscard ColorResource& CircleObject::get_color_resource() noexcept {
+[[nodiscard]] ColorResource& CircleObject::get_color_resource() noexcept {
   return this->_color;
 }
 
@@ -52,6 +52,10 @@ void CircleObject::set_flip_vertically(bool flip_vertically) noexcept {
 
 void CircleObject::set_flip_horizontally(bool flip_horizontally) noexcept {
   this->_circle.set_flip_horizontally(flip_horizontally);
+}
+
+void CircleObject::set_ignore_zoom(bool ignore_zoom) noexcept {
+  this->_circle.set_ignore_zoom(ignore_zoom);
 }
 
 [[nodiscard]] const bool& CircleObject::get_flip_vertically() const noexcept {

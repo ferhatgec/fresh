@@ -43,7 +43,7 @@ void CameraObject::set_camera_position(const PointResource& pt) noexcept {
   // we apply delta at the time because there might be more than one calls to changing
   // position of an object; that is because there still at least one delta waits to be
   // applied into its child objects; in the end of apply_changes; it will reset the delta.
-  //this->apply_changes(true);
+  this->apply_changes(true);
 }
 
 void CameraObject::move_camera(const PointResource& pt) noexcept {
@@ -52,8 +52,8 @@ void CameraObject::move_camera(const PointResource& pt) noexcept {
   }
   this->_camera->set_position(
       glm::vec3{this->get_x() + pt.get_x(), this->get_y() + pt.get_y(), 1.f});
-  this->set_position({this->get_x() + pt.get_x(), this->get_y() + pt.get_y()});
-  //this->apply_changes(true);
+  this->set_position({this->get_x() + pt.get_x(), this->get_y() + pt.get_y(), this->get_w(), this->get_h()});
+  this->apply_changes(true);
 }
 
 void CameraObject::resize_camera(idk::f32 w, idk::f32 h) noexcept {
@@ -61,8 +61,15 @@ void CameraObject::resize_camera(idk::f32 w, idk::f32 h) noexcept {
     return;
   }
   this->_camera->resize(w, h);
+  FreshInstance->get_window()->get_framebuffer().resize(w, h);
   this->set_position({this->get_x(), this->get_y(), w, h});
-  //this->apply_changes(true);
+  this->reset_delta_w();
+  this->reset_delta_h();
+  this->apply_changes(true);
+}
+
+void CameraObject::set_zoom_factor(idk::f32 zoom_factor) noexcept {
+  this->_camera->set_zoom_factor(zoom_factor);
 }
 
 [[nodiscard]] const std::unique_ptr<fre2d::Camera>& CameraObject::get_camera() const noexcept {

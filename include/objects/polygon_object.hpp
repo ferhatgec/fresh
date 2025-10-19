@@ -31,15 +31,16 @@ public:
   void set(const fescript::Token& name, fescript::Object value) override;
   void init_signal() noexcept override;
 
-  __idk_nodiscard
+  [[nodiscard]]
   PolygonResource& get_polygon_resource() noexcept;
 
-  __idk_nodiscard
+  [[nodiscard]]
   ColorResource& get_color_resource() noexcept;
 
   void set_rotation(idk::f32 rad_degrees) noexcept override;
   void set_flip_vertically(bool flip_vertically) noexcept override;
   void set_flip_horizontally(bool flip_horizontally) noexcept override;
+  void set_ignore_zoom(bool ignore_zoom) noexcept override;
 
   [[nodiscard]] const bool& get_flip_vertically() const noexcept override;
   [[nodiscard]] const bool& get_flip_horizontally() const noexcept override;

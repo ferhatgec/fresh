@@ -72,7 +72,7 @@ class BaseObject {
   /// BaseObject::set_position(BBoxResource) is write-only access to _pos_info
   /// property.
   void set_position(const BBoxResource& pos) noexcept;
-
+  void lazy_set_position(const BBoxResource& pos) noexcept;
   /// BaseObject::get_x() is read-only access to _pos_info._x property.
   [[nodiscard]] const idk::f32& get_x() const noexcept;
   /// BaseObject::get_y() is read-only access to _pos_info._y property.
@@ -83,6 +83,8 @@ class BaseObject {
   [[nodiscard]] const idk::f32& get_h() const noexcept;
   /// BaseObject::get_color() is read-only access to _color property.
   [[nodiscard]] const ColorResource& get_color() const noexcept;
+
+  [[nodiscard]] virtual const bool& get_ignore_zoom() const noexcept;
 
   /// does not set anything if self is BaseObject.
   virtual void set_flip_vertically(bool flip_vertically) noexcept;
@@ -107,6 +109,8 @@ class BaseObject {
   void set_h(idk::f32 h) noexcept;
   /// BaseObject::set_color() is write-only access to _color property.
   void set_color(const ColorResource& res) noexcept;
+
+  virtual void set_ignore_zoom(bool ignore_zoom) noexcept;
 
   void lazy_set_x(idk::f32 x) noexcept;
   void lazy_set_y(idk::f32 y) noexcept;
@@ -146,6 +150,11 @@ class BaseObject {
 
   /// BaseObject::reset_delta() sets delta values to 0.
   void reset_delta() noexcept;
+
+  void reset_delta_x() noexcept;
+  void reset_delta_y() noexcept;
+  void reset_delta_w() noexcept;
+  void reset_delta_h() noexcept;
 
   /// BaseObject::push_object(std::shared_ptr<BaseObject>) pushes given object
   /// into child object list.

@@ -76,26 +76,22 @@ void BaseObject::sync(bool is_member_of_camera) noexcept {
 }
 
 void BaseObject::apply_changes(bool is_member_of_camera) noexcept {
-  const bool is_camera_moved = this->_member_of_camera && strcmp(this->to_string(), "cameraobject") == SameCstr;
+  // FIXME: it seems some Camera child objects do not catch with others,
+  // for now that's the patch but it should be fixed any time soon.
+  this->_member_of_camera = is_member_of_camera;
   for (const auto& object: this->_sub_objects) {
     if(!object) {
       log_error(src(), "invalid object.");
       return;
     }
+    // FIXME: this should have done at the time of
+    // that child object being pushed into CameraObject's child list,
+    // but not a big deal though just simple bool assign.
+    if(this->_member_of_camera) {
+      object->set_ignore_zoom(true);
+    }
     if(this->get_delta() != 0.f) {
-      if (is_camera_moved) {
-        object->lazy_set_x(object->get_x() + this->get_delta_x());
-        object->lazy_set_y(object->get_y() + this->get_delta_y());
-        // FIXME: there might be unnecessary call to notify_y() since RectangleObject,
-        // CircleObject, SpriteObject etc. are all using same methods for y along with y.
-        // but since model matrix is lazily updated, there is no too much overhead.
-        object->notify_x();
-        object->notify_y();
-        // this way it prevents from calling apply_changes twice.
-        object->apply_changes(object->_member_of_camera);
-      } else {
-        object->set_position(object->get_position() + this->get_delta());
-      }
+      object->set_position(object->get_position() + this->get_delta());
     }
     if(!fre2d::detail::nearly_equals(this->get_delta_rot(), 0.f)) {
       object->set_rotation(object->get_rotation() + this->get_delta_rot());
@@ -115,21 +111,29 @@ void BaseObject::apply_changes(bool is_member_of_camera) noexcept {
 }
 
 void BaseObject::set_position(const BBoxResource& pos) noexcept {
+  if(this->_pos_info == pos)
+    return;
   this->_copy_last_pos_info = this->_pos_info;
   this->_pos_info = pos;
-  if (this->get_delta_x() != 0.f) {
+  if (!fre2d::detail::nearly_equals(this->get_delta_x(), 0.f)) {
     this->notify_x();
   }
-  if (this->get_delta_y() != 0.f) {
+  if (!fre2d::detail::nearly_equals(this->get_delta_y(), 0.f)) {
     this->notify_y();
   }
-  if (this->get_delta_w() != 0.f) {
+  if (!fre2d::detail::nearly_equals(this->get_delta_w(), 0.f)) {
     this->notify_w();
   }
-  if (this->get_delta_h() != 0.f) {
+  if (!fre2d::detail::nearly_equals(this->get_delta_h(), 0.f)) {
     this->notify_h();
   }
-  this->apply_changes(this->_member_of_camera);
+}
+
+void BaseObject::lazy_set_position(const BBoxResource& pos) noexcept {
+  if(this->_pos_info == pos)
+    return;
+  this->_copy_last_pos_info = this->_pos_info;
+  this->_pos_info = pos;
 }
 
 [[nodiscard]] const idk::f32& BaseObject::get_x() const noexcept {
@@ -150,6 +154,10 @@ void BaseObject::set_position(const BBoxResource& pos) noexcept {
 
 [[nodiscard]] const ColorResource& BaseObject::get_color() const noexcept {
   return this->_color;
+}
+
+[[nodiscard]] const bool& BaseObject::get_ignore_zoom() const noexcept {
+  return false;
 }
 
 void BaseObject::set_flip_vertically(bool flip_vertically) noexcept {}
@@ -190,6 +198,10 @@ void BaseObject::set_h(idk::f32 h) noexcept {
   this->lazy_set_h(h);
   this->notify_h();
   this->apply_changes(this->_member_of_camera);
+}
+
+void BaseObject::set_ignore_zoom(bool ignore_zoom) noexcept {
+
 }
 
 void BaseObject::lazy_set_x(idk::f32 x) noexcept {
@@ -282,12 +294,29 @@ void BaseObject::reset_delta() noexcept {
   this->_last_rotation_degrees = this->_rotation_degrees;
 }
 
+void BaseObject::reset_delta_x() noexcept {
+  this->_copy_last_pos_info.set_x(this->get_x());
+}
+
+void BaseObject::reset_delta_y() noexcept {
+  this->_copy_last_pos_info.set_y(this->get_y());
+}
+
+void BaseObject::reset_delta_w() noexcept {
+  this->_copy_last_pos_info.set_w(this->get_w());
+}
+
+void BaseObject::reset_delta_h() noexcept {
+  this->_copy_last_pos_info.set_h(this->get_h());
+}
+
 void BaseObject::push_object(std::shared_ptr<BaseObject> sub_object) noexcept {
   if(!sub_object) [[unlikely]] {
     log_warning(src(), "BaseObject::push_object(): invalid pointer.");
     return;
   }
   sub_object->_parent = this->_give_shared_ptr();
+  sub_object->_member_of_camera = this->_member_of_camera;
   this->_sub_objects.push_back(std::move(sub_object));
 }
 

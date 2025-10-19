@@ -737,33 +737,35 @@ void Interpreter::check_number_operands(const Token &op, const Object &left,
     }
     case FescriptLabelObjectIndex: {
       RETURN_BASE_OBJECT_PROPERTIES(FescriptLabelObjectIndex)
-      else if (keyword.lexeme == "background_red"  ) return static_cast<idk::f80>(std::get<FescriptLabelObjectIndex>(value)->get_background_color().get_red());
-      else if (keyword.lexeme == "background_green") return static_cast<idk::f80>(std::get<FescriptLabelObjectIndex>(value)->get_background_color().get_green());
-      else if (keyword.lexeme == "background_blue" ) return static_cast<idk::f80>(std::get<FescriptLabelObjectIndex>(value)->get_background_color().get_blue());
-      else if (keyword.lexeme == "background_alpha") return static_cast<idk::f80>(std::get<FescriptLabelObjectIndex>(value)->get_background_color().get_alpha());
-      else if (keyword.lexeme == "foreground_red"  ) return static_cast<idk::f80>(std::get<FescriptLabelObjectIndex>(value)->get_foreground_color().get_red());
-      else if (keyword.lexeme == "background_blue" ) return static_cast<idk::f80>(std::get<FescriptLabelObjectIndex>(value)->get_background_color().get_blue());
-      else if (keyword.lexeme == "background_alpha") return static_cast<idk::f80>(std::get<FescriptLabelObjectIndex>(value)->get_background_color().get_alpha());
-      else if (keyword.lexeme == "foreground_red"  ) return static_cast<idk::f80>(std::get<FescriptLabelObjectIndex>(value)->get_foreground_color().get_red());
-      else if (keyword.lexeme == "foreground_green") return static_cast<idk::f80>(std::get<FescriptLabelObjectIndex>(value)->get_foreground_color().get_green());
-      else if (keyword.lexeme == "foreground_blue" ) return static_cast<idk::f80>(std::get<FescriptLabelObjectIndex>(value)->get_foreground_color().get_blue());
-      else if (keyword.lexeme == "foreground_alpha") return static_cast<idk::f80>(std::get<FescriptLabelObjectIndex>(value)->get_foreground_color().get_alpha());
-      else if (keyword.lexeme == "label_text"      ) return std::string(std::get<FescriptLabelObjectIndex>(value)->get_label_text().data());
-      else if (keyword.lexeme == "font_size"       ) return static_cast<idk::f80>(std::get<FescriptLabelObjectIndex>(value)->get_label_font_resource().get_font_size());
-      else if (keyword.lexeme == "font_resource"   ) return std::string(std::get<FescriptLabelObjectIndex>(value)->get_label_font_resource().get_font_path().data());
-      else if (keyword.lexeme == "init_font"       ) return cache_make_shared<FescriptLabelObjectMemberInitFont>(std::get<FescriptLabelObjectIndex>(value));
-      else if (keyword.lexeme == "init_text"       ) return cache_make_shared<FescriptLabelObjectMemberInitText>(std::get<FescriptLabelObjectIndex>(value));
+      if (keyword.lexeme == "background_red"  ) return static_cast<idk::f80>(std::get<FescriptLabelObjectIndex>(value)->get_background_color().get_red());
+      if (keyword.lexeme == "background_green") return static_cast<idk::f80>(std::get<FescriptLabelObjectIndex>(value)->get_background_color().get_green());
+      if (keyword.lexeme == "background_blue" ) return static_cast<idk::f80>(std::get<FescriptLabelObjectIndex>(value)->get_background_color().get_blue());
+      if (keyword.lexeme == "background_alpha") return static_cast<idk::f80>(std::get<FescriptLabelObjectIndex>(value)->get_background_color().get_alpha());
+      if (keyword.lexeme == "foreground_red"  ) return static_cast<idk::f80>(std::get<FescriptLabelObjectIndex>(value)->get_foreground_color().get_red());
+      if (keyword.lexeme == "background_blue" ) return static_cast<idk::f80>(std::get<FescriptLabelObjectIndex>(value)->get_background_color().get_blue());
+      if (keyword.lexeme == "background_alpha") return static_cast<idk::f80>(std::get<FescriptLabelObjectIndex>(value)->get_background_color().get_alpha());
+      if (keyword.lexeme == "foreground_red"  ) return static_cast<idk::f80>(std::get<FescriptLabelObjectIndex>(value)->get_foreground_color().get_red());
+      if (keyword.lexeme == "foreground_green") return static_cast<idk::f80>(std::get<FescriptLabelObjectIndex>(value)->get_foreground_color().get_green());
+      if (keyword.lexeme == "foreground_blue" ) return static_cast<idk::f80>(std::get<FescriptLabelObjectIndex>(value)->get_foreground_color().get_blue());
+      if (keyword.lexeme == "foreground_alpha") return static_cast<idk::f80>(std::get<FescriptLabelObjectIndex>(value)->get_foreground_color().get_alpha());
+      if (keyword.lexeme == "label_text"      ) return std::string(std::get<FescriptLabelObjectIndex>(value)->get_label_text().data());
+      if (keyword.lexeme == "font_size"       ) return static_cast<idk::f80>(std::get<FescriptLabelObjectIndex>(value)->get_label_font_resource().get_font_size());
+      if (keyword.lexeme == "font_resource"   ) return std::string(std::get<FescriptLabelObjectIndex>(value)->get_label_font_resource().get_font_path().data());
+      if (keyword.lexeme == "init_font"       ) return cache_make_shared<FescriptLabelObjectMemberInitFont>(std::get<FescriptLabelObjectIndex>(value));
+      if (keyword.lexeme == "init_text"       ) return cache_make_shared<FescriptLabelObjectMemberInitText>(std::get<FescriptLabelObjectIndex>(value));
       throw RuntimeError(keyword, "LabelObject property cannot be found.");
     }
     case FescriptAreaObjectIndex: {
       RETURN_BASE_OBJECT_PROPERTIES(FescriptAreaObjectIndex)
-      else if (keyword.lexeme == "is_colliding_with") return cache_make_shared<FescriptAreaObjectMemberIsCollidingWith>(std::get<FescriptAreaObjectIndex>(value));
+      if (keyword.lexeme == "is_colliding_with") return cache_make_shared<FescriptAreaObjectMemberIsCollidingWith>(std::get<FescriptAreaObjectIndex>(value));
       throw RuntimeError(keyword, "AreaObject property cannot be found.");
     }
     case FescriptCameraObjectIndex: {
       RETURN_BASE_OBJECT_PROPERTIES(FescriptCameraObjectIndex)
       if(keyword.lexeme == "is_visible_on_camera") return cache_make_shared<FescriptCameraObjectMemberIsVisibleOnCamera>(std::get<FescriptCameraObjectIndex>(value));
       if(keyword.lexeme == "move") return cache_make_shared<FescriptCameraObjectMemberMove>(std::get<FescriptCameraObjectIndex>(value));
+      if(keyword.lexeme == "set_zoom_factor") return cache_make_shared<FescriptCameraObjectMemberSetZoomFactor>(std::get<FescriptCameraObjectIndex>(value));
+      if(keyword.lexeme == "get_zoom_factor") return cache_make_shared<FescriptCameraObjectMemberGetZoomFactor>(std::get<FescriptCameraObjectIndex>(value));
       throw RuntimeError(keyword, "CameraObject property cannot be found.");
     }
     case FescriptAnimationPlayerObjectIndex: {

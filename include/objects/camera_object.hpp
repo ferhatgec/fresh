@@ -40,8 +40,8 @@ public:
   /// they are just implementation of camera without synchronizing position and
   /// other properties; just renders them to screen.
   void move_camera(const PointResource& pt) noexcept;
-
   void resize_camera(idk::f32 w, idk::f32 h) noexcept;
+  void set_zoom_factor(idk::f32 zoom_factor) noexcept;
 
   [[nodiscard]] const std::unique_ptr<fre2d::Camera>& get_camera() const noexcept;
 
