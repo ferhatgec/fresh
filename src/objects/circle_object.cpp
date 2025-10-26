@@ -58,12 +58,24 @@ void CircleObject::set_ignore_zoom(bool ignore_zoom) noexcept {
   this->_circle.set_ignore_zoom(ignore_zoom);
 }
 
+void CircleObject::set_affected_by_light(bool affected_by_light) noexcept {
+  this->_circle.set_affected_by_light(affected_by_light);
+}
+
 [[nodiscard]] const bool& CircleObject::get_flip_vertically() const noexcept {
   return this->_circle.get_flip_vertically();
 }
 
 [[nodiscard]] const bool& CircleObject::get_flip_horizontally() const noexcept {
   return this->_circle.get_flip_horizontally();
+}
+
+[[nodiscard]] bool CircleObject::get_ignore_zoom() const noexcept {
+  return this->_circle.get_ignore_zoom();
+}
+
+[[nodiscard]] bool CircleObject::get_affected_by_light() const noexcept {
+  return this->_circle.get_affected_by_light();
 }
 
 void CircleObject::init_signal() noexcept {

@@ -78,12 +78,24 @@ void SpriteObject::set_ignore_zoom(bool ignore_zoom) noexcept {
   this->_rectangle.set_ignore_zoom(ignore_zoom);
 }
 
+void SpriteObject::set_affected_by_light(bool affected_by_light) noexcept {
+  this->_rectangle.set_affected_by_light(affected_by_light);
+}
+
 [[nodiscard]] const bool& SpriteObject::get_flip_vertically() const noexcept {
   return this->_rectangle.get_flip_vertically();
 }
 
 [[nodiscard]] const bool& SpriteObject::get_flip_horizontally() const noexcept {
   return this->_rectangle.get_flip_horizontally();
+}
+
+[[nodiscard]] bool SpriteObject::get_ignore_zoom() const noexcept {
+  return this->get_rectangle().get_ignore_zoom();
+}
+
+[[nodiscard]] bool SpriteObject::get_affected_by_light() const noexcept {
+  return this->get_rectangle().get_affected_by_light();
 }
 
 void SpriteObject::notify_x() noexcept {

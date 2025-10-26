@@ -45,6 +45,8 @@
   if(keyword.lexeme == "set_name") return fescript::cache_make_shared<FescriptBaseObjectMemberSetName>(obj_ptr); \
   if(keyword.lexeme == "set_flip_vertically") return fescript::cache_make_shared<FescriptBaseObjectMemberSetFlipVertically>(obj_ptr); \
   if(keyword.lexeme == "set_flip_horizontally") return fescript::cache_make_shared<FescriptBaseObjectMemberSetFlipHorizontally>(obj_ptr); \
+  if(keyword.lexeme == "set_ignore_zoom") return fescript::cache_make_shared<FescriptBaseObjectMemberSetIgnoreZoom>(obj_ptr); \
+  if(keyword.lexeme == "set_affected_by_light") return fescript::cache_make_shared<FescriptBaseObjectMemberSetAffectedByLight>(obj_ptr); \
   if(keyword.lexeme == "get_visible") return fescript::cache_make_shared<FescriptBaseObjectMemberGetVisible>(obj_ptr); \
   if(keyword.lexeme == "get_visible") return fescript::cache_make_shared<FescriptBaseObjectMemberGetVisible>(obj_ptr); \
   if(keyword.lexeme == "get_x") return fescript::cache_make_shared<FescriptBaseObjectMemberGetX>(obj_ptr); \
@@ -56,6 +58,8 @@
   if(keyword.lexeme == "get_name") return fescript::cache_make_shared<FescriptBaseObjectMemberGetName>(obj_ptr); \
   if(keyword.lexeme == "get_flip_vertically") return fescript::cache_make_shared<FescriptBaseObjectMemberGetFlipVertically>(obj_ptr); \
   if(keyword.lexeme == "get_flip_horizontally") return fescript::cache_make_shared<FescriptBaseObjectMemberGetFlipHorizontally>(obj_ptr); \
+  if(keyword.lexeme == "get_ignore_zoom") return fescript::cache_make_shared<FescriptBaseObjectMemberGetIgnoreZoom>(obj_ptr); \
+  if(keyword.lexeme == "get_affected_by_light") return fescript::cache_make_shared<FescriptBaseObjectMemberGetAffectedByLight>(obj_ptr); \
   if(keyword.lexeme == "get_object") return fescript::cache_make_shared<FescriptBaseObjectMemberGetObject>(obj_ptr); \
   if(keyword.lexeme == "sub_groups") { \
     auto array = std::make_shared<FescriptArray>(); \
@@ -149,6 +153,8 @@ DEFINE_MEMBER_MODULE_CLASS(SetRot, BaseObjectMember, 1, fresh::BaseObject)
 DEFINE_MEMBER_MODULE_CLASS(SetName, BaseObjectMember, 1, fresh::BaseObject)
 DEFINE_MEMBER_MODULE_CLASS(SetFlipVertically, BaseObjectMember, 1, fresh::BaseObject)
 DEFINE_MEMBER_MODULE_CLASS(SetFlipHorizontally, BaseObjectMember, 1, fresh::BaseObject)
+DEFINE_MEMBER_MODULE_CLASS(SetIgnoreZoom, BaseObjectMember, 1, fresh::BaseObject)
+DEFINE_MEMBER_MODULE_CLASS(SetAffectedByLight, BaseObjectMember, 1, fresh::BaseObject)
 DEFINE_MEMBER_MODULE_CLASS(GetVisible, BaseObjectMember, 0, fresh::BaseObject)
 DEFINE_MEMBER_MODULE_CLASS(GetDisabled, BaseObjectMember, 0, fresh::BaseObject)
 DEFINE_MEMBER_MODULE_CLASS(GetX, BaseObjectMember, 0, fresh::BaseObject)
@@ -158,8 +164,10 @@ DEFINE_MEMBER_MODULE_CLASS(GetH, BaseObjectMember, 0, fresh::BaseObject)
 DEFINE_MEMBER_MODULE_CLASS(GetXYWH, BaseObjectMember, 0, fresh::BaseObject)
 DEFINE_MEMBER_MODULE_CLASS(GetRot, BaseObjectMember, 0, fresh::BaseObject)
 DEFINE_MEMBER_MODULE_CLASS(GetName, BaseObjectMember, 0, fresh::BaseObject)
-DEFINE_MEMBER_MODULE_CLASS(GetFlipVertically, BaseObjectMember, 1, fresh::BaseObject)
-DEFINE_MEMBER_MODULE_CLASS(GetFlipHorizontally, BaseObjectMember, 1, fresh::BaseObject)
+DEFINE_MEMBER_MODULE_CLASS(GetFlipVertically, BaseObjectMember, 0, fresh::BaseObject)
+DEFINE_MEMBER_MODULE_CLASS(GetFlipHorizontally, BaseObjectMember, 0, fresh::BaseObject)
+DEFINE_MEMBER_MODULE_CLASS(GetIgnoreZoom, BaseObjectMember, 0, fresh::BaseObject)
+DEFINE_MEMBER_MODULE_CLASS(GetAffectedByLight, BaseObjectMember, 0, fresh::BaseObject)
 DEFINE_MEMBER_MODULE_CLASS(GetObject, BaseObjectMember, 1, fresh::BaseObject)
 
 class FescriptBaseObjectWrapper : public FescriptCallable {

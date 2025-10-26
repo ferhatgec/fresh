@@ -84,7 +84,8 @@ class BaseObject {
   /// BaseObject::get_color() is read-only access to _color property.
   [[nodiscard]] const ColorResource& get_color() const noexcept;
 
-  [[nodiscard]] virtual const bool& get_ignore_zoom() const noexcept;
+  [[nodiscard]] virtual bool get_ignore_zoom() const noexcept;
+  [[nodiscard]] virtual bool get_affected_by_light() const noexcept;
 
   /// does not set anything if self is BaseObject.
   virtual void set_flip_vertically(bool flip_vertically) noexcept;
@@ -111,6 +112,7 @@ class BaseObject {
   void set_color(const ColorResource& res) noexcept;
 
   virtual void set_ignore_zoom(bool ignore_zoom) noexcept;
+  virtual void set_affected_by_light(bool affected_by_light) noexcept;
 
   void lazy_set_x(idk::f32 x) noexcept;
   void lazy_set_y(idk::f32 y) noexcept;

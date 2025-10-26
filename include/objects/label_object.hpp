@@ -42,9 +42,12 @@ public:
   void set_flip_vertically(bool flip_vertically) noexcept override;
   void set_flip_horizontally(bool flip_horizontally) noexcept override;
   void set_ignore_zoom(bool ignore_zoom) noexcept override;
+  void set_affected_by_light(bool affected_by_light) noexcept override;
 
   [[nodiscard]] const bool& get_flip_vertically() const noexcept override;
   [[nodiscard]] const bool& get_flip_horizontally() const noexcept override;
+  [[nodiscard]] bool get_ignore_zoom() const noexcept override;
+  [[nodiscard]] bool get_affected_by_light() const noexcept override;
 
   [[nodiscard]] ColorResource& get_background_color() noexcept {
     return this->_bg;

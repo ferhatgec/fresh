@@ -884,6 +884,7 @@ void Interpreter::check_number_operands(const Token &op, const Object &left,
       std::exit(1);
     }
   }
+  return nullptr;
 }
 
 [[nodiscard]] Object Interpreter::baseobject_to_fescript_object(std::shared_ptr<fresh::BaseObject> base_obj) noexcept {

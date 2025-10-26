@@ -119,7 +119,5 @@ private:
   idk::i64 global_seed;
 
   bool is_initialized { false };
-
-  std::vector<std::shared_ptr<fresh::BaseObject>> _acquired_objects; // TODO: All not moved objects will be stored here, variables will take reference of specific object.
 };
 }// namespace fescript

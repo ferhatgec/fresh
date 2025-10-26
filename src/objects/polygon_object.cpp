@@ -98,11 +98,23 @@ void PolygonObject::set_ignore_zoom(bool ignore_zoom) noexcept {
   this->_polygon.set_ignore_zoom(ignore_zoom);
 }
 
+void PolygonObject::set_affected_by_light(bool affected_by_light) noexcept {
+  this->_polygon.set_affected_by_light(affected_by_light);
+}
+
 [[nodiscard]] const bool& PolygonObject::get_flip_vertically() const noexcept {
   return this->_polygon.get_flip_vertically();
 }
 
 [[nodiscard]] const bool& PolygonObject::get_flip_horizontally() const noexcept {
   return this->_polygon.get_flip_horizontally();
+}
+
+[[nodiscard]] bool PolygonObject::get_ignore_zoom() const noexcept {
+  return this->_polygon.get_affected_by_light();
+}
+
+[[nodiscard]] bool PolygonObject::get_affected_by_light() const noexcept {
+  return this->_polygon.get_affected_by_light();
 }
 } // namespace fresh

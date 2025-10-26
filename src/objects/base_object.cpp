@@ -156,8 +156,12 @@ void BaseObject::lazy_set_position(const BBoxResource& pos) noexcept {
   return this->_color;
 }
 
-[[nodiscard]] const bool& BaseObject::get_ignore_zoom() const noexcept {
+[[nodiscard]] bool BaseObject::get_ignore_zoom() const noexcept {
   return false;
+}
+
+[[nodiscard]] bool BaseObject::get_affected_by_light() const noexcept {
+  return true;
 }
 
 void BaseObject::set_flip_vertically(bool flip_vertically) noexcept {}
@@ -201,6 +205,10 @@ void BaseObject::set_h(idk::f32 h) noexcept {
 }
 
 void BaseObject::set_ignore_zoom(bool ignore_zoom) noexcept {
+
+}
+
+void BaseObject::set_affected_by_light(bool affected_by_light) noexcept {
 
 }
 

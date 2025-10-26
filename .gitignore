@@ -1,5 +1,4 @@
 .idea
-.clang-format
 *.d
 *.slo
 *.lo

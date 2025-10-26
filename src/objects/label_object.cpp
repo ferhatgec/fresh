@@ -102,6 +102,10 @@ void LabelObject::set_ignore_zoom(bool ignore_zoom) noexcept {
   this->_label.set_ignore_zoom(ignore_zoom);
 }
 
+void LabelObject::set_affected_by_light(bool affected_by_light) noexcept {
+  this->_label.set_affected_by_light(affected_by_light);
+}
+
 [[nodiscard]] const bool& LabelObject::get_flip_vertically() const noexcept {
   return this->_label.get_flip_vertically();
 }
@@ -109,4 +113,12 @@ void LabelObject::set_ignore_zoom(bool ignore_zoom) noexcept {
 [[nodiscard]] const bool& LabelObject::get_flip_horizontally() const noexcept {
   return this->_label.get_flip_horizontally();
 }
-}  // namespace fresh
+
+[[nodiscard]] bool LabelObject::get_ignore_zoom() const noexcept {
+  return this->_label.get_ignore_zoom();
+}
+
+[[nodiscard]] bool LabelObject::get_affected_by_light() const noexcept {
+  return this->_label.get_affected_by_light();
+}
+} // namespace fresh

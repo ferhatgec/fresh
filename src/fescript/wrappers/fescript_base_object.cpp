@@ -98,6 +98,18 @@ namespace fescript {
   return nullptr;
 }
 
+[[nodiscard]] Object FescriptBaseObjectMemberSetIgnoreZoom::call(Interpreter& interpreter, const std::vector<Object>& arguments) {
+  ERR_CHECK_BOOL("BaseObject.set_ignore_zoom()", 1)
+  this->get_self()->set_ignore_zoom(std::get<BoolIndex>(arguments[0]));
+  return nullptr;
+}
+
+[[nodiscard]] Object FescriptBaseObjectMemberSetAffectedByLight::call(Interpreter& interpreter, const std::vector<Object>& arguments) {
+  ERR_CHECK_BOOL("BaseObject.set_affected_by_light()", 1)
+  this->get_self()->set_affected_by_light(std::get<BoolIndex>(arguments[0]));
+  return nullptr;
+}
+
 [[nodiscard]] Object FescriptBaseObjectMemberGetVisible::call(Interpreter& interpreter, const std::vector<Object>& arguments) {
   return this->get_self()->get_visible();
 }
@@ -158,6 +170,14 @@ namespace fescript {
 
 [[nodiscard]] Object FescriptBaseObjectMemberGetFlipHorizontally::call(Interpreter& interpreter, const std::vector<Object>& arguments) {
   return this->get_self()->get_flip_horizontally();
+}
+
+[[nodiscard]] Object FescriptBaseObjectMemberGetIgnoreZoom::call(Interpreter& interpreter, const std::vector<Object>& arguments) {
+  return this->get_self()->get_ignore_zoom();
+}
+
+[[nodiscard]] Object FescriptBaseObjectMemberGetAffectedByLight::call(Interpreter& interpreter, const std::vector<Object>& arguments) {
+  return this->get_self()->get_affected_by_light();
 }
 
 [[nodiscard]] Object FescriptBaseObjectMemberGetObject::call(Interpreter& interpreter, const std::vector<Object>& arguments) {

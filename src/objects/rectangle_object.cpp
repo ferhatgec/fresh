@@ -85,6 +85,11 @@ void RectangleObject::set_ignore_zoom(bool ignore_zoom) noexcept {
   this->_rectangle.set_ignore_zoom(ignore_zoom);
 }
 
+void RectangleObject::set_affected_by_light(bool affected_by_light) noexcept {
+  this->_rectangle.set_affected_by_light(affected_by_light);
+}
+
+
 [[nodiscard]] const bool& RectangleObject::get_flip_vertically() const noexcept {
   return this->_rectangle.get_flip_vertically();
 }
@@ -92,6 +97,16 @@ void RectangleObject::set_ignore_zoom(bool ignore_zoom) noexcept {
 [[nodiscard]] const bool& RectangleObject::get_flip_horizontally() const noexcept {
   return this->_rectangle.get_flip_horizontally();
 }
+
+[[nodiscard]] bool RectangleObject::get_ignore_zoom() const noexcept {
+  return this->_rectangle.get_ignore_zoom();
+}
+
+[[nodiscard]] bool RectangleObject::get_affected_by_light() const noexcept {
+  return this->_rectangle.get_affected_by_light();
+}
+
+
 
 void RectangleObject::notify_x() noexcept {
   this->_base_notify_xy();

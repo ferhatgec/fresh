@@ -41,6 +41,9 @@ def init(delta) =
  Camera = Engine_get_object("Camera");
 
  ColoredRect = Engine_get_object("Camera/ColoredRect1");
+ ColoredRect.get_object("./TestSprite1").set_affected_by_light(false);
+ ColoredRect.set_affected_by_light(false);
+
  Character = CreateDynamicRectangleBody("character_pixel.png", [0, 0], [40, 80], "Gech", "PixelCharacter");
  Character.set_fixed_rot(true);
  Engine_render_objects_push(CreateStaticRectangleBody([0, -100], [200, 30]));
