@@ -15,7 +15,7 @@
    return; \
   }
 
-#define CHECK_WINDOW(ret_val) \
+#define CHECK_WINDOW_RETURN(ret_val) \
   if(!this->_window) { \
     fresh::log_error(src(), "window has not been initialized."); \
     return ret_val; \

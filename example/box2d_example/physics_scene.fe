@@ -96,6 +96,7 @@ def init(delta) =
 
 def update(delta) =
  delta = delta * 10.0;
+ # IO_println("FPS: ", Engine_calculate_fps(), "\n");
 
  # move camera with WASD keys
  if(EngineIO_is_key_pressed(EngineIO_Key_W)) = Camera.move(0, -CameraMoveSpeed);;

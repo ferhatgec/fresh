@@ -158,6 +158,7 @@ Interpreter::Interpreter() {
   this->globals->define("Engine_load_fes", std::make_shared<FescriptEngineLoadFes>());
   this->globals->define("Engine_get_object", std::make_shared<FescriptEngineGetObject>());
   this->globals->define("Engine_link_camera", std::make_shared<FescriptEngineLinkCamera>());
+  this->globals->define("Engine_calculate_fps", std::make_shared<FescriptEngineCalculateFPS>());
 
   this->globals->define("Engine_render_objects_push", std::make_shared<FescriptEngineRenderObjectsPush>());
 }

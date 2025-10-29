@@ -17,6 +17,7 @@ ENGINE_MODULE(GetObject, 1)
 ENGINE_MODULE(RenderObjectsPush, 1)
 ENGINE_MODULE(LoadFes, 1)
 ENGINE_MODULE(LinkCamera, 1)
+ENGINE_MODULE(CalculateFPS, 0)
 } // namespace fescript
 
 #undef ENGINE_MODULE

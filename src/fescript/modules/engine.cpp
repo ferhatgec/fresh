@@ -75,4 +75,8 @@ namespace fescript {
   FreshInstance->link_camera(std::get<FescriptCameraObjectIndex>(arguments.front()));
   return nullptr;
 }
+
+[[nodiscard]] Object FescriptEngineCalculateFPS::call([[maybe_unused]] Interpreter& interpreter, const std::vector<Object>& arguments) {
+  return FreshInstance->calculate_fps();
+}
 } // namespace fescript

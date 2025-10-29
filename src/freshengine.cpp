@@ -46,10 +46,10 @@ void Engine::last() {
 
 void Engine::run() {
   init_cache_shader_map();
-  if(!Engine::get_instance()->_camera_object) {
-    Engine::get_instance()->_camera_object = std::make_shared<CameraObject>(
-      Engine::get_instance()->get_window()->get_width(),
-      Engine::get_instance()->get_window()->get_height()
+  if(!FreshInstance->_camera_object) {
+    FreshInstance->_camera_object = std::make_shared<CameraObject>(
+      static_cast<idk::f32>(FreshInstance->get_window()->get_width()),
+      static_cast<idk::f32>(FreshInstance->get_window()->get_height())
     );
   }
   FreshInstance->get_light_manager()->initialize();
@@ -71,18 +71,17 @@ void Engine::run() {
     glfwPollEvents();
     delta_prev = delta_now;
     delta_now = TimerResource::get_universal_tick();
-    RenderObjects::delta_ms = static_cast<idk::f80>((delta_now - delta_prev) * 1000) / static_cast<idk::f80>(TimerResource::get_universal_tick());
+    RenderObjects::delta_ms = static_cast<idk::f80>(delta_now - delta_prev);
     this->update();
     this->_window->_fb.call([&] {
       const auto& color = Engine::get_instance()->get_window()->get_clear_color();
       this->_window->_fb.clear_color(color.get_red(), color.get_green(), color.get_blue(), color.get_alpha());
-      for(std::size_t i = 0; i < fresh::RenderObjects::objects_to_render.size(); ++i) {
-        const auto& sptr = fresh::RenderObjects::objects_to_render[i];
-        if(sptr) {
+      for(std::size_t i = 0; i < RenderObjects::objects_to_render.size(); ++i) {
+        if(const auto& sptr = RenderObjects::objects_to_render[i]) {
           sptr->sync();
           continue;
         }
-        log_warning(fresh::src(), "iterated object is invalid, index is {}.", i);
+        log_warning(src(), "iterated object is invalid, index is {}.", i);
       }
     });
     this->_window->_fb.render_texture();
@@ -188,4 +187,8 @@ void Engine::increase_global_id() noexcept {
 void Engine::reset_global_id() noexcept {
   fresh::Engine::_id = 0;
 }
-}// namespace fresh
+
+[[nodiscard]] idk::f80 Engine::calculate_fps() noexcept {
+  return RenderObjects::delta_ms > 0.f ? 1000.0 / RenderObjects::delta_ms : 0.0;
+}
+}  // namespace fresh

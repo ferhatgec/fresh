@@ -116,13 +116,13 @@ class Engine {
 
   /// Engine::link_camera(std::shared_ptr<CameraObject>) links given camera
   /// with Engine-backed camera instance.
-  void link_camera(std::shared_ptr<CameraObject> camera_object) noexcept;
+  static void link_camera(std::shared_ptr<CameraObject> camera_object) noexcept;
 
   /// Engine::get_camera() returns current Engine-backed/bounded Camera.
   [[nodiscard]]
   static const std::shared_ptr<CameraObject>& get_camera() noexcept;
 
-  [[nodiscard]]
+  [[nodiscard]] static
   const std::unique_ptr<fre2d::LightManager>& get_light_manager() noexcept;
 
   /// Engine::get_id() returns global id that counts how many objects
@@ -134,6 +134,9 @@ class Engine {
 
   /// Engine::reset_global_id() resets global id to 0.
   static void reset_global_id() noexcept;
+
+  /// Engine::calculate_fps() calculates FPS.
+  [[nodiscard]] static idk::f80 calculate_fps() noexcept;
 
   static std::unique_ptr<Engine> _instance;
  private:
