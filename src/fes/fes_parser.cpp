@@ -1,6 +1,6 @@
 // MIT License
 //
-// Copyright (c) 2024-2025 Ferhat Geçdoğan All Rights Reserved.
+// Copyright (c) 2024-2026 Ferhat Geçdoğan All Rights Reserved.
 // Distributed under the terms of the MIT License.
 //
 #include <fes/fes_parser.hpp>
@@ -44,7 +44,8 @@ void FesParser::parse_variable(std::shared_ptr<FesObjectAST> object_node) noexce
         case FontSize:
         case AttConstant:
         case AttLinear:
-        case AttQuadratic: {
+        case AttQuadratic:
+        case ZoomFactor: {
           const auto& val = _parse_floats<idk::f64>(var);
           if(val.index() == ConvertibleToFloat) {
             const auto& _value = std::get<ConvertibleToFloat>(val);
@@ -158,6 +159,13 @@ void FesParser::parse_variable(std::shared_ptr<FesObjectAST> object_node) noexce
                   } else { // AttQuadratic
                     pt_obj->set_attenuation_quadratic(static_cast<idk::f32>(_value));
                   }
+                }
+                break;
+              }
+              case ZoomFactor: {
+                if(object_node->get_type() == CameraObject) {
+                  const auto& cam_obj = std::static_pointer_cast<FesCameraObjectAST>(object_node);
+                  cam_obj->set_zoom_factor(static_cast<idk::f32>(_value));
                 }
                 break;
               }

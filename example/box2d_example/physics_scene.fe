@@ -104,6 +104,22 @@ def update(delta) =
  if(EngineIO_is_key_pressed(EngineIO_Key_A)) = Camera.move(-CameraMoveSpeed, 0);;
  if(EngineIO_is_key_pressed(EngineIO_Key_D)) = Camera.move(CameraMoveSpeed, 0);;
 
+ if(EngineIO_is_key_just_pressed(EngineIO_Key_1)) =
+  IO_println("FPS: ", Engine_calculate_fps(), "\n");
+ ;
+
+ if(EngineIO_is_key_just_pressed(EngineIO_Key_Z)) =
+  IO_println("Switched to SecondCamera");
+  Engine_link_camera(Engine_get_object("SecondCamera"));
+  Camera = Engine_get_object("SecondCamera");
+ ;
+
+ if(EngineIO_is_key_just_pressed(EngineIO_Key_Q)) =
+  IO_println("Switched to Camera");
+  Engine_link_camera(Engine_get_object("Camera"));
+  Camera = Engine_get_object("Camera");
+ ;
+
  # increase zoom
  if(EngineIO_is_key_pressed(EngineIO_Key_V)) =
   Camera.set_zoom_factor(Camera.get_zoom_factor() + 0.1);

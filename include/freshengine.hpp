@@ -116,7 +116,8 @@ class Engine {
 
   /// Engine::link_camera(std::shared_ptr<CameraObject>) links given camera
   /// with Engine-backed camera instance.
-  static void link_camera(std::shared_ptr<CameraObject> camera_object) noexcept;
+  static void link_camera(
+      const std::shared_ptr<CameraObject>& camera_object) noexcept;
 
   /// Engine::get_camera() returns current Engine-backed/bounded Camera.
   [[nodiscard]]

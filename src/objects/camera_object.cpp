@@ -1,6 +1,6 @@
 // MIT License
 //
-// Copyright (c) 2024 Ferhat Geçdoğan All Rights Reserved.
+// Copyright (c) 2024-2026 Ferhat Geçdoğan All Rights Reserved.
 // Distributed under the terms of the MIT License.
 //
 #include <fescript/wrappers/fescript_base_object.hpp>
@@ -17,6 +17,7 @@ CameraObject::CameraObject() {
   const auto& [width, height] = Engine::get_instance()->get_window()->get_window_size();
   this->_camera = std::make_unique<fre2d::Camera>(width, height);
   this->set_position({this->get_x(), this->get_y(), static_cast<idk::f32>(width), static_cast<idk::f32>(height)});
+  this->_camera->set_position(glm::vec3{this->get_x(), this->get_y(), 1.f});
   this->reset_delta();
   this->_member_of_camera = true;
 }
@@ -24,6 +25,7 @@ CameraObject::CameraObject() {
 CameraObject::CameraObject(idk::f32 width, idk::f32 height) {
   this->_camera = std::make_unique<fre2d::Camera>(width, height);
   this->set_position({this->get_x(), this->get_y(), width, height});
+  this->_camera->set_position(glm::vec3{this->get_x(), this->get_y(), 1.f});
   this->reset_delta();
   this->_member_of_camera = true;
 }
@@ -39,7 +41,7 @@ void CameraObject::set_camera_position(const PointResource& pt) noexcept {
     return;
   }
   this->_camera->set_position(glm::vec3{pt.get_x(), pt.get_y(), 1.f});
-  this->set_position({ pt.get_x(), pt.get_y(), this->get_w(), this->get_h()});
+  this->set_position({ pt.get_x(), pt.get_y(), this->get_w(), this->get_h() });
   // we apply delta at the time because there might be more than one calls to changing
   // position of an object; that is because there still at least one delta waits to be
   // applied into its child objects; in the end of apply_changes; it will reset the delta.
@@ -68,7 +70,7 @@ void CameraObject::resize_camera(idk::f32 w, idk::f32 h) noexcept {
   this->apply_changes(true);
 }
 
-void CameraObject::set_zoom_factor(idk::f32 zoom_factor) noexcept {
+void CameraObject::set_zoom_factor(idk::f32 zoom_factor) const noexcept {
   this->_camera->set_zoom_factor(zoom_factor);
 }
 

@@ -1,6 +1,6 @@
 // MIT License
 //
-// Copyright (c) 2024-2025 Ferhat Geçdoğan All Rights Reserved.
+// Copyright (c) 2024-2026 Ferhat Geçdoğan All Rights Reserved.
 // Distributed under the terms of the MIT License.
 //
 #include <fes/fes_tokenizer.hpp>
@@ -12,10 +12,10 @@ namespace fresh::fes {
 FesTokenizer::FesTokenizer() noexcept
   : _i{0}, _is_string_data{false} {}
 
-/// most of the time, fes scenes contains not that big data.
-/// so memory mapped i/o might be a bit overkill here, so we will use normal
-/// way. if you want to read files fast, use that your own one, then pass file
-/// argument as false. fes will automatically initialize _raw_file_data variable
+/// most of the time, fes scenes contain small amount of scene data.
+/// so memory mapped i/o might be a bit overkill here, therefore we will use the
+/// normal way. if you want to read files fast, use your own implementation, then pass file
+/// argument as false. FesTokenizer will automatically initialize _raw_file_data variable
 /// with ctx.
 void FesTokenizer::load_from(const std::string& ctx, bool file) noexcept {
   this->_raw_file_data.clear();
@@ -195,6 +195,7 @@ void FesTokenizer::_check_and_push() noexcept {
     pushe("att_constant", Keywords::AttConstant)
     pushe("att_linear", Keywords::AttLinear)
     pushe("att_quadratic", Keywords::AttQuadratic)
+    pushe("zoom_factor", Keywords::ZoomFactor)
     pushe("path", Keywords::Path)
     pushe("default_clear_color", Keywords::DefaultClearColor)
     pushe("label_text", Keywords::LabelText)

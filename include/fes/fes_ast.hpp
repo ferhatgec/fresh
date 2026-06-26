@@ -134,6 +134,11 @@ class FesCameraObjectAST : public FesObjectAST {
 public:
   FesCameraObjectAST() noexcept;
   ~FesCameraObjectAST() noexcept override = default;
+
+  [[nodiscard]] const idk::f32& get_zoom_factor() const noexcept;
+  void set_zoom_factor(idk::f32 zoom) noexcept;
+protected:
+  idk::f32 _zoom_factor {1.f};
 };
 
 class FesColorObjectAST : public FesObjectAST {

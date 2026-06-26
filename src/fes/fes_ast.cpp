@@ -1,6 +1,6 @@
 // MIT License
 //
-// Copyright (c) 2024-2025 Ferhat Geçdoğan All Rights Reserved.
+// Copyright (c) 2024-2026 Ferhat Geçdoğan All Rights Reserved.
 // Distributed under the terms of the MIT License.
 //
 #include <fes/fes_ast.hpp>
@@ -145,6 +145,14 @@ FesRectangleAreaObject::FesRectangleAreaObject() noexcept {
 
 FesCameraObjectAST::FesCameraObjectAST() noexcept {
   this->_object_type = Keywords::CameraObject;
+}
+
+[[nodiscard]] const idk::f32& FesCameraObjectAST::get_zoom_factor() const noexcept {
+  return this->_zoom_factor;
+}
+
+void FesCameraObjectAST::set_zoom_factor(idk::f32 zoom) noexcept {
+  this->_zoom_factor = zoom;
 }
 
 FesColorObjectAST::FesColorObjectAST() noexcept {

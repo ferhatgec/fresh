@@ -1,6 +1,6 @@
 // MIT License
 //
-// Copyright (c) 2024-2025 Ferhat Geçdoğan All Rights Reserved.
+// Copyright (c) 2024-2026 Ferhat Geçdoğan All Rights Reserved.
 // Distributed under the terms of the MIT License.
 //
 #include <filesystem>
@@ -158,6 +158,14 @@ void FesLoaderResource::load_fes(const std::string& ctx,
       }
       break;
     }
+    case fes::CameraObject: {
+      const auto& fes_cam_obj = std::static_pointer_cast<fes::FesCameraObjectAST>(fes_obj);
+      const auto& cam_obj = std::static_pointer_cast<fresh::CameraObject>(gen_obj);
+      const auto& pos = fes_cam_obj->get_position();
+      cam_obj->get_camera()->set_position({pos.get_x(), pos.get_y(), 1.f});
+      cam_obj->set_zoom_factor(fes_cam_obj->get_zoom_factor());
+      break;
+    }
   }
   gen_obj->reset_delta();
   for (const auto& child_obj: fes_obj->get_sub_groups()) {
@@ -246,6 +254,13 @@ FesLoaderResource::generate_from_object(
         vert_ptr->set_resource(vert);
         gen_fes_obj->get_resource_mutable().push_back(std::move(vert_ptr));
       }
+      break;
+    }
+    case fes::CameraObject: {
+      const auto& gen_fes_obj =
+         std::static_pointer_cast<fes::FesCameraObjectAST>(fes_object);
+      const auto& gen_obj = std::static_pointer_cast<CameraObject>(fresh_obj);
+      gen_fes_obj->set_zoom_factor(gen_obj->get_camera()->get_zoom_factor());
       break;
     }
   }
@@ -397,11 +412,14 @@ FesLoaderResource::generate_from_object(
         _serialize_append(ctx, "att_constant = " + std::to_string(pt_ptr->get_attenuation_constant()) + ",", local_ws, true);
         _serialize_append(ctx, "att_linear = " + std::to_string(pt_ptr->get_attenuation_linear()) + ",", local_ws, true);
         _serialize_append(ctx, "att_quadratic = " + std::to_string(pt_ptr->get_attenuation_quadratic()) + ",", local_ws, true);
+      } else if(fes_obj->get_type() == fes::CameraObject) {
+        const auto& pt_ptr = std::static_pointer_cast<fes::FesCameraObjectAST>(fes_obj);
+        _serialize_append(ctx, "zoom_factor = " + std::to_string(pt_ptr->get_zoom_factor()) + ",", local_ws, true);
       }
 
       _serialize_append(
             ctx,
-            "sub_groups = " + FesLoaderResource::serialize_list(fes_obj->get_sub_groups()) + ";", local_ws, true);
+            "sub_groups = " + serialize_list(fes_obj->get_sub_groups()) + ";", local_ws, true);
       break;
     }
   }

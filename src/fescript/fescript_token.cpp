@@ -1,14 +1,9 @@
 // MIT License
 //
-// Copyright (c) 2024 Ferhat Geçdoğan All Rights Reserved.
+// Copyright (c) 2024-2026 Ferhat Geçdoğan All Rights Reserved.
 // Distributed under the terms of the MIT License.
 //
 
-#include <fescript/fescript_array.hpp>
-#include <fescript/fescript_class.hpp>
-#include <fescript/fescript_dict.hpp>
-#include <fescript/fescript_function.hpp>
-#include <fescript/fescript_instance.hpp>
 #include <fescript/fescript_interpreter.hpp>
 #include <utility>
 

@@ -58,6 +58,7 @@ enum Keywords {
   AttConstant, // att_constant
   AttLinear, // att_linear
   AttQuadratic, // att_quadratic
+  ZoomFactor, // zoom_factor
 
 /// start of objects >
   Project, // Project

@@ -208,6 +208,16 @@
      ];
     # FIXME: child objects of Camera does not work as expected, which was working smoothly in SDL2 implementation.
     };
+   ],
+   [CameraObject,
+     name = "SecondCamera",
+     group_id = auto,
+     width = 800,
+     height = 600,
+     position_x = 250,
+     position_y = 0,
+     zoom_factor = 0.5,
+     sub_groups = {};
    ];
   };
  ];

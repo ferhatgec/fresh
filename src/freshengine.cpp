@@ -1,10 +1,8 @@
 // MIT License
 //
-// Copyright (c) 2024-2025 Ferhat Geçdoğan All Rights Reserved.
+// Copyright (c) 2024-2026 Ferhat Geçdoğan All Rights Reserved.
 // Distributed under the terms of the MIT License.
 //
-#include <string>
-#include <utility>
 #include <freshengine.hpp>
 #include <types/predefined.hpp>
 #include <resources/shader_resource.hpp>
@@ -144,12 +142,13 @@ CursorResource& Engine::get_cursor_resource() noexcept {
 /// instance. it used for checking rendered base object can be seen by borders
 /// of camera or not. if it is not; then object won't be rendered, but still do
 /// sync. pass your camera using shared_ptr, it does not need ownership.
-void Engine::link_camera(std::shared_ptr<CameraObject> camera_object) noexcept {
+void Engine::link_camera(
+    const std::shared_ptr<CameraObject>& camera_object) noexcept {
   if(!camera_object) {
     log_error(src(), "invalid camera object passed.");
     return;
   }
-  Engine::get_instance()->_camera_object = std::move(camera_object);
+  Engine::get_instance()->_camera_object = camera_object;
 }
 
 /// Engine::get_camera returns CameraObject* as immutable pointer and immutable value.
